@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QMainWindow>
 #include <QVector>
+#include <QPointer>
+#include <QMainWindow>
 
 class QTcpServer;
 class QTcpSocket;
@@ -12,9 +13,11 @@ class SimulatorMainWindow : public QMainWindow {
 
 	public:
 		explicit SimulatorMainWindow(QWidget *parent = 0);
+		~SimulatorMainWindow();
 
 	private slots:
 		void onRingPhone();
+		void onCallPhone();
 		void onConnectPhone();
 		void onDisconnectPhone();
 

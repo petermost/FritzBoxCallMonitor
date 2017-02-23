@@ -7,11 +7,10 @@
 #include <QPushButton>
 #include <QStatusBar>
 
-using namespace avm;
-
 static const char RING[]       = "29.10.16 18:23:02;RING;0;017624025482;90969248;SIP1;\n";
 static const char CONNECT[]    = "03.11.16 13:17:16;CONNECT;0;1;015146609763;\n";
 static const char DISCONNECT[] = "29.10.16 18:23:04;DISCONNECT;0;201;\n";
+static const char CALLING[]    = "21.11.16 22:51:49;CALL;0;1;90969248;017624025482;SIP1;\n";
 
 //03.11.16 13:17:08;RING;0;015146609763;90969248;SIP1;
 //03.11.16 13:17:16;CONNECT;0;1;015146609763;
@@ -19,11 +18,14 @@ static const char DISCONNECT[] = "29.10.16 18:23:04;DISCONNECT;0;201;\n";
 
 //==================================================================================================
 
-SimulatorMainWindow::SimulatorMainWindow( QWidget *parent ) :
-	QMainWindow( parent ) {
+SimulatorMainWindow::SimulatorMainWindow( QWidget *parent )
+	: QMainWindow( parent ) {
 
 	auto ringPhoneButton = new QPushButton( "Ring Phone" );
 	connect( ringPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::onRingPhone );
+
+	auto callPhoneButton = new QPushButton( "Call Phone" );
+	connect( callPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::onCallPhone );
 
 	auto connectPhoneButton = new QPushButton( "Connect Phone" );
 	connect( connectPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::onConnectPhone );
@@ -33,6 +35,7 @@ SimulatorMainWindow::SimulatorMainWindow( QWidget *parent ) :
 
 	auto layout = new QVBoxLayout;
 	layout->addWidget( ringPhoneButton );
+	layout->addWidget( callPhoneButton );
 	layout->addWidget( connectPhoneButton );
 	layout->addWidget( disconnectPhoneButton );
 
@@ -42,7 +45,7 @@ SimulatorMainWindow::SimulatorMainWindow( QWidget *parent ) :
 	setCentralWidget( centralWidget );
 
 	server_ = new QTcpServer( this );
-	if ( !server_->listen( QHostAddress::Any, FritzBox::DEFAULT_CALL_MONITOR_PORT )) {
+	if ( !server_->listen( QHostAddress::Any, 10012 )) {
 		QMessageBox::critical( this, "Fritz!Box Simulator",
 			QString( "Unable to start the server: %1." ).arg( server_->errorString() ));
 		server_->close();
@@ -56,7 +59,20 @@ SimulatorMainWindow::SimulatorMainWindow( QWidget *parent ) :
 
 //==================================================================================================
 
+SimulatorMainWindow::~SimulatorMainWindow() {
+	// We need to manually disconnect, because otherwise the QTcpSocket::disconnected signal gets
+	// emitted when the destructor of this and the container with the sockets have already been
+	// run!
+
+	for ( auto socket : sockets_ ) {
+		socket->disconnectFromHost();
+	}
+}
+
+//==================================================================================================
+
 void SimulatorMainWindow::onNewConnection( QTcpSocket *socket ) {
+	sockets_.append( socket );
 
 	connect( socket, &QTcpSocket::readyRead, [ = ] {
 		onReadyRead( socket );
@@ -69,8 +85,6 @@ void SimulatorMainWindow::onNewConnection( QTcpSocket *socket ) {
 	connect( socket, &QTcpSocket::disconnected, [ = ] {
 		onDisconnected( socket );
 	});
-
-	sockets_.append( socket );
 }
 
 //==================================================================================================
@@ -102,6 +116,14 @@ void SimulatorMainWindow::onRingPhone() {
 
 //==================================================================================================
 
+void SimulatorMainWindow::onCallPhone() {
+	for ( auto socket : sockets_ ) {
+		socket->write( CALLING );
+	}
+}
+
+//==================================================================================================
+
 void SimulatorMainWindow::onConnectPhone() {
 	for ( auto socket : sockets_ ) {
 		socket->write( CONNECT );
@@ -115,3 +137,4 @@ void SimulatorMainWindow::onDisconnectPhone() {
 		socket->write( DISCONNECT );
 	}
 }
+

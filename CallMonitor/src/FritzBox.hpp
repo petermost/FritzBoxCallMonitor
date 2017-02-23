@@ -5,20 +5,26 @@
 #include <QTcpSocket>
 #include <pera_software/aidkit/qt/net/Socket.hpp>
 
-namespace avm {
-
 class FritzBox : public QObject {
 	Q_OBJECT
 	public:
-		using SocketPort = pera_software::aidkit::qt::net::Port;
+		using Port = pera_software::aidkit::qt::net::Port;
 
 		static const QString DEFAULT_HOST_NAME;
-		static const SocketPort DEFAULT_CALL_MONITOR_PORT;
+		static const Port DEFAULT_CALL_MONITOR_PORT;
 
-		FritzBox( QObject *parent = nullptr );
+		FritzBox( QObject *parent = nullptr ) noexcept;
 
-		void connectTo( const QString &hostName, SocketPort portNumber ) noexcept;
+		void connectTo( const QString &hostName, Port portNumber ) noexcept;
 		void disconnectFrom() noexcept;
+
+		QString hostName() const noexcept {
+			return hostName_;
+		}
+
+		Port portNumber() const noexcept {
+			return portNumber_;
+		}
 
 	signals:
 		void stateChanged( QTcpSocket::SocketState state );
@@ -27,12 +33,16 @@ class FritzBox : public QObject {
 		void phoneRinging( unsigned connectionId, const QString &caller, const QString &callee );
 		void phoneConnected( unsigned connectionId, const QString &caller );
 		void phoneDisconnected( unsigned connectionId );
+		void phoneCalling( unsigned connectionId, const QString &caller, const QString &callee );
 
 	private slots:
+		void onError( QTcpSocket::SocketError socketError );
 		void onReadyRead();
 
 	private:
+		QString hostName_;
+		Port portNumber_;
 		QTcpSocket *socket_;
-};
 
-}
+		void reconnect();
+};
