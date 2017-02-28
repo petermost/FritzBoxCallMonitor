@@ -39,6 +39,39 @@ void FritzBox::disconnectFrom() noexcept {
 
 //==================================================================================================
 
+void FritzBox::parseAndSignal( const QString &line ) {
+	QStringList parts = line.split( ';' );
+	QString dateTime      = parts[ 0 ];
+	QString command       = parts[ 1 ];
+	unsigned connectionId = parts[ 2 ].toUInt();
+
+	if ( command == "RING" ) {
+		QString caller = parts[ 3 ];
+		QString callee = parts[ 4 ];
+		emit phoneRinging( connectionId, caller, callee );
+	}
+	else if ( command == "CONNECT" ) {
+		QString extension = parts[ 3 ];
+		QString caller    = parts[ 4 ];
+		emit phoneConnected( connectionId, caller );
+	}
+	else if ( command == "DISCONNECT" ) {
+		QString durationSeconds = parts[ 3 ];
+		emit phoneDisconnected( connectionId );
+	}
+	else if ( command == "CALL" ) {
+		QString extension = parts[ 3 ];
+		QString caller    = parts[ 4 ];
+		QString callee    = parts[ 5 ];
+		emit phoneCalling( connectionId, caller, callee );
+	}
+	else {
+		emit errorOccured( QTcpSocket::SocketError::UnknownSocketError, tr( "Unknown command '%1'!" ).arg( line ));
+	}
+}
+
+//==================================================================================================
+
 void FritzBox::reconnect() {
 	socket_->connectToHost( hostName_, portNumber_ );
 }
@@ -66,33 +99,6 @@ void FritzBox::onReadyRead() {
 
 	if (( length = socket_->readLine( buffer, sizeof( buffer ))) != -1 ) {
 		QString line = QString::fromLatin1( buffer, static_cast< int >( length )).remove( '\n' );
-		QStringList parts = line.split( ';' );
-		QString dateTime      = parts[ 0 ];
-		QString command       = parts[ 1 ];
-		unsigned connectionId = parts[ 2 ].toUInt();
-
-		if ( command == "RING" ) {
-			QString caller = parts[ 3 ];
-			QString callee = parts[ 4 ];
-			emit phoneRinging( connectionId, caller, callee );
-		}
-		else if ( command == "CONNECT" ) {
-			QString extension = parts[ 3 ];
-			QString caller    = parts[ 4 ];
-			emit phoneConnected( connectionId, caller );
-		}
-		else if ( command == "DISCONNECT" ) {
-			QString durationSeconds = parts[ 3 ];
-			emit phoneDisconnected( connectionId );
-		}
-		else if ( command == "CALL" ) {
-			QString extension = parts[ 3 ];
-			QString caller    = parts[ 4 ];
-			QString callee    = parts[ 5 ];
-			emit phoneCalling( connectionId, caller, callee );
-		}
-		else {
-			emit errorOccured( QTcpSocket::SocketError::UnknownSocketError, tr( "Unknown command '%1'!" ).arg( line ));
-		}
+		parseAndSignal( line );
 	}
 }

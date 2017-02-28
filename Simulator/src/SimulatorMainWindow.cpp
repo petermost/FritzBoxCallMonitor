@@ -1,20 +1,12 @@
 #include "SimulatorMainWindow.hpp"
+#include <CallMonitor/src/FritzBox.hpp>
+#include <CallMonitor/test/FritzBoxTest.hpp>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QMessageBox>
-#include <CallMonitor/src/FritzBox.hpp>
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QStatusBar>
-
-static const char RING[]       = "29.10.16 18:23:02;RING;0;017624025482;90969248;SIP1;\n";
-static const char CONNECT[]    = "03.11.16 13:17:16;CONNECT;0;1;015146609763;\n";
-static const char DISCONNECT[] = "29.10.16 18:23:04;DISCONNECT;0;201;\n";
-static const char CALLING[]    = "21.11.16 22:51:49;CALL;0;1;90969248;017624025482;SIP1;\n";
-
-//03.11.16 13:17:08;RING;0;015146609763;90969248;SIP1;
-//03.11.16 13:17:16;CONNECT;0;1;015146609763;
-//03.11.16 13:20:37;DISCONNECT;0;201;
 
 //==================================================================================================
 
@@ -110,7 +102,7 @@ void SimulatorMainWindow::onBytesWritten( QTcpSocket *, qint64 /* count */ ) {
 
 void SimulatorMainWindow::onRingPhone() {
 	for ( auto socket : sockets_ ) {
-		socket->write( RING );
+		socket->write( FritzBoxTest::RING_DATA );
 	}
 }
 
@@ -118,7 +110,7 @@ void SimulatorMainWindow::onRingPhone() {
 
 void SimulatorMainWindow::onCallPhone() {
 	for ( auto socket : sockets_ ) {
-		socket->write( CALLING );
+		socket->write( FritzBoxTest::CALLING_DATA );
 	}
 }
 
@@ -126,7 +118,7 @@ void SimulatorMainWindow::onCallPhone() {
 
 void SimulatorMainWindow::onConnectPhone() {
 	for ( auto socket : sockets_ ) {
-		socket->write( CONNECT );
+		socket->write( FritzBoxTest::CONNECT_DATA );
 	}
 }
 
@@ -134,7 +126,7 @@ void SimulatorMainWindow::onConnectPhone() {
 
 void SimulatorMainWindow::onDisconnectPhone() {
 	for ( auto socket : sockets_ ) {
-		socket->write( DISCONNECT );
+		socket->write( FritzBoxTest::DISCONNECT_DATA );
 	}
 }
 

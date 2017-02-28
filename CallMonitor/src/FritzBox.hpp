@@ -18,6 +18,8 @@ class FritzBox : public QObject {
 		void connectTo( const QString &hostName, Port portNumber ) noexcept;
 		void disconnectFrom() noexcept;
 
+		void parseAndSignal( const QString &line );
+
 		QString hostName() const noexcept {
 			return hostName_;
 		}
