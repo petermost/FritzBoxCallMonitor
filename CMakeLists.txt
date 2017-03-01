@@ -18,6 +18,8 @@ set( sources
 	CallMonitor/src/main.cpp
 	CallMonitor/src/FritzBox.hpp
 	CallMonitor/src/FritzBox.cpp
+	CallMonitor/src/FritzBoxPhoneBook.hpp
+	CallMonitor/src/FritzBoxPhoneBook.cpp
 	CallMonitor/src/MonitorApplication.hpp
 	CallMonitor/src/MonitorApplication.cpp
 	CallMonitor/src/MonitorMainWindow.hpp
@@ -27,19 +29,6 @@ set( sources
 
 add_executable( fritzboxcallmonitor ${sources})
 target_link_libraries( fritzboxcallmonitor AidKit Qt5::Widgets Qt5::Network )
-
-####################################################################################################
-# Setup tests:
-
-set( testSources
-	CallMonitor/test/TestMain.cpp
-	CallMonitor/src/FritzBox.hpp
-	CallMonitor/src/FritzBox.cpp
-	CallMonitor/test/FritzBoxTest.hpp
-	CallMonitor/test/FritzBoxTest.cpp
-)
-add_executable( fritztest ${testSources})
-target_link_libraries( fritztest AidKitTest Qt5::Network )
 
 ####################################################################################################
 # Setup simulator:
@@ -57,3 +46,20 @@ set( simulatorSources
 add_executable( simulator ${simulatorSources})
 target_link_libraries( simulator AidKit AidKitTest Qt5::Widgets Qt5::Network )
 
+####################################################################################################
+# Setup tests:
+
+set( testSources
+	CallMonitor/test/TestMain.cpp
+	CallMonitor/src/FritzBox.hpp
+	CallMonitor/src/FritzBox.cpp
+	CallMonitor/src/FritzBoxPhoneBook.hpp
+	CallMonitor/src/FritzBoxPhoneBook.cpp
+	CallMonitor/test/FritzBoxTest.hpp
+	CallMonitor/test/FritzBoxTest.cpp
+	CallMonitor/test/FritzBoxPhoneBookTest.hpp
+	CallMonitor/test/FritzBoxPhoneBookTest.cpp
+	CallMonitor/test/Data.qrc
+)
+add_executable( fritztest ${testSources})
+target_link_libraries( fritztest AidKitTest Qt5::Network )
