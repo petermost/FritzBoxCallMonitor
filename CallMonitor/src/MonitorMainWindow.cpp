@@ -1,5 +1,4 @@
 #include "MonitorMainWindow.hpp"
-#include "MonitorMainWindowModel.hpp"
 
 #include <QMenu>
 #include <QTcpSocket>
@@ -20,19 +19,14 @@ using namespace net;
 
 //==================================================================================================
 
-MonitorMainWindow::MonitorMainWindow()
-	: MonitorMainWindow( QSharedPointer< MonitorMainWindowModel >::create() ){
-}
-
-MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > model )
-	: model_( model ) {
+MonitorMainWindow::MonitorMainWindow() {
 
 	// Add the default menus:
 
 	addFileMenu();
 	addHelpMenu();
 
-	connect( quitAction(), &QAction::triggered, model_.data(), &MonitorMainWindowModel::quit );
+	connect( quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::quit );
 	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::quit );
 
 	// Prepare the hostname widget:
@@ -41,9 +35,9 @@ MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > m
 	hostName_->setClearButtonEnabled( true );
 
 	connect( hostName_, &QLineEdit::editingFinished, [ = ] {
-		model_->setHostName( hostName_->text() );
+		model_.setHostName( hostName_->text() );
 	});
-	connect( model.data(), &MonitorMainWindowModel::hostNameChanged, hostName_, &QLineEdit::setText );
+	connect( &model_, &MonitorMainWindowModel::hostNameChanged, hostName_, &QLineEdit::setText );
 
 	auto hostNameLabel = new QLabel( tr( "&Hostname:" ));
 	hostNameLabel->setBuddy( hostName_ );
@@ -54,9 +48,9 @@ MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > m
 	portNumber_->setRange( PORT_MIN, PORT_MAX );
 
 	connect( portNumber_, &QSpinBox::editingFinished, [ = ] {
-		model_->setPortNumber( static_cast< Port >( portNumber_->value() ));
+		model_.setPortNumber( static_cast< Port >( portNumber_->value() ));
 	});
-	connect( model.data(), &MonitorMainWindowModel::portNumberChanged, portNumber_, &QSpinBox::setValue );
+	connect( &model_, &MonitorMainWindowModel::portNumberChanged, portNumber_, &QSpinBox::setValue );
 
 	auto portNumberLabel = new QLabel( tr( "&Portnumber:" ));
 	portNumberLabel->setBuddy( portNumber_ );
@@ -66,10 +60,10 @@ MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > m
 	phoneBookPath_ = new QLineEdit;
 	phoneBookPath_->setClearButtonEnabled( true );
 
-	connect( phoneBookPath_, &QLineEdit::editingFinished, model.data(), [ = ] {
-		model_->setPhoneBookPath( phoneBookPath_->text() );
+	connect( phoneBookPath_, &QLineEdit::editingFinished, &model_, [ = ] {
+		model_.setPhoneBookPath( phoneBookPath_->text() );
 	});
-	connect( model_.data(), &MonitorMainWindowModel::phoneBookPathChanged, phoneBookPath_, &QLineEdit::setText );
+	connect( &model_, &MonitorMainWindowModel::phoneBookPathChanged, phoneBookPath_, &QLineEdit::setText );
 
 	auto phoneBookLabel = new QLabel( tr( "&Phonebook:" ));
 	phoneBookLabel->setBuddy( phoneBookPath_ );
@@ -78,7 +72,7 @@ MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > m
 
 	browsePhoneBookPathButton_ = new QPushButton( tr( "&Browse..." ));
 
-	connect( browsePhoneBookPathButton_, &QPushButton::clicked, model_.data(), &MonitorMainWindowModel::browseForPhoneBook );
+	connect( browsePhoneBookPathButton_, &QPushButton::clicked, &model_, &MonitorMainWindowModel::browseForPhoneBook );
 
 	// Prepare the fritz box layout:
 
@@ -100,8 +94,8 @@ MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > m
 	messages_ = new MessagesWidget;
 	messages_->setMaximumItemCount( 100 );
 
-	connect( model_.data(), &MonitorMainWindowModel::showError, messages_, &MessagesWidget::showError );
-	connect( model_.data(), &MonitorMainWindowModel::showInformation, messages_, &MessagesWidget::showInformation );
+	connect( &model_, &MonitorMainWindowModel::showError, messages_, &MessagesWidget::showError );
+	connect( &model_, &MonitorMainWindowModel::showInformation, messages_, &MessagesWidget::showInformation );
 
 	auto messagesLayout = new QHBoxLayout;
 	messagesLayout->addWidget( messages_ );
@@ -124,7 +118,7 @@ MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > m
 	trayIcon_->show();
 
 	connect( trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated );
-	connect( model_.data(), &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message ) {
+	connect( &model_, &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message ) {
 		trayIcon_->showMessage( title, message );
 	});
 
@@ -135,14 +129,14 @@ MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > m
 
 void MonitorMainWindow::readSettings( QSettings *settings ) {
 	PERAMainWindow::readSettings( settings );
-	model_->readSettings( settings );
+	model_.readSettings( settings );
 }
 
 //==================================================================================================
 
 void MonitorMainWindow::writeSettings( QSettings *settings ) const {
 	PERAMainWindow::writeSettings( settings );
-	model_->writeSettings( settings );
+	model_.writeSettings( settings );
 }
 
 //==================================================================================================

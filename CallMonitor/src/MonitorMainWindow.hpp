@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MonitorMainWindowModel.hpp"
 #include <pera_software/company/qt/PERAMainWindow.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesWidget.hpp>
 #include <QSystemTrayIcon>
@@ -7,14 +8,12 @@
 class QSpinBox;
 class QLineEdit;
 class QPushButton;
-class MonitorMainWindowModel;
 
 class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 	Q_OBJECT
 
 	public:
 		MonitorMainWindow();
-		MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > model );
 
 		virtual void readSettings( QSettings *settings ) override;
 		virtual void writeSettings( QSettings *settings ) const override;
@@ -29,7 +28,7 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 		void onTrayIconActivated( QSystemTrayIcon::ActivationReason reason );
 
 	private:
-		QSharedPointer< MonitorMainWindowModel > model_;
+		MonitorMainWindowModel model_;
 
 		QLineEdit *hostName_;
 		QSpinBox *portNumber_;

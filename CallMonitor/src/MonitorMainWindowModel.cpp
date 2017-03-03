@@ -138,7 +138,7 @@ void MonitorMainWindowModel::setPhoneBookPath( const QString &phoneBookPath ) {
 
 		fritzBoxPhoneBook_.read( phoneBookPath_ );
 		for( auto entry = fritzBoxPhoneBook_.begin(); entry != fritzBoxPhoneBook_.end(); ++entry ) {
-			emit showInformation( tr( "Read phone book entry name: %1, number: %2" ).arg( entry.value() ).arg( entry.key() ));
+			emit showInformation( tr( "Read phone book entry for '%1' with the number: '%2'." ).arg( entry.value() ).arg( entry.key() ));
 		}
 	}
 }
