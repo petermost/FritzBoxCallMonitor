@@ -38,6 +38,7 @@ class FritzBox : public QObject {
 		void phoneCalling( unsigned connectionId, const QString &caller, const QString &callee );
 
 	private slots:
+		void onConnected();
 		void onError( QTcpSocket::SocketError socketError );
 		void onReadyRead();
 

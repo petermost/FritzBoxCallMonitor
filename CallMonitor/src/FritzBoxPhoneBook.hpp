@@ -30,7 +30,11 @@ class FritzBoxPhoneBook : public QObject, public QHash< QString, QString >  {
 	public:
 		FritzBoxPhoneBook( QObject *parent = nullptr ) noexcept;
 
+		int read( const QString &fileName );
+
 		/// reads the phone book from the given device.
 		/// Returns the number of entries read.
 		int read( QIODevice *device );
+
+	signals:
 };

@@ -2,22 +2,25 @@
 
 #include <pera_software/company/qt/PERAMainWindow.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesWidget.hpp>
-#include "FritzBox.hpp"
 #include <QSystemTrayIcon>
 
 class QSpinBox;
 class QLineEdit;
 class QPushButton;
+class MonitorMainWindowModel;
 
 class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 	Q_OBJECT
 
 	public:
 		MonitorMainWindow();
+		MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > model );
+
+		virtual void readSettings( QSettings *settings ) override;
+		virtual void writeSettings( QSettings *settings ) const override;
 
 	public slots:
-		void connectToFritzBox();
-		void disconnectFromFritzBox();
+		void quit();
 
 	protected:
 		void closeEvent( QCloseEvent *event ) override;
@@ -26,13 +29,13 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 		void onTrayIconActivated( QSystemTrayIcon::ActivationReason reason );
 
 	private:
-		FritzBox *fritzBox_ = nullptr;
+		QSharedPointer< MonitorMainWindowModel > model_;
 
 		QLineEdit *hostName_;
 		QSpinBox *portNumber_;
-
-		QLineEdit *phoneBookName_;
-
+		QLineEdit *phoneBookPath_;
+		QPushButton *browsePhoneBookPathButton_;
 		pera_software::aidkit::qt::MessagesWidget *messages_;
+
 		QSystemTrayIcon *trayIcon_;
 };

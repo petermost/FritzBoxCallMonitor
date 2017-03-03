@@ -1,6 +1,5 @@
 #include "MonitorApplication.hpp"
 #include "MonitorMainWindow.hpp"
-#include "FritzBox.hpp"
 
 using namespace pera_software::company::qt;
 

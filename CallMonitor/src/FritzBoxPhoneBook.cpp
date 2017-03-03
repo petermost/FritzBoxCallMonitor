@@ -1,4 +1,5 @@
 #include "FritzBoxPhoneBook.hpp"
+#include <QFile>
 #include <QIODevice>
 #include <QXmlStreamReader>
 
@@ -8,6 +9,14 @@ using XmlToken = QXmlStreamReader::TokenType;
 
 FritzBoxPhoneBook::FritzBoxPhoneBook( QObject *parent ) noexcept
 	: QObject( parent ) {
+}
+
+int FritzBoxPhoneBook::read( const QString &fileName ) {
+	QFile file( fileName );
+	if( file.open( QFile::ReadOnly | QFile::Text ))
+		return read( &file );
+	else
+		return -1;
 }
 
 int FritzBoxPhoneBook::read( QIODevice *device ) {

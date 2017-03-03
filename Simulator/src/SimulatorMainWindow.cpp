@@ -1,5 +1,4 @@
 #include "SimulatorMainWindow.hpp"
-#include <CallMonitor/src/FritzBox.hpp>
 #include <CallMonitor/test/FritzBoxTest.hpp>
 #include <QTcpServer>
 #include <QTcpSocket>

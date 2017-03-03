@@ -1,13 +1,12 @@
 #include "MonitorMainWindow.hpp"
-#include <pera_software/aidkit/qt/core/Enums.hpp>
+#include "MonitorMainWindowModel.hpp"
+
 #include <QMenu>
-#include <QSystemTrayIcon>
 #include <QTcpSocket>
 #include <QApplication>
 #include <QLineEdit>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <limits>
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QSpinBox>
@@ -21,17 +20,30 @@ using namespace net;
 
 //==================================================================================================
 
-MonitorMainWindow::MonitorMainWindow() {
+MonitorMainWindow::MonitorMainWindow()
+	: MonitorMainWindow( QSharedPointer< MonitorMainWindowModel >::create() ){
+}
+
+MonitorMainWindow::MonitorMainWindow( QSharedPointer< MonitorMainWindowModel > model )
+	: model_( model ) {
 
 	// Add the default menus:
 
 	addFileMenu();
 	addHelpMenu();
 
-	// Prepare the hostname widget;
+	connect( quitAction(), &QAction::triggered, model_.data(), &MonitorMainWindowModel::quit );
+	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::quit );
 
-	hostName_ = new QLineEdit( FritzBox::DEFAULT_HOST_NAME );
+	// Prepare the hostname widget:
+
+	hostName_ = new QLineEdit;
 	hostName_->setClearButtonEnabled( true );
+
+	connect( hostName_, &QLineEdit::editingFinished, [ = ] {
+		model_->setHostName( hostName_->text() );
+	});
+	connect( model.data(), &MonitorMainWindowModel::hostNameChanged, hostName_, &QLineEdit::setText );
 
 	auto hostNameLabel = new QLabel( tr( "&Hostname:" ));
 	hostNameLabel->setBuddy( hostName_ );
@@ -40,22 +52,33 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	portNumber_ = new QSpinBox;
 	portNumber_->setRange( PORT_MIN, PORT_MAX );
-	portNumber_->setValue( FritzBox::DEFAULT_CALL_MONITOR_PORT );
+
+	connect( portNumber_, &QSpinBox::editingFinished, [ = ] {
+		model_->setPortNumber( static_cast< Port >( portNumber_->value() ));
+	});
+	connect( model.data(), &MonitorMainWindowModel::portNumberChanged, portNumber_, &QSpinBox::setValue );
 
 	auto portNumberLabel = new QLabel( tr( "&Portnumber:" ));
 	portNumberLabel->setBuddy( portNumber_ );
 
 	// Prepare the phone book widget:
 
-	phoneBookName_ = new QLineEdit;
-	phoneBookName_->setClearButtonEnabled( true );
+	phoneBookPath_ = new QLineEdit;
+	phoneBookPath_->setClearButtonEnabled( true );
+
+	connect( phoneBookPath_, &QLineEdit::editingFinished, model.data(), [ = ] {
+		model_->setPhoneBookPath( phoneBookPath_->text() );
+	});
+	connect( model_.data(), &MonitorMainWindowModel::phoneBookPathChanged, phoneBookPath_, &QLineEdit::setText );
 
 	auto phoneBookLabel = new QLabel( tr( "&Phonebook:" ));
-	phoneBookLabel->setBuddy( phoneBookName_ );
+	phoneBookLabel->setBuddy( phoneBookPath_ );
 
 	// Prepare the phone book browse widget:
 
-	auto phoneBookBrowseButton = new QPushButton( tr( "&Browse..." ));
+	browsePhoneBookPathButton_ = new QPushButton( tr( "&Browse..." ));
+
+	connect( browsePhoneBookPathButton_, &QPushButton::clicked, model_.data(), &MonitorMainWindowModel::browseForPhoneBook );
 
 	// Prepare the fritz box layout:
 
@@ -65,10 +88,9 @@ MonitorMainWindow::MonitorMainWindow() {
 	fritzBoxLayout->addWidget( portNumberLabel, 0, 2 );
 	fritzBoxLayout->addWidget( portNumber_, 0, 3 );
 
-
 	fritzBoxLayout->addWidget( phoneBookLabel, 1, 0 );
-	fritzBoxLayout->addWidget( phoneBookName_, 1, 1 );
-	fritzBoxLayout->addWidget( phoneBookBrowseButton, 1, 2, 1, 2 );
+	fritzBoxLayout->addWidget( phoneBookPath_, 1, 1 );
+	fritzBoxLayout->addWidget( browsePhoneBookPathButton_, 1, 2, 1, 2 );
 
 	auto fritzBoxGroup = new QGroupBox( "FRITZ!Box" );
 	fritzBoxGroup->setLayout( fritzBoxLayout );
@@ -77,6 +99,9 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	messages_ = new MessagesWidget;
 	messages_->setMaximumItemCount( 100 );
+
+	connect( model_.data(), &MonitorMainWindowModel::showError, messages_, &MessagesWidget::showError );
+	connect( model_.data(), &MonitorMainWindowModel::showInformation, messages_, &MessagesWidget::showInformation );
 
 	auto messagesLayout = new QHBoxLayout;
 	messagesLayout->addWidget( messages_ );
@@ -93,69 +118,37 @@ MonitorMainWindow::MonitorMainWindow() {
 	// Prepare the tray icon:
 
 	trayIcon_ = new QSystemTrayIcon( this );
-	connect( trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated );
 	const QIcon fritzBoxIcon( ":/telephone-icon.png" );
 	trayIcon_->setIcon( fritzBoxIcon );
 	trayIcon_->setContextMenu( fileMenu() );
 	trayIcon_->show();
 
+	connect( trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated );
+	connect( model_.data(), &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message ) {
+		trayIcon_->showMessage( title, message );
+	});
+
 	setCentralWidget( centralWidget );
-
-	// Start connecting when the window is shown or the hostname or the portnumber changed:
-
-	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::disconnectFromFritzBox );
-	connect( this, &PERAMainWindow::showed, this, &MonitorMainWindow::connectToFritzBox );
-	connect( hostName_, &QLineEdit::editingFinished, this, &MonitorMainWindow::connectToFritzBox );
-	connect( portNumber_, &QSpinBox::editingFinished, this, &MonitorMainWindow::connectToFritzBox );
 }
 
 //==================================================================================================
 
-void MonitorMainWindow::connectToFritzBox() {
-	if ( fritzBox_ == nullptr ) {
-		fritzBox_ = new FritzBox( this );
-
-		connect( fritzBox_, &FritzBox::errorOccured, [ = ]( QTcpSocket::SocketError, const QString &message ) {
-			messages_->showError( message );
-		});
-
-		connect( fritzBox_, &FritzBox::stateChanged, [ = ]( QTcpSocket::SocketState state ) {
-			if ( state == QTcpSocket::SocketState::ConnectedState )
-				messages_->showInformation( tr( "Connected." ));
-		});
-
-		connect( fritzBox_, &FritzBox::phoneRinging, [ = ]( unsigned /* connectionId */, const QString &caller, const QString &callee ) {
-			messages_->showInformation( tr( "Phone ringing: Caller: '%1', Callee: '%2'." ).arg( caller ).arg( callee ));
-			trayIcon_->showMessage( "Incoming Call", caller );
-		});
-
-		connect( fritzBox_, &FritzBox::phoneCalling, [ = ]( unsigned /* connectionId */, const QString &caller, const QString &callee ) {
-			messages_->showInformation( tr( "Phone calling: Caller: '%1', Callee: '%2'." ).arg( caller ).arg( callee ));
-		});
-
-		connect( fritzBox_, &FritzBox::phoneConnected, [ = ]( unsigned /* connectionId */, const QString &caller ) {
-			messages_->showInformation( tr( "Phone connected: Caller: '%1'." ).arg( caller ));
-		});
-
-		connect( fritzBox_, &FritzBox::phoneDisconnected, [ = ]( unsigned /* connectionId */ ) {
-			messages_->showInformation( tr( "Phone disconnected." ));
-		});
-	}
-	QString hostName = hostName_->text();
-	Port portNumber = static_cast< Port >( portNumber_->value() );
-	if ( hostName != fritzBox_->hostName() || portNumber != fritzBox_->portNumber() ) {
-		fritzBox_->disconnectFrom();
-		fritzBox_->connectTo( hostName, portNumber );
-	}
+void MonitorMainWindow::readSettings( QSettings *settings ) {
+	PERAMainWindow::readSettings( settings );
+	model_->readSettings( settings );
 }
 
 //==================================================================================================
 
-void MonitorMainWindow::disconnectFromFritzBox() {
-	if ( fritzBox_ != nullptr ) {
-		fritzBox_->disconnectFrom();
-		trayIcon_->hide();
-	}
+void MonitorMainWindow::writeSettings( QSettings *settings ) const {
+	PERAMainWindow::writeSettings( settings );
+	model_->writeSettings( settings );
+}
+
+//==================================================================================================
+
+void MonitorMainWindow::quit() {
+	trayIcon_->hide();
 	close();
 }
 
