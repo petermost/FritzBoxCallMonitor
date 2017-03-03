@@ -97,6 +97,10 @@ MonitorMainWindow::MonitorMainWindow() {
 	connect( &model_, &MonitorMainWindowModel::showError, messages_, &MessagesWidget::showError );
 	connect( &model_, &MonitorMainWindowModel::showInformation, messages_, &MessagesWidget::showInformation );
 
+	// When an error should be shown then we make the window visible again:
+
+	connect( &model_, &MonitorMainWindowModel::showError, this, &MonitorMainWindow::show );
+
 	auto messagesLayout = new QHBoxLayout;
 	messagesLayout->addWidget( messages_ );
 
