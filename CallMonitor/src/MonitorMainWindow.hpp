@@ -15,8 +15,8 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 	public:
 		MonitorMainWindow();
 
-		virtual void readSettings( QSettings *settings ) override;
-		virtual void writeSettings( QSettings *settings ) const override;
+		void readSettings( QSettings *settings ) noexcept override;
+		void writeSettings( QSettings *settings ) const noexcept override;
 
 	public slots:
 		void quit();

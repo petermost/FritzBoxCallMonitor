@@ -94,12 +94,12 @@ MonitorMainWindow::MonitorMainWindow() {
 	messages_ = new MessagesWidget;
 	messages_->setMaximumItemCount( 100 );
 
-	connect( &model_, &MonitorMainWindowModel::showError, messages_, &MessagesWidget::showError );
+	connect( &model_, &MonitorMainWindowModel::errorOccured, messages_, &MessagesWidget::showError );
 	connect( &model_, &MonitorMainWindowModel::showInformation, messages_, &MessagesWidget::showInformation );
 
 	// When an error should be shown then we make the window visible again:
 
-	connect( &model_, &MonitorMainWindowModel::showError, this, &MonitorMainWindow::show );
+	connect( &model_, &MonitorMainWindowModel::errorOccured, this, &MonitorMainWindow::show );
 
 	auto messagesLayout = new QHBoxLayout;
 	messagesLayout->addWidget( messages_ );
@@ -131,14 +131,14 @@ MonitorMainWindow::MonitorMainWindow() {
 
 //==================================================================================================
 
-void MonitorMainWindow::readSettings( QSettings *settings ) {
+void MonitorMainWindow::readSettings( QSettings *settings ) noexcept {
 	PERAMainWindow::readSettings( settings );
 	model_.readSettings( settings );
 }
 
 //==================================================================================================
 
-void MonitorMainWindow::writeSettings( QSettings *settings ) const {
+void MonitorMainWindow::writeSettings( QSettings *settings ) const noexcept {
 	PERAMainWindow::writeSettings( settings );
 	model_.writeSettings( settings );
 }

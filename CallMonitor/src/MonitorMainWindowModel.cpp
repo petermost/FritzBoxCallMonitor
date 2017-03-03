@@ -17,7 +17,7 @@ MonitorMainWindowModel::MonitorMainWindowModel() {
 	fritzBox_ = new FritzBox( this );
 
 	connect( fritzBox_, &FritzBox::errorOccured, [ = ]( QTcpSocket::SocketError, const QString &message ) {
-		emit showError( message );
+		emit errorOccured( message );
 	});
 
 	connect( fritzBox_, &FritzBox::stateChanged, [ = ]( QTcpSocket::SocketState state ) {
@@ -63,7 +63,7 @@ void MonitorMainWindowModel::onPhoneRinging( const QString &caller, const QStrin
 
 //==================================================================================================
 
-void MonitorMainWindowModel::readSettings( QSettings *settings ) {
+void MonitorMainWindowModel::readSettings( QSettings *settings ) noexcept {
 	setHostName( qvariant_cast< QString >( settings->value( HOST_NAME_KEY, FritzBox::DEFAULT_HOST_NAME )));
 	setPortNumber( qvariant_cast< Port >( settings->value( PORT_NUMBER_KEY, FritzBox::DEFAULT_CALL_MONITOR_PORT )));
 	setPhoneBookPath( qvariant_cast< QString >( settings->value( PHONE_BOOK_PATH )));
@@ -71,7 +71,7 @@ void MonitorMainWindowModel::readSettings( QSettings *settings ) {
 
 //==================================================================================================
 
-void MonitorMainWindowModel::writeSettings( QSettings *settings ) const {
+void MonitorMainWindowModel::writeSettings( QSettings *settings ) const noexcept {
 	settings->setValue( HOST_NAME_KEY, hostName_ );
 	settings->setValue( PORT_NUMBER_KEY, portNumber_ );
 	settings->setValue( PHONE_BOOK_PATH, phoneBookPath_ );
@@ -136,9 +136,12 @@ void MonitorMainWindowModel::setPhoneBookPath( const QString &phoneBookPath ) {
 		phoneBookPath_ = phoneBookPath;
 		emit phoneBookPathChanged( phoneBookPath_ );
 
-		fritzBoxPhoneBook_.read( phoneBookPath_ );
-		for( auto entry = fritzBoxPhoneBook_.begin(); entry != fritzBoxPhoneBook_.end(); ++entry ) {
-			emit showInformation( tr( "Read phone book entry for '%1' with the number: '%2'." ).arg( entry.value() ).arg( entry.key() ));
+		if ( fritzBoxPhoneBook_.read( phoneBookPath_ ) > 0 ) {
+			for( auto entry = fritzBoxPhoneBook_.begin(); entry != fritzBoxPhoneBook_.end(); ++entry ) {
+				emit showInformation( tr( "Read phone book entry for '%1' with the number: '%2'." ).arg( entry.value() ).arg( entry.key() ));
+			}
+		} else {
+			emit errorOccured( tr( "Unable to read '%1'!" ).arg( phoneBookPath_ ));
 		}
 	}
 }
