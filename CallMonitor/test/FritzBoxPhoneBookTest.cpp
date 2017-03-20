@@ -10,9 +10,10 @@ void FritzBoxPhoneBookTest::testRead() {
 	// To prevent real names ending up on GitHub.com, this XML file has been edited (with Eclipse)
 	// and the real names have been replaced with dummy names:
 
+	QString errorString;
 	FritzBoxPhoneBook book;
-	int count = book.read( ":/FRITZ.Box_Telefonbuch.xml" );
-	QCOMPARE( count, 6 );
+	QVERIFY( book.read( ":/FRITZ.Box_Telefonbuch.xml", &errorString ));
+	QCOMPARE( book.count(), 6 );
 
 	QCOMPARE( book.value( QStringLiteral( "1111111111" )), QStringLiteral( "FirstPerson" ));
 	QCOMPARE( book.value( QStringLiteral( "2222222222" )), QStringLiteral( "SecondPerson" ));

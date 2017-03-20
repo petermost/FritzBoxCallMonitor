@@ -11,15 +11,21 @@ FritzBoxPhoneBook::FritzBoxPhoneBook( QObject *parent ) noexcept
 	: QObject( parent ) {
 }
 
-int FritzBoxPhoneBook::read( const QString &fileName ) {
+//==================================================================================================
+
+bool FritzBoxPhoneBook::read( const QString &fileName, QString *errorString ) {
 	QFile file( fileName );
-	if( file.open( QFile::ReadOnly | QFile::Text ))
-		return read( &file );
-	else
-		return -1;
+	if ( file.open( QFile::ReadOnly | QFile::Text ))
+		return read( &file, errorString );
+	else {
+		*errorString = file.errorString();
+		return false;
+	}
 }
 
-int FritzBoxPhoneBook::read( QIODevice *device ) {
+//==================================================================================================
+
+bool FritzBoxPhoneBook::read( QIODevice *device, QString *errorString ) {
 	Q_ASSERT( device->isOpen() );
 
 	clear();
@@ -48,10 +54,8 @@ int FritzBoxPhoneBook::read( QIODevice *device ) {
 		}
 	}
 	if ( reader.atEnd() && reader.hasError() && reader.error() != QXmlStreamReader::Error::PrematureEndOfDocumentError ) {
-		throw XmlException( reader.error(), reader.errorString() );
+		*errorString = reader.errorString();
+		return false;
 	}
-	return count();
+	return true;
 }
-
-//==================================================================================================
-

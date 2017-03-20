@@ -3,12 +3,12 @@
 #include <QObject>
 #include <QtGlobal>
 #include <QTcpSocket>
-#include <pera_software/aidkit/qt/net/Socket.hpp>
+#include <pera_software/aidkit/qt/core/Socket.hpp>
 
 class FritzBox : public QObject {
 	Q_OBJECT
 	public:
-		using Port = pera_software::aidkit::qt::net::Port;
+		using Port = pera_software::aidkit::qt::Port;
 
 		static const QString DEFAULT_HOST_NAME;
 		static const Port DEFAULT_CALL_MONITOR_PORT;
