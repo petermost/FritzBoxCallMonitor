@@ -2,7 +2,7 @@
 
 #include "MonitorMainWindowModel.hpp"
 #include <pera_software/company/qt/PERAMainWindow.hpp>
-#include <pera_software/aidkit/qt/widgets/MessagesWidget.hpp>
+#include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
 #include <QSystemTrayIcon>
 
 class QSpinBox;
@@ -31,9 +31,10 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 		MonitorMainWindowModel model_;
 
 		QLineEdit *hostName_;
-		QSpinBox *portNumber_;
+		pera_software::aidkit::qt::IntegerSpinBox *portNumber_;
 		QLineEdit *phoneBookPath_;
 		QPushButton *browsePhoneBookPathButton_;
+		pera_software::aidkit::qt::IntegerSpinBox *notificationTimeout_;
 		pera_software::aidkit::qt::MessagesWidget *messages_;
 
 		QSystemTrayIcon *trayIcon_;

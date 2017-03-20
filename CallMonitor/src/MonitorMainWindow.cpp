@@ -1,5 +1,10 @@
 #include "MonitorMainWindow.hpp"
 
+#include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
+#include <pera_software/aidkit/qt/widgets/MessagesWidget.hpp>
+
+#include <chrono>
+
 #include <QMenu>
 #include <QTcpSocket>
 #include <QApplication>
@@ -8,14 +13,13 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <QSpinBox>
 #include <QLabel>
 #include <QPushButton>
 
 using namespace std;
+using namespace chrono;
 using namespace pera_software::company::qt;
 using namespace pera_software::aidkit::qt;
-using namespace net;
 
 //==================================================================================================
 
@@ -31,7 +35,7 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	// Prepare the hostname widget:
 
-	hostName_ = new QLineEdit;
+	hostName_ = new QLineEdit( model_.hostName() );
 	hostName_->setClearButtonEnabled( true );
 
 	connect( hostName_, &QLineEdit::editingFinished, [ = ] {
@@ -44,20 +48,20 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	// Prepare the port number widget:
 
-	portNumber_ = new QSpinBox;
+	portNumber_ = new IntegerSpinBox( model_.portNumber() );
 	portNumber_->setRange( PORT_MIN, PORT_MAX );
 
-	connect( portNumber_, &QSpinBox::editingFinished, [ = ] {
+	connect( portNumber_, &IntegerSpinBox::editingFinished, [ = ] {
 		model_.setPortNumber( static_cast< Port >( portNumber_->value() ));
 	});
-	connect( &model_, &MonitorMainWindowModel::portNumberChanged, portNumber_, &QSpinBox::setValue );
+	connect( &model_, &MonitorMainWindowModel::portNumberChanged, portNumber_, &IntegerSpinBox::setValue );
 
 	auto portNumberLabel = new QLabel( tr( "&Portnumber:" ));
 	portNumberLabel->setBuddy( portNumber_ );
 
 	// Prepare the phone book widget:
 
-	phoneBookPath_ = new QLineEdit;
+	phoneBookPath_ = new QLineEdit( model_.phoneBookPath() );
 	phoneBookPath_->setClearButtonEnabled( true );
 
 	connect( phoneBookPath_, &QLineEdit::editingFinished, &model_, [ = ] {
@@ -89,6 +93,27 @@ MonitorMainWindow::MonitorMainWindow() {
 	auto fritzBoxGroup = new QGroupBox( "FRITZ!Box" );
 	fritzBoxGroup->setLayout( fritzBoxLayout );
 
+	// Prepare the notification layout:
+
+	notificationTimeout_ = new IntegerSpinBox( model_.notificationTimeout().count() );
+	notificationTimeout_->setSuffix( tr( "ms" ));
+	connect( notificationTimeout_, &IntegerSpinBox::editingFinished, [ = ] {
+		model_.setNotificationTimeout( milliseconds( notificationTimeout_->value() ));
+	});
+	connect( &model_, &MonitorMainWindowModel::notificationTimeoutChanged, [ = ]( milliseconds timeout ) {
+		notificationTimeout_->setValue( timeout.count() );
+	});
+
+	auto notificationTimeoutLabel = new QLabel( tr( "&Timeout:" ));
+	notificationTimeoutLabel->setBuddy( notificationTimeout_ );
+
+	auto notificationLayout = new QHBoxLayout;
+	notificationLayout->addWidget( notificationTimeoutLabel );
+	notificationLayout->addWidget( notificationTimeout_ );
+
+	auto notificationGroup = new QGroupBox( tr( "Notification" ));
+	notificationGroup->setLayout( notificationLayout );
+
 	// Create the message(s) widget:
 
 	messages_ = new MessagesWidget;
@@ -104,12 +129,14 @@ MonitorMainWindow::MonitorMainWindow() {
 	auto messagesLayout = new QHBoxLayout;
 	messagesLayout->addWidget( messages_ );
 
-	auto messagesGroup = new QGroupBox( "Messages" );
+	auto messagesGroup = new QGroupBox( tr( "Messages" ));
 	messagesGroup->setLayout( messagesLayout );
 
 	auto centralWidgetLayout = new QVBoxLayout;
 	centralWidgetLayout->addWidget( fritzBoxGroup );
+	centralWidgetLayout->addWidget( notificationGroup );
 	centralWidgetLayout->addWidget( messagesGroup );
+
 	auto centralWidget = new QWidget;
 	centralWidget->setLayout( centralWidgetLayout );
 
@@ -122,8 +149,8 @@ MonitorMainWindow::MonitorMainWindow() {
 	trayIcon_->show();
 
 	connect( trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated );
-	connect( &model_, &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message ) {
-		trayIcon_->showMessage( title, message );
+	connect( &model_, &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message, milliseconds timeout ) {
+		trayIcon_->showMessage( title, message, QSystemTrayIcon::MessageIcon::Information, timeout.count() );
 	});
 
 	setCentralWidget( centralWidget );
