@@ -6,6 +6,7 @@
 #include <chrono>
 
 #include <QMenu>
+#include <QMenuBar>
 #include <QTcpSocket>
 #include <QApplication>
 #include <QLineEdit>
@@ -15,6 +16,8 @@
 #include <QCloseEvent>
 #include <QLabel>
 #include <QPushButton>
+
+// TODO: Add what's this actions.
 
 using namespace std;
 using namespace chrono;
@@ -28,6 +31,7 @@ MonitorMainWindow::MonitorMainWindow() {
 	// Add the default menus:
 
 	addFileMenu();
+	addWindowMenu();
 	addHelpMenu();
 
 	connect( quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::quit );
@@ -158,6 +162,18 @@ MonitorMainWindow::MonitorMainWindow() {
 
 //==================================================================================================
 
+void MonitorMainWindow::addWindowMenu() {
+	auto hideAction = new QAction( tr( "&Hide..." ), this );
+	connect( hideAction, &QAction::triggered, this, &MonitorMainWindow::onHide );
+
+	auto windowMenu = new QMenu( tr( "&Window" ));
+	windowMenu->addAction( hideAction );
+
+	menuBar()->addMenu( windowMenu );
+}
+
+//==================================================================================================
+
 void MonitorMainWindow::readSettings( QSettings *settings ) noexcept {
 	PERAMainWindow::readSettings( settings );
 	model_.readSettings( settings );
@@ -179,15 +195,13 @@ void MonitorMainWindow::quit() {
 
 //==================================================================================================
 
-void MonitorMainWindow::closeEvent( QCloseEvent *event ) {
-	PERAMainWindow::closeEvent( event );
+void MonitorMainWindow::onHide() {
 	if ( trayIcon_->isVisible() ) {
 		QMessageBox::information( this, QApplication::applicationName(),
 		tr("The program will keep running in the system tray. To terminate the program, "
 			"choose <b>Quit</b> in the context menu of the system tray entry."));
 
 		hide();
-		event->ignore();
 	}
 }
 
@@ -196,3 +210,4 @@ void MonitorMainWindow::closeEvent( QCloseEvent *event ) {
 void MonitorMainWindow::onTrayIconActivated( QSystemTrayIcon::ActivationReason ) {
 	show();
 }
+

@@ -21,13 +21,13 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 	public slots:
 		void quit();
 
-	protected:
-		void closeEvent( QCloseEvent *event ) override;
-
 	private slots:
 		void onTrayIconActivated( QSystemTrayIcon::ActivationReason reason );
+		void onHide();
 
 	private:
+		void addWindowMenu();
+
 		MonitorMainWindowModel model_;
 
 		QLineEdit *hostName_;
