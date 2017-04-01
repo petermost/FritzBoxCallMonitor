@@ -197,9 +197,10 @@ void MonitorMainWindow::quit() {
 
 void MonitorMainWindow::onHide() {
 	if ( trayIcon_->isVisible() ) {
+		auto quitText = quitAction()->text().remove( '&' );
 		QMessageBox::information( this, QApplication::applicationName(),
 		tr("The program will keep running in the system tray. To terminate the program, "
-			"choose <b>Quit</b> in the context menu of the system tray entry."));
+			"choose <b>%1</b> in the context menu of the system tray entry.").arg( quitText ));
 
 		hide();
 	}
