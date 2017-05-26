@@ -33,6 +33,7 @@ MonitorMainWindow::MonitorMainWindow() {
 	addFileMenu();
 	addWindowMenu();
 	addHelpMenu();
+	addTrayIcon();
 
 	connect( quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::quit );
 	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::quit );
@@ -143,20 +144,6 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	auto centralWidget = new QWidget;
 	centralWidget->setLayout( centralWidgetLayout );
-
-	// Prepare the tray icon:
-
-	trayIcon_ = new QSystemTrayIcon( this );
-	const QIcon fritzBoxIcon( ":/telephone-icon.png" );
-	trayIcon_->setIcon( fritzBoxIcon );
-	trayIcon_->setContextMenu( fileMenu() );
-	trayIcon_->show();
-
-	connect( trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated );
-	connect( &model_, &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message, milliseconds timeout ) {
-		trayIcon_->showMessage( title, message, QSystemTrayIcon::MessageIcon::Information, timeout.count() );
-	});
-
 	setCentralWidget( centralWidget );
 }
 
@@ -170,6 +157,32 @@ void MonitorMainWindow::addWindowMenu() {
 	windowMenu->addAction( hideAction );
 
 	menuBar()->addMenu( windowMenu );
+}
+
+//==================================================================================================
+
+void MonitorMainWindow::addTrayIcon() {
+	// Prepare the menu for the tray icon:
+
+	auto hideAction = new QAction( tr( "&Hide Window" ), this );
+	connect( hideAction, &QAction::triggered, this, &MonitorMainWindow::onHide );
+
+	auto trayMenu = new QMenu( this );
+	trayMenu->addAction( hideAction );
+	trayMenu->addAction( quitAction() );
+
+	// Prepare the tray icon:
+
+	trayIcon_ = new QSystemTrayIcon( this );
+	QIcon fritzBoxIcon( ":/telephone-icon.png" );
+	trayIcon_->setIcon( fritzBoxIcon );
+	trayIcon_->setContextMenu( trayMenu );
+	trayIcon_->show();
+
+	connect( trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated );
+	connect( &model_, &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message, milliseconds timeout ) {
+		trayIcon_->showMessage( title, message, QSystemTrayIcon::MessageIcon::Information, timeout.count() );
+	});
 }
 
 //==================================================================================================
@@ -197,11 +210,6 @@ void MonitorMainWindow::quit() {
 
 void MonitorMainWindow::onHide() {
 	if ( trayIcon_->isVisible() ) {
-		auto quitText = quitAction()->text().remove( '&' );
-		QMessageBox::information( this, QApplication::applicationName(),
-		tr("The program will keep running in the system tray. To terminate the program, "
-			"choose <b>%1</b> in the context menu of the system tray entry.").arg( quitText ));
-
 		hide();
 	}
 }

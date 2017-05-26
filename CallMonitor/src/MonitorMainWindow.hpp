@@ -27,6 +27,7 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 
 	private:
 		void addWindowMenu();
+		void addTrayIcon();
 
 		MonitorMainWindowModel model_;
 
