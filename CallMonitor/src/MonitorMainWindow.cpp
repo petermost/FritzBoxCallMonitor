@@ -217,6 +217,9 @@ void MonitorMainWindow::onHide() {
 //==================================================================================================
 
 void MonitorMainWindow::onTrayIconActivated( QSystemTrayIcon::ActivationReason ) {
-	show();
+	if ( isHidden() )
+		show();
+	else
+		hide();
 }
 
