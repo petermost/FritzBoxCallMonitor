@@ -38,4 +38,5 @@ CMakeLists.txt.user
 
 # Build directory
 build/
+prototypes/
 
