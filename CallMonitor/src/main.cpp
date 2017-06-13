@@ -15,7 +15,9 @@ int main( int argc, char *argv[] ) {
 	IniSettings settings;
 	mainWindow.readSettings( &settings );
 
-	mainWindow.show();
+	// Visible status is stored in settings, so we don't need to explicitly show it via
+	// mainWindow.show();
+
 	auto result = application.exec();
 
 	mainWindow.writeSettings( &settings );

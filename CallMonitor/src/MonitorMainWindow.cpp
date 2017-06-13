@@ -1,7 +1,7 @@
 #include "MonitorMainWindow.hpp"
 
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
-#include <pera_software/aidkit/qt/widgets/MessagesWidget.hpp>
+#include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
 
 #include <chrono>
 
@@ -37,6 +37,9 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	connect( quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::quit );
 	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::quit );
+
+	connect( &model_, &MonitorMainWindowModel::visibleChanged, this, &MonitorMainWindow::setVisible );
+	// connect( this, &MonitorMainWindow::visibleChanged, &model_, &MonitorMainWindowModel::beVisible );
 
 	// Prepare the hostname widget:
 
@@ -121,15 +124,8 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	// Create the message(s) widget:
 
-	messages_ = new MessagesWidget;
-	messages_->setMaximumItemCount( 100 );
-
-	connect( &model_, &MonitorMainWindowModel::errorOccured, messages_, &MessagesWidget::showError );
-	connect( &model_, &MonitorMainWindowModel::showInformation, messages_, &MessagesWidget::showInformation );
-
-	// When an error should be shown then we make the window visible again:
-
-	connect( &model_, &MonitorMainWindowModel::errorOccured, this, &MonitorMainWindow::show );
+	messages_ = new MessagesView;
+	messages_->setModel( model_.messagesModel() );
 
 	auto messagesLayout = new QHBoxLayout;
 	messagesLayout->addWidget( messages_ );
@@ -210,16 +206,13 @@ void MonitorMainWindow::quit() {
 
 void MonitorMainWindow::onHide() {
 	if ( trayIcon_->isVisible() ) {
-		hide();
+		model_.beVisible( false );
 	}
 }
 
 //==================================================================================================
 
 void MonitorMainWindow::onTrayIconActivated( QSystemTrayIcon::ActivationReason ) {
-	if ( isHidden() )
-		show();
-	else
-		hide();
+	model_.beVisible( !model_.isVisible() );
 }
 

@@ -8,6 +8,7 @@
 class QSpinBox;
 class QLineEdit;
 class QPushButton;
+class QListView;
 
 class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 	Q_OBJECT
@@ -36,7 +37,7 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 		QLineEdit *phoneBookPath_;
 		QPushButton *browsePhoneBookPathButton_;
 		pera_software::aidkit::qt::IntegerSpinBox *notificationTimeout_;
-		pera_software::aidkit::qt::MessagesWidget *messages_;
+		pera_software::aidkit::qt::MessagesView *messages_;
 
 		QSystemTrayIcon *trayIcon_;
 };
