@@ -1,0 +1,3 @@
+[submodule "CppAidKit"]
+	path = CppAidKit
+	url = https://github.com/petermost/CppAidKit.git

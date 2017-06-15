@@ -1,8 +1,9 @@
 cmake_minimum_required( VERSION 3.0 )
 project( FritzBoxCallMonitor )
 
-include( ../CppAidKit/cmake/all_options.cmake )
-include( ../CppAidKit/cmake/aidkit_options.cmake )
+add_subdirectory( CppAidKit )
+
+include( CppAidKit/cmake/all_options.cmake )
 
 find_package( Qt5 COMPONENTS REQUIRED Widgets Network )
 
