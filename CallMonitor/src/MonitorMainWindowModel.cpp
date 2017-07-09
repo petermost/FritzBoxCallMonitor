@@ -86,6 +86,8 @@ void MonitorMainWindowModel::readSettings( QSettings *settings ) noexcept {
 	setPortNumber( qvariant_cast< Port >( settings->value( PORT_NUMBER_KEY, FritzBox::DEFAULT_CALL_MONITOR_PORT )));
 	setPhoneBookPath( qvariant_cast< QString >( settings->value( PHONE_BOOK_PATH )));
 	setNotificationTimeout( qvariant_cast< milliseconds >( settings->value( NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue( DEFAULT_NOTIFICATION_TIMEOUT ))));
+
+	emit showStatus( tr( "Loaded settings from: '%1'").arg( settings->fileName()), milliseconds(0));
 }
 
 //==================================================================================================
@@ -96,6 +98,8 @@ void MonitorMainWindowModel::writeSettings( QSettings *settings ) const noexcept
 	settings->setValue( PORT_NUMBER_KEY, portNumber_ );
 	settings->setValue( PHONE_BOOK_PATH, phoneBookPath_ );
 	settings->setValue( NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue( notificationTimeout_ ));
+
+	emit showStatus( tr( "Saved settings to: '%1'").arg( settings->fileName()), milliseconds(0));
 }
 
 //==================================================================================================

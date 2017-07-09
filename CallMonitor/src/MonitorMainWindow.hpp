@@ -24,10 +24,11 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 
 	private slots:
 		void onTrayIconActivated( QSystemTrayIcon::ActivationReason reason );
-		void onHide();
+		void onVisible( bool isVisible );
 
 	private:
 		void addWindowMenu();
+		void addStatusBar();
 		void addTrayIcon();
 
 		MonitorMainWindowModel model_;

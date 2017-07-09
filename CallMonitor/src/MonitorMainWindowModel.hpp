@@ -39,6 +39,7 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		void phoneBookPathChanged( const QString &phoneBookPath );
 
 		void showNotification( const QString &title, const QString &message, std::chrono::milliseconds timeout );
+		void showStatus( const QString &message,  std::chrono::milliseconds timeout ) const;
 
 	public slots:
 		void quit();

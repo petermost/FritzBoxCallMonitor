@@ -2,6 +2,7 @@
 
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
+#include <pera_software/aidkit/cpp/stdlib.hpp>
 
 #include <chrono>
 
@@ -16,6 +17,7 @@
 #include <QCloseEvent>
 #include <QLabel>
 #include <QPushButton>
+#include <QStatusBar>
 
 // TODO: Add what's this actions.
 
@@ -23,6 +25,7 @@ using namespace std;
 using namespace chrono;
 using namespace pera_software::company::qt;
 using namespace pera_software::aidkit::qt;
+using namespace pera_software::aidkit::cpp;
 
 //==================================================================================================
 
@@ -33,13 +36,13 @@ MonitorMainWindow::MonitorMainWindow() {
 	addFileMenu();
 	addWindowMenu();
 	addHelpMenu();
+	addStatusBar();
 	addTrayIcon();
 
 	connect( quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::quit );
 	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::quit );
 
-	connect( &model_, &MonitorMainWindowModel::visibleChanged, this, &MonitorMainWindow::setVisible );
-	// connect( this, &MonitorMainWindow::visibleChanged, &model_, &MonitorMainWindowModel::beVisible );
+	connect( &model_, &MonitorMainWindowModel::visibleChanged, this, &MonitorMainWindow::onVisible );
 
 	// Prepare the hostname widget:
 
@@ -103,13 +106,13 @@ MonitorMainWindow::MonitorMainWindow() {
 
 	// Prepare the notification layout:
 
-	notificationTimeout_ = new IntegerSpinBox( model_.notificationTimeout().count() );
+	notificationTimeout_ = new IntegerSpinBox( int_cast< int >( model_.notificationTimeout().count() ));
 	notificationTimeout_->setSuffix( tr( "ms" ));
 	connect( notificationTimeout_, &IntegerSpinBox::editingFinished, [ = ] {
 		model_.setNotificationTimeout( milliseconds( notificationTimeout_->value() ));
 	});
 	connect( &model_, &MonitorMainWindowModel::notificationTimeoutChanged, [ = ]( milliseconds timeout ) {
-		notificationTimeout_->setValue( timeout.count() );
+		notificationTimeout_->setValue( int_cast< int >( timeout.count() ));
 	});
 
 	auto notificationTimeoutLabel = new QLabel( tr( "&Timeout:" ));
@@ -147,12 +150,21 @@ MonitorMainWindow::MonitorMainWindow() {
 
 void MonitorMainWindow::addWindowMenu() {
 	auto hideAction = new QAction( tr( "&Hide..." ), this );
-	connect( hideAction, &QAction::triggered, this, &MonitorMainWindow::onHide );
+	connect( hideAction, &QAction::triggered, [ = ] { model_.beVisible( false ); });
 
 	auto windowMenu = new QMenu( tr( "&Window" ));
 	windowMenu->addAction( hideAction );
-
 	menuBar()->addMenu( windowMenu );
+}
+
+//==================================================================================================
+
+void MonitorMainWindow::addStatusBar() {
+	statusBar()->showMessage( QString::null );
+
+	connect( &model_, &MonitorMainWindowModel::showStatus, [ = ]( const QString &message, milliseconds timeout ) {
+		statusBar()->showMessage( message, int_cast< int >( timeout.count() ));
+	});
 }
 
 //==================================================================================================
@@ -160,10 +172,19 @@ void MonitorMainWindow::addWindowMenu() {
 void MonitorMainWindow::addTrayIcon() {
 	// Prepare the menu for the tray icon:
 
+	auto showAction = new QAction( tr( "&Show Window" ), this );
+	connect( showAction, &QAction::triggered, [ = ] { model_.beVisible( true ); });
+
 	auto hideAction = new QAction( tr( "&Hide Window" ), this );
-	connect( hideAction, &QAction::triggered, this, &MonitorMainWindow::onHide );
+	connect( hideAction, &QAction::triggered, [ = ] { model_.beVisible( false ); });
+
+	connect( &model_, &MonitorMainWindowModel::visibleChanged, [ = ]( bool isVisible ) {
+		showAction->setDisabled( isVisible );
+		hideAction->setEnabled( isVisible );
+	});
 
 	auto trayMenu = new QMenu( this );
+	trayMenu->addAction( showAction );
 	trayMenu->addAction( hideAction );
 	trayMenu->addAction( quitAction() );
 
@@ -177,7 +198,7 @@ void MonitorMainWindow::addTrayIcon() {
 
 	connect( trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated );
 	connect( &model_, &MonitorMainWindowModel::showNotification, [ = ]( const QString &title, const QString &message, milliseconds timeout ) {
-		trayIcon_->showMessage( title, message, QSystemTrayIcon::MessageIcon::Information, timeout.count() );
+		trayIcon_->showMessage( title, message, QSystemTrayIcon::MessageIcon::Information, int_cast< int >( timeout.count() ));
 	});
 }
 
@@ -198,16 +219,23 @@ void MonitorMainWindow::writeSettings( QSettings *settings ) const noexcept {
 //==================================================================================================
 
 void MonitorMainWindow::quit() {
-	trayIcon_->hide();
 	close();
 }
 
 //==================================================================================================
 
-void MonitorMainWindow::onHide() {
-	if ( trayIcon_->isVisible() ) {
-		model_.beVisible( false );
-	}
+//void MonitorMainWindow::onHide() {
+//	if ( trayIcon_->isVisible() ) {
+//		model_.beVisible( false );
+//	}
+//}
+
+//==================================================================================================
+
+void MonitorMainWindow::onVisible(bool isVisible) {
+	setVisible(isVisible);
+	if (isVisible)
+		activateWindow();
 }
 
 //==================================================================================================
