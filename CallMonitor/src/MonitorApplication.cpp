@@ -1,7 +1,7 @@
 #include "MonitorApplication.hpp"
 
-MonitorApplication::MonitorApplication( int &argc, char *argv[] )
-	: PERAApplication( argc, argv ) {
+const QString MonitorApplication::NAME( QStringLiteral( "FRITZ!Box CallMonitor" ));
 
-	setApplicationName( "FRITZ!Box CallMonitor" ); // This sets also the system tray entry label!
+MonitorApplication::MonitorApplication( int &argc, char *argv[] )
+	: PERAApplication( NAME, argc, argv ) {
 }
