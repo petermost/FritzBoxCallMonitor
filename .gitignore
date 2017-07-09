@@ -40,3 +40,8 @@ CMakeLists.txt.user
 build/
 prototypes/
 
+# Eclipse
+.cproject
+.project
+.settings/
+
