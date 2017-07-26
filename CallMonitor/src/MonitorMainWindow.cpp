@@ -183,9 +183,10 @@ void MonitorMainWindow::addTrayIcon() {
 		hideAction->setEnabled( isVisible );
 	});
 
-	auto trayMenu = new QMenu( this );
+	auto trayMenu = new QMenu( "TrayMenu", this );
 	trayMenu->addAction( showAction );
 	trayMenu->addAction( hideAction );
+	trayMenu->addSeparator();
 	trayMenu->addAction( quitAction() );
 
 	// Prepare the tray icon:
