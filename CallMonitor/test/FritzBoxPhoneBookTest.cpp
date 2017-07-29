@@ -15,7 +15,7 @@ void FritzBoxPhoneBookTest::testRead() {
 	QVERIFY( book.read( ":/FRITZ.Box_Telefonbuch.xml", &errorString ));
 	QCOMPARE( book.count(), 6 );
 
-	QCOMPARE( book.value( QStringLiteral( "1111111111" )), QStringLiteral( "FirstPerson" ));
-	QCOMPARE( book.value( QStringLiteral( "2222222222" )), QStringLiteral( "SecondPerson" ));
-	QCOMPARE( book.value( QStringLiteral( "3333333333" )), QStringLiteral( "ThirdPerson" ));
+	QCOMPARE( book.findName( QStringLiteral( "1111111111" )), QStringLiteral( "FirstPerson" ));
+	QCOMPARE( book.findName( QStringLiteral( "2222222222" )), QStringLiteral( "SecondPerson" ));
+	QCOMPARE( book.findName( QStringLiteral( "3333333333" )), QStringLiteral( "ThirdPerson" ));
 }

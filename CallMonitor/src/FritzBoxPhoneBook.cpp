@@ -3,8 +3,9 @@
 #include <QIODevice>
 #include <QXmlStreamReader>
 
-using XmlToken = QXmlStreamReader::TokenType;
+using namespace std;
 
+using XmlToken = QXmlStreamReader::TokenType;
 //==================================================================================================
 
 FritzBoxPhoneBook::FritzBoxPhoneBook( QObject *parent ) noexcept
@@ -28,7 +29,7 @@ bool FritzBoxPhoneBook::read( const QString &fileName, QString *errorString ) {
 bool FritzBoxPhoneBook::read( QIODevice *device, QString *errorString ) {
 	Q_ASSERT( device->isOpen() );
 
-	clear();
+	entries_.clear();
 
 	XmlToken token;
 	QXmlStreamReader reader( device );
@@ -43,7 +44,7 @@ bool FritzBoxPhoneBook::read( QIODevice *device, QString *errorString ) {
 				}
 				if ( elementName == "number" ) {
 					number = reader.readElementText();
-					insert( number, name );
+					entries_.insert( number, name );
 					name.clear();
 					number.clear();
 				}
@@ -58,4 +59,28 @@ bool FritzBoxPhoneBook::read( QIODevice *device, QString *errorString ) {
 		return false;
 	}
 	return true;
+}
+
+//==================================================================================================
+
+QString FritzBoxPhoneBook::findNumber(const QString &name) const {
+	return entries_.value(name);
+}
+
+//==================================================================================================
+
+QString FritzBoxPhoneBook::findName(const QString &number) const {
+	auto nameIterator = entries_.find(number);
+	return (nameIterator != entries_.end()) ? *nameIterator : QString();
+}
+
+//==================================================================================================
+
+int FritzBoxPhoneBook::count() const {
+	return entries_.count();
+}
+
+void FritzBoxPhoneBook::forEach( const function< void ( const QString &, const QString & )> &consumer ) const {
+	for ( auto iterator = entries_.begin(); iterator != entries_.end(); ++iterator )
+		consumer( iterator.value(), iterator.key() );
 }

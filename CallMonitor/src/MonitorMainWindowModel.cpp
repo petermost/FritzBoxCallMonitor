@@ -71,8 +71,9 @@ void MonitorMainWindowModel::onPhoneRinging( const QString &caller, const QStrin
 
 	// Do a reverse lookup of the caller:
 
-	auto nameIterator = fritzBoxPhoneBook_.find( caller );
-	QString callerName = ( nameIterator != fritzBoxPhoneBook_.end() ) ? *nameIterator : caller;
+	QString callerName = fritzBoxPhoneBook_.findName( caller );
+	if (callerName.isEmpty())
+		callerName = caller;
 
 	messagesModel_->showInformation( tr( "Phone ringing: Caller: '%1', Callee: '%2'." ).arg( callerName ).arg( callee ));
 	emit showNotification( tr( "Incoming Call" ), callerName, notificationTimeout_ );
@@ -193,9 +194,9 @@ void MonitorMainWindowModel::setPhoneBookPath( const QString &phoneBookPath ) {
 
 		QString errorString;
 		if ( fritzBoxPhoneBook_.read( phoneBookPath_, &errorString )) {
-			for( auto entry = fritzBoxPhoneBook_.begin(); entry != fritzBoxPhoneBook_.end(); ++entry ) {
-				messagesModel_->showInformation( tr( "Read phone book entry for '%1' with the number: '%2'." ).arg( entry.value() ).arg( entry.key() ));
-			}
+			fritzBoxPhoneBook_.forEach([ = ]( const QString &name, const QString &number ) {
+				messagesModel_->showInformation( tr( "Read phone book entry for '%1' with the number: '%2'." ).arg( name ).arg( number ));
+			});
 		} else {
 			messagesModel_->showError( tr( "Unable to read '%1' because '%2'!" ).arg( phoneBookPath_ ).arg( errorString ));
 			beVisible();
