@@ -87,7 +87,7 @@ void FritzBox::parseAndSignal( const QString &line ) {
 	if ( command == "RING" ) {
 		QString caller = parts[ 3 ];
 		QString callee = parts[ 4 ];
-		emit phoneRinging( connectionId, caller, callee );
+		emit incomingCall( connectionId, caller, callee );
 	}
 	else if ( command == "CONNECT" ) {
 		QString extension = parts[ 3 ];
@@ -102,7 +102,7 @@ void FritzBox::parseAndSignal( const QString &line ) {
 		QString extension = parts[ 3 ];
 		QString caller    = parts[ 4 ];
 		QString callee    = parts[ 5 ];
-		emit phoneCalling( connectionId, caller, callee );
+		emit outgoingCall( connectionId, caller, callee );
 	}
 	else {
 		emit errorOccured( QTcpSocket::SocketError::UnknownSocketError, tr( "Unknown command '%1'!" ).arg( line ));

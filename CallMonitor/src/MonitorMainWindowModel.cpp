@@ -40,21 +40,22 @@ MonitorMainWindowModel::MonitorMainWindowModel()
 		// emit showInformation( Enums::toString( state ));
 	});
 
-	connect( fritzBox_, &FritzBox::phoneCalling, [ = ]( unsigned /* connectionId */, const QString &caller, const QString &callee ) {
-		messagesModel_->showInformation( tr( "Phone calling: Caller: '%1', Callee: '%2'." ).arg( caller ).arg( callee ));
+	connect( fritzBox_, &FritzBox::incomingCall, [ = ]( unsigned /* connectionId */, const QString &caller, const QString &callee ) {
+		onIncomingCall( caller, callee );
+	});
+
+	connect( fritzBox_, &FritzBox::outgoingCall, [ = ]( unsigned /* connectionId */, const QString &caller, const QString &callee ) {
+		onOutgoingCalling(caller, callee);
 	});
 
 	connect( fritzBox_, &FritzBox::phoneConnected, [ = ]( unsigned /* connectionId */, const QString &caller ) {
-		messagesModel_->showInformation( tr( "Phone connected: Caller: '%1'." ).arg( caller ));
+		onPhoneConnected( caller );
 	});
 
 	connect( fritzBox_, &FritzBox::phoneDisconnected, [ = ]( unsigned /* connectionId */ ) {
 		messagesModel_->showInformation( tr( "Phone disconnected." ));
 	});
 
-	connect( fritzBox_, &FritzBox::phoneRinging, [ = ]( unsigned /* connectionId */, const QString &caller, const QString &callee ) {
-		onPhoneRinging( caller, callee );
-	});
 
 	connectToFritzBox();
 }
@@ -67,16 +68,35 @@ void MonitorMainWindowModel::connectToFritzBox() {
 
 //==================================================================================================
 
-void MonitorMainWindowModel::onPhoneRinging( const QString &caller, const QString &callee ) {
+static QString findNameOrDefault(const FritzBoxPhoneBook &phoneBook, const QString &number,
+		const QString &defaultName) {
+	QString name = phoneBook.findName(number);
+	if (name.isEmpty())
+		name = defaultName;
 
-	// Do a reverse lookup of the caller:
+	return name;
+}
 
-	QString callerName = fritzBoxPhoneBook_.findName( caller );
-	if (callerName.isEmpty())
-		callerName = caller;
+//==================================================================================================
 
-	messagesModel_->showInformation( tr( "Phone ringing: Caller: '%1', Callee: '%2'." ).arg( callerName ).arg( callee ));
+void MonitorMainWindowModel::onIncomingCall( const QString &caller, const QString &callee ) {
+	QString callerName = findNameOrDefault( fritzBoxPhoneBook_, caller, caller );
+	messagesModel_->showInformation( tr( "Incoming call: Caller: '%1', Callee: '%2'." ).arg( callerName ).arg( callee ));
 	emit showNotification( tr( "Incoming Call" ), callerName, notificationTimeout_ );
+}
+
+//==================================================================================================
+
+void MonitorMainWindowModel::onOutgoingCalling(const QString &caller, const QString &callee) {
+	QString calleeName = findNameOrDefault( fritzBoxPhoneBook_, callee, callee );
+	messagesModel_->showInformation(tr("Outgoing call: Caller: '%1', Callee: '%2'.").arg(caller).arg(calleeName));
+}
+
+//==================================================================================================
+
+void MonitorMainWindowModel::onPhoneConnected(const QString &caller) {
+	QString callerName = findNameOrDefault( fritzBoxPhoneBook_, caller, caller );
+	messagesModel_->showInformation( tr( "Phone connected: Caller: '%1'." ).arg(callerName));
 }
 
 //==================================================================================================

@@ -32,10 +32,10 @@ class FritzBox : public QObject {
 		void stateChanged( QTcpSocket::SocketState state );
 		void errorOccured( QTcpSocket::SocketError error, const QString &message );
 
-		void phoneRinging( unsigned connectionId, const QString &caller, const QString &callee );
+		void incomingCall( unsigned connectionId, const QString &caller, const QString &callee );
 		void phoneConnected( unsigned connectionId, const QString &caller );
 		void phoneDisconnected( unsigned connectionId );
-		void phoneCalling( unsigned connectionId, const QString &caller, const QString &callee );
+		void outgoingCall( unsigned connectionId, const QString &caller, const QString &callee );
 
 	private slots:
 		void onConnected();

@@ -16,10 +16,10 @@ class SimulatorMainWindow : public QMainWindow {
 		~SimulatorMainWindow();
 
 	private slots:
-		void onRingPhone();
-		void onCallPhone();
-		void onConnectPhone();
-		void onDisconnectPhone();
+		void doIncomingCall();
+		void doOutgoingCall();
+		void doConnectPhone();
+		void doDisconnectPhone();
 
 	private:
 		void onNewConnection( QTcpSocket *socket );

@@ -12,21 +12,23 @@
 SimulatorMainWindow::SimulatorMainWindow( QWidget *parent )
 	: QMainWindow( parent ) {
 
-	auto ringPhoneButton = new QPushButton( "Ring Phone" );
-	connect( ringPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::onRingPhone );
+	setWindowTitle("FRITZ!Box Simulator");
 
-	auto callPhoneButton = new QPushButton( "Call Phone" );
-	connect( callPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::onCallPhone );
+	auto incomingCallButton = new QPushButton( "Incoming Call" );
+	connect( incomingCallButton, &QPushButton::clicked, this, &SimulatorMainWindow::doIncomingCall );
+
+	auto outgoingCallButton = new QPushButton( "Outgoing Call" );
+	connect( outgoingCallButton, &QPushButton::clicked, this, &SimulatorMainWindow::doOutgoingCall );
 
 	auto connectPhoneButton = new QPushButton( "Connect Phone" );
-	connect( connectPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::onConnectPhone );
+	connect( connectPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::doConnectPhone );
 
 	auto disconnectPhoneButton = new QPushButton( "Disconnect Phone" );
-	connect( disconnectPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::onDisconnectPhone );
+	connect( disconnectPhoneButton, &QPushButton::clicked, this, &SimulatorMainWindow::doDisconnectPhone );
 
 	auto layout = new QVBoxLayout;
-	layout->addWidget( ringPhoneButton );
-	layout->addWidget( callPhoneButton );
+	layout->addWidget( incomingCallButton );
+	layout->addWidget( outgoingCallButton );
 	layout->addWidget( connectPhoneButton );
 	layout->addWidget( disconnectPhoneButton );
 
@@ -99,7 +101,7 @@ void SimulatorMainWindow::onBytesWritten( QTcpSocket *, qint64 /* count */ ) {
 
 //==================================================================================================
 
-void SimulatorMainWindow::onRingPhone() {
+void SimulatorMainWindow::doIncomingCall() {
 	for ( auto socket : sockets_ ) {
 		socket->write( FritzBoxTest::RING_DATA );
 	}
@@ -107,7 +109,7 @@ void SimulatorMainWindow::onRingPhone() {
 
 //==================================================================================================
 
-void SimulatorMainWindow::onCallPhone() {
+void SimulatorMainWindow::doOutgoingCall() {
 	for ( auto socket : sockets_ ) {
 		socket->write( FritzBoxTest::CALLING_DATA );
 	}
@@ -115,7 +117,7 @@ void SimulatorMainWindow::onCallPhone() {
 
 //==================================================================================================
 
-void SimulatorMainWindow::onConnectPhone() {
+void SimulatorMainWindow::doConnectPhone() {
 	for ( auto socket : sockets_ ) {
 		socket->write( FritzBoxTest::CONNECT_DATA );
 	}
@@ -123,7 +125,7 @@ void SimulatorMainWindow::onConnectPhone() {
 
 //==================================================================================================
 
-void SimulatorMainWindow::onDisconnectPhone() {
+void SimulatorMainWindow::doDisconnectPhone() {
 	for ( auto socket : sockets_ ) {
 		socket->write( FritzBoxTest::DISCONNECT_DATA );
 	}
