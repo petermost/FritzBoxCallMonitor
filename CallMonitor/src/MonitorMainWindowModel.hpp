@@ -53,9 +53,9 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 
 	private:
 		void connectToFritzBox();
-		void onIncomingCall( const QString &caller, const QString &callee );
-		void onOutgoingCalling(const QString &caller, const QString &callee);
-		void onPhoneConnected(const QString &caller);
+		void onIncomingCall( unsigned connectionId, const QString &caller, const QString &callee );
+		void onOutgoingCall( unsigned connectionId, const QString &caller, const QString &callee);
+		void onPhoneConnected( unsigned connectionId, const QString &caller);
 
 		pera_software::aidkit::cpp::optional< bool > isVisible_;
 		FritzBox *fritzBox_ = nullptr;
