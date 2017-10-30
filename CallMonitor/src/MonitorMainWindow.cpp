@@ -1,4 +1,5 @@
 #include "MonitorMainWindow.hpp"
+#include "MonitorSettingsDialog.hpp"
 
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
@@ -18,6 +19,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QStatusBar>
+#include <QSettings>
 
 // TODO: Add what's this actions.
 
@@ -34,6 +36,7 @@ MonitorMainWindow::MonitorMainWindow() {
 	// Add the default menus:
 
 	addFileMenu();
+	addEditMenu();
 	addWindowMenu();
 	addHelpMenu();
 	addStatusBar();
@@ -43,87 +46,6 @@ MonitorMainWindow::MonitorMainWindow() {
 	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::quit );
 
 	connect( &model_, &MonitorMainWindowModel::visibleChanged, this, &MonitorMainWindow::onVisible );
-
-	// Prepare the hostname widget:
-
-	hostName_ = new QLineEdit( model_.hostName() );
-	hostName_->setClearButtonEnabled( true );
-
-	connect( hostName_, &QLineEdit::editingFinished, [ = ] {
-		model_.setHostName( hostName_->text() );
-	});
-	connect( &model_, &MonitorMainWindowModel::hostNameChanged, hostName_, &QLineEdit::setText );
-
-	auto hostNameLabel = new QLabel( tr( "&Hostname:" ));
-	hostNameLabel->setBuddy( hostName_ );
-
-	// Prepare the port number widget:
-
-	portNumber_ = new IntegerSpinBox( model_.portNumber() );
-	portNumber_->setRange( PORT_MIN, PORT_MAX );
-
-	connect( portNumber_, &IntegerSpinBox::editingFinished, [ = ] {
-		model_.setPortNumber( static_cast< Port >( portNumber_->value() ));
-	});
-	connect( &model_, &MonitorMainWindowModel::portNumberChanged, portNumber_, &IntegerSpinBox::setValue );
-
-	auto portNumberLabel = new QLabel( tr( "&Portnumber:" ));
-	portNumberLabel->setBuddy( portNumber_ );
-
-	// Prepare the phone book widget:
-
-	phoneBookPath_ = new QLineEdit( model_.phoneBookPath() );
-	phoneBookPath_->setClearButtonEnabled( true );
-
-	connect( phoneBookPath_, &QLineEdit::editingFinished, &model_, [ = ] {
-		model_.setPhoneBookPath( phoneBookPath_->text() );
-	});
-	connect( &model_, &MonitorMainWindowModel::phoneBookPathChanged, phoneBookPath_, &QLineEdit::setText );
-
-	auto phoneBookLabel = new QLabel( tr( "&Phonebook:" ));
-	phoneBookLabel->setBuddy( phoneBookPath_ );
-
-	// Prepare the phone book browse widget:
-
-	browsePhoneBookPathButton_ = new QPushButton( tr( "&Browse..." ));
-
-	connect( browsePhoneBookPathButton_, &QPushButton::clicked, &model_, &MonitorMainWindowModel::browseForPhoneBook );
-
-	// Prepare the fritz box layout:
-
-	auto fritzBoxLayout = new QGridLayout;
-	fritzBoxLayout->addWidget( hostNameLabel, 0, 0 );
-	fritzBoxLayout->addWidget( hostName_, 0, 1 );
-	fritzBoxLayout->addWidget( portNumberLabel, 0, 2 );
-	fritzBoxLayout->addWidget( portNumber_, 0, 3 );
-
-	fritzBoxLayout->addWidget( phoneBookLabel, 1, 0 );
-	fritzBoxLayout->addWidget( phoneBookPath_, 1, 1 );
-	fritzBoxLayout->addWidget( browsePhoneBookPathButton_, 1, 2, 1, 2 );
-
-	auto fritzBoxGroup = new QGroupBox( "FRITZ!Box" );
-	fritzBoxGroup->setLayout( fritzBoxLayout );
-
-	// Prepare the notification layout:
-
-	notificationTimeout_ = new IntegerSpinBox( int_cast< int >( model_.notificationTimeout().count() ));
-	notificationTimeout_->setSuffix( tr( "ms" ));
-	connect( notificationTimeout_, &IntegerSpinBox::editingFinished, [ = ] {
-		model_.setNotificationTimeout( milliseconds( notificationTimeout_->value() ));
-	});
-	connect( &model_, &MonitorMainWindowModel::notificationTimeoutChanged, [ = ]( milliseconds timeout ) {
-		notificationTimeout_->setValue( int_cast< int >( timeout.count() ));
-	});
-
-	auto notificationTimeoutLabel = new QLabel( tr( "&Timeout:" ));
-	notificationTimeoutLabel->setBuddy( notificationTimeout_ );
-
-	auto notificationLayout = new QHBoxLayout;
-	notificationLayout->addWidget( notificationTimeoutLabel );
-	notificationLayout->addWidget( notificationTimeout_ );
-
-	auto notificationGroup = new QGroupBox( tr( "Notification" ));
-	notificationGroup->setLayout( notificationLayout );
 
 	// Create the message(s) widget:
 
@@ -136,14 +58,43 @@ MonitorMainWindow::MonitorMainWindow() {
 	auto messagesGroup = new QGroupBox( tr( "Messages" ));
 	messagesGroup->setLayout( messagesLayout );
 
-	auto centralWidgetLayout = new QVBoxLayout;
-	centralWidgetLayout->addWidget( fritzBoxGroup );
-	centralWidgetLayout->addWidget( notificationGroup );
-	centralWidgetLayout->addWidget( messagesGroup );
+	setCentralWidget( messagesGroup );
 
-	auto centralWidget = new QWidget;
-	centralWidget->setLayout( centralWidgetLayout );
-	setCentralWidget( centralWidget );
+	QSettings settings;
+	readSettings(&settings);
+}
+
+//==================================================================================================
+
+MonitorMainWindow::~MonitorMainWindow() {
+	QSettings settings;
+	writeSettings(&settings);
+}
+
+//==================================================================================================
+
+void MonitorMainWindow::readSettings(QSettings *settings) noexcept{
+	PERAMainWindow::readSettings(settings);
+	model_.readSettings(settings);
+}
+
+//==================================================================================================
+
+void MonitorMainWindow::writeSettings(QSettings *settings) const noexcept {
+	PERAMainWindow::writeSettings(settings);
+	model_.writeSettings(settings);
+}
+
+
+//==================================================================================================
+
+void MonitorMainWindow::addEditMenu() {
+	auto settingsAction = new QAction(tr("&Settings..."), this);
+	connect(settingsAction, &QAction::triggered, this, &MonitorMainWindow::editSettings);
+
+	auto editMenu = new QMenu(tr("&Edit"), this);
+	editMenu->addAction(settingsAction);
+	menuBar()->addMenu(editMenu);
 }
 
 //==================================================================================================
@@ -152,7 +103,7 @@ void MonitorMainWindow::addWindowMenu() {
 	auto hideAction = new QAction( tr( "&Hide..." ), this );
 	connect( hideAction, &QAction::triggered, [ = ] { model_.beVisible( false ); });
 
-	auto windowMenu = new QMenu( tr( "&Window" ));
+	auto windowMenu = new QMenu( tr( "&Window" ), this);
 	windowMenu->addAction( hideAction );
 	menuBar()->addMenu( windowMenu );
 }
@@ -205,22 +156,27 @@ void MonitorMainWindow::addTrayIcon() {
 
 //==================================================================================================
 
-void MonitorMainWindow::readSettings( QSettings *settings ) noexcept {
-	PERAMainWindow::readSettings( settings );
-	model_.readSettings( settings );
-}
-
-//==================================================================================================
-
-void MonitorMainWindow::writeSettings( QSettings *settings ) const noexcept {
-	PERAMainWindow::writeSettings( settings );
-	model_.writeSettings( settings );
-}
-
-//==================================================================================================
-
 void MonitorMainWindow::quit() {
 	close();
+}
+
+//==================================================================================================
+
+void MonitorMainWindow::editSettings() {
+	MonitorSettingsDialog settingsDialog;
+	MonitorSettingsDialogModel *dialogModel = settingsDialog.model();
+
+	dialogModel->setHostName( model_.hostName() );
+	dialogModel->setPortNumber( model_.portNumber() );
+	dialogModel->setPhoneBookPath( model_.phoneBookPath() );
+	dialogModel->setNotificationTimeout( model_.notificationTimeout() );
+
+	if ( settingsDialog.exec() == QDialog::Accepted ) {
+		model_.setHostName(dialogModel->hostName());
+		model_.setPortNumber(dialogModel->portNumber());
+		model_.setPhoneBookPath(dialogModel->phoneBookPath());
+		model_.setNotificationTimeout(dialogModel->notificationTimeout());
+	}
 }
 
 //==================================================================================================

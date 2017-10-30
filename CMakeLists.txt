@@ -27,6 +27,12 @@ set( sources
 	CallMonitor/src/MonitorMainWindow.cpp
 	CallMonitor/src/MonitorMainWindowModel.hpp
 	CallMonitor/src/MonitorMainWindowModel.cpp
+	CallMonitor/src/MonitorSettingsDialog.hpp
+	CallMonitor/src/MonitorSettingsDialog.cpp
+	CallMonitor/src/MonitorSettingsDialogModel.hpp
+	CallMonitor/src/MonitorSettingsDialogModel.cpp
+	CallMonitor/src/Settings.cpp
+	CallMonitor/src/Settings.hpp
 	CallMonitor/resources/Images.qrc
 )
 

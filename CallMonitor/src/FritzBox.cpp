@@ -34,9 +34,10 @@ void FritzBox::connectTo( const QString &hostName, Port portNumber ) noexcept {
 
 		hostName_ = hostName;
 		portNumber_ = portNumber;
+
+	//	auto state = Enums::toString( socket_->state() );
+		socket_->connectToHost( hostName_, portNumber_ );
 	}
-//	auto state = Enums::toString( socket_->state() );
-	socket_->connectToHost( hostName_, portNumber_ );
 }
 
 //==================================================================================================
