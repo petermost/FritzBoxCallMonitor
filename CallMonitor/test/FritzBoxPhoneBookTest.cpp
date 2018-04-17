@@ -19,3 +19,11 @@ void FritzBoxPhoneBookTest::testRead() {
 	QCOMPARE( book.findName( QStringLiteral( "2222222222" )), QStringLiteral( "SecondPerson" ));
 	QCOMPARE( book.findName( QStringLiteral( "3333333333" )), QStringLiteral( "ThirdPerson" ));
 }
+
+void FritzBoxPhoneBookTest::testFindNameOrDefault() {
+	FritzBoxPhoneBook book;
+
+	QString defaultName(QStringLiteral("defaultName"));
+	QString nonExistingName(QStringLiteral("xxx"));
+	QCOMPARE(book.findNameOrDefault(nonExistingName, defaultName), defaultName);
+}

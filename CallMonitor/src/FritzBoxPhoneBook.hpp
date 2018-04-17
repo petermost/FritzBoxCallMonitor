@@ -26,6 +26,8 @@ class FritzBoxPhoneBook : public QObject {
 		/// Find the name for the number.
 		QString findName(const QString &number) const;
 
+		QString findNameOrDefault(const QString &number, const QString &defaultName) const;
+
 		/// Returns the number of entries.
 		int count() const;
 

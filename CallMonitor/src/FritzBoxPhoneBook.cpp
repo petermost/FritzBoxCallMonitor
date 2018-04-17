@@ -76,6 +76,16 @@ QString FritzBoxPhoneBook::findName(const QString &number) const {
 
 //==================================================================================================
 
+QString FritzBoxPhoneBook::findNameOrDefault(const QString &number, const QString &defaultName) const {
+	QString name = findName(number);
+	if (name.isEmpty())
+		name = defaultName;
+
+	return name;
+}
+
+//==================================================================================================
+
 int FritzBoxPhoneBook::count() const {
 	return entries_.count();
 }

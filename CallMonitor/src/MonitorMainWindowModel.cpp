@@ -61,20 +61,8 @@ void MonitorMainWindowModel::connectToFritzBox() {
 
 //==================================================================================================
 
-static QString findNameOrDefault(const FritzBoxPhoneBook &phoneBook, const QString &number,
-		const QString &defaultName) {
-
-	QString name = phoneBook.findName(number);
-	if (name.isEmpty())
-		name = defaultName;
-
-	return name;
-}
-
-//==================================================================================================
-
 void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const QString &caller, const QString &callee ) {
-	QString callerName = findNameOrDefault( fritzBoxPhoneBook_, caller, caller );
+	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	messagesModel_->showInformation( tr( "Incoming call: Caller: '%1', Callee: '%2'." ).arg( callerName ).arg( callee ));
 
 	emit showNotification( tr( "Incoming Call" ), callerName, notificationTimeout_ );
@@ -83,14 +71,14 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 //==================================================================================================
 
 void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const QString &caller, const QString &callee) {
-	QString calleeName = findNameOrDefault( fritzBoxPhoneBook_, callee, callee );
+	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
 	messagesModel_->showInformation(tr("Outgoing call: Caller: '%1', Callee: '%2'.").arg(caller).arg(calleeName));
 }
 
 //==================================================================================================
 
 void MonitorMainWindowModel::onPhoneConnected(unsigned /* connectionId */, const QString &caller) {
-	QString callerName = findNameOrDefault( fritzBoxPhoneBook_, caller, caller );
+	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	messagesModel_->showInformation( tr( "Phone connected: Caller: '%1'." ).arg(callerName));
 }
 

@@ -7,4 +7,5 @@ class FritzBoxPhoneBookTest : public pera_software::aidkit::qt::Test {
 
 	private slots:
 		void testRead();
+		void testFindNameOrDefault();
 };

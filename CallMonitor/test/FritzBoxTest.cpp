@@ -13,7 +13,7 @@ const QByteArray CALLEE = "90969248";
 const QByteArray FritzBoxTest::RING_DATA       = "29.10.16 18:23:02;RING;0;" + CALLER + ";" + CALLEE + ";SIP1;\n";
 const QByteArray FritzBoxTest::CONNECT_DATA    = "03.11.16 13:17:16;CONNECT;0;1;" + CALLER + ";\n";
 const QByteArray FritzBoxTest::DISCONNECT_DATA = "29.10.16 18:23:04;DISCONNECT;0;201;\n";
-const QByteArray FritzBoxTest::CALLING_DATA    = "21.11.16 22:51:49;CALL;0;1;" + CALLEE + ";" + CALLER + ";SIP1;\n";
+const QByteArray FritzBoxTest::CALLING_DATA    = "21.11.16 22:51:49;CALL;0;1;" + CALLER + ";" + CALLEE + ";SIP1;\n";
 
 void FritzBoxTest::testRingingSignal() {
 	FritzBox fritzBox;
