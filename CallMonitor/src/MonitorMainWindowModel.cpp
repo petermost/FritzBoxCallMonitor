@@ -6,7 +6,7 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QSettings>
-#include "Settings.hpp"
+#include "MonitorSettings.hpp"
 
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
@@ -15,9 +15,7 @@ using namespace pera_software::aidkit::cpp;
 static const QString IS_VISIBLE_KEY( QStringLiteral( "isVisible" ));
 
 
-MonitorMainWindowModel::MonitorMainWindowModel()
-	: hostName_(DEFAULT_HOST_NAME), portNumber_(DEFAULT_CALL_MONITOR_PORT),
-	notificationTimeout_(DEFAULT_NOTIFICATION_TIMEOUT) {
+MonitorMainWindowModel::MonitorMainWindowModel() {
 
 	fritzBox_ = new FritzBox( this );
 
@@ -30,9 +28,10 @@ MonitorMainWindowModel::MonitorMainWindowModel()
 	});
 
 	connect( fritzBox_, &FritzBox::stateChanged, [ = ]( QTcpSocket::SocketState state ) {
-		if ( state == QTcpSocket::SocketState::ConnectedState )
-			messagesModel_->showInformation( tr( "Connected." ));
-		// emit showInformation( Enums::toString( state ));
+		if ( state == QTcpSocket::SocketState::ConnectedState ) {
+			messagesModel_->showInformation(tr("Connected to '%1:%2'").arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()));
+			// emit showInformation( Enums::toString( state ));
+		}
 	});
 
 	connect( fritzBox_, &FritzBox::incomingCall, this, &MonitorMainWindowModel::onIncomingCall );
@@ -45,7 +44,7 @@ MonitorMainWindowModel::MonitorMainWindowModel()
 		messagesModel_->showInformation( tr( "Phone disconnected." ));
 	});
 
-	connectToFritzBox();
+	connectToFritzBox(settings_.hostName, settings_.portNumber);
 }
 
 //==================================================================================================
@@ -55,8 +54,8 @@ MonitorMainWindowModel::~MonitorMainWindowModel() {
 
 //==================================================================================================
 
-void MonitorMainWindowModel::connectToFritzBox() {
-	fritzBox_->connectTo( hostName_, portNumber_ );
+void MonitorMainWindowModel::connectToFritzBox(const QString &hostName, Port portNumber) {
+	fritzBox_->connectTo(hostName, portNumber);
 }
 
 //==================================================================================================
@@ -65,7 +64,7 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	messagesModel_->showInformation( tr( "Incoming call: Caller: '%1', Callee: '%2'." ).arg( callerName ).arg( callee ));
 
-	emit showNotification( tr( "Incoming Call" ), callerName, notificationTimeout_ );
+	emit showNotification(tr("Incoming Call"), callerName, settings_.notificationTimeout);
 }
 
 //==================================================================================================
@@ -79,33 +78,28 @@ void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const Q
 
 void MonitorMainWindowModel::onPhoneConnected(unsigned /* connectionId */, const QString &caller) {
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
-	messagesModel_->showInformation( tr( "Phone connected: Caller: '%1'." ).arg(callerName));
+	messagesModel_->showInformation(tr("Phone connected: Caller: '%1'.").arg(callerName));
 }
 
 //==================================================================================================
 
 void MonitorMainWindowModel::readSettings(QSettings *settings) noexcept {
-
 	beVisible( qvariant_cast< bool >( settings->value( IS_VISIBLE_KEY, true )));
-	setHostName( readHostName( settings ));
-	setPortNumber( readPortNumber( settings ));
-	setPhoneBookPath( readPhoneBookPath( settings ));
-	setNotificationTimeout( readNotificationTimeout( settings ));
+
+	MonitorSettings monitorSettings;
+	monitorSettings.readSettings(settings);
+	setSettings(monitorSettings);
 
 	emit showStatus( tr( "Loaded settings from: '%1'").arg( settings->fileName()), milliseconds(0));
 
-	connectToFritzBox();
+	// connectToFritzBox();
 }
 
 //==================================================================================================
 
 void MonitorMainWindowModel::writeSettings(QSettings *settings) const noexcept {
-
 	settings->setValue( IS_VISIBLE_KEY, isVisible() );
-	writeHostName( settings, hostName_ );
-	writePortNumber( settings, portNumber_ );
-	writePhoneBookPath( settings, phoneBookPath_ );
-	writeNotificationTimeout( settings, notificationTimeout_ );
+	settings_.writeSettings(settings);
 
 	emit showStatus( tr( "Saved settings to: '%1'").arg( settings->fileName()), milliseconds(0));
 }
@@ -118,22 +112,20 @@ void MonitorMainWindowModel::quit() {
 
 //==================================================================================================
 
-void MonitorMainWindowModel::setHostName(const QString &hostName) {
-	if (hostName != hostName_) {
-		hostName_ = hostName;
-
-		connectToFritzBox();
+void MonitorMainWindowModel::setSettings(const MonitorSettings &settings) {
+	if (settings.hostName != settings_.hostName || settings.portNumber != settings_.portNumber) {
+		connectToFritzBox(settings.hostName, settings.portNumber);
 	}
+	if (settings.phoneBookPath != settings_.phoneBookPath) {
+		readPhoneBook(settings.phoneBookPath);
+	}
+	settings_ = settings;
 }
 
 //==================================================================================================
 
-void MonitorMainWindowModel::setPortNumber(FritzBox::Port portNumber) {
-	if (portNumber != portNumber_) {
-		portNumber_ = portNumber;
-
-		connectToFritzBox();
-	}
+MonitorSettings MonitorMainWindowModel::settings() const {
+	return settings_;
 }
 
 //==================================================================================================
@@ -154,51 +146,15 @@ void MonitorMainWindowModel::beVisible( bool isVisible ) {
 
 //==================================================================================================
 
-QString MonitorMainWindowModel::hostName() const {
-	return hostName_;
-}
-
-//==================================================================================================
-
-FritzBox::Port MonitorMainWindowModel::portNumber() const {
-	return portNumber_;
-}
-
-//==================================================================================================
-
-QString MonitorMainWindowModel::phoneBookPath() const {
-	return phoneBookPath_;
-}
-
-//==================================================================================================
-
-milliseconds MonitorMainWindowModel::notificationTimeout() const {
-	return notificationTimeout_;
-}
-
-//==================================================================================================
-
-void MonitorMainWindowModel::setPhoneBookPath( const QString &phoneBookPath ) {
-	if ( phoneBookPath != phoneBookPath_ ) {
-		phoneBookPath_ = phoneBookPath;
-
-		QString errorString;
-		if ( fritzBoxPhoneBook_.read( phoneBookPath_, &errorString )) {
-			fritzBoxPhoneBook_.forEach([ = ]( const QString &name, const QString &number ) {
-				messagesModel_->showInformation( tr( "Read phone book entry for '%1' with the number: '%2'." ).arg( name ).arg( number ));
-			});
-		} else {
-			messagesModel_->showError( tr( "Unable to read '%1' because '%2'!" ).arg( phoneBookPath ).arg( errorString ));
-			beVisible();
-		}
-	}
-}
-
-//==================================================================================================
-
-void MonitorMainWindowModel::setNotificationTimeout(milliseconds notificationTimeout) {
-	if ( notificationTimeout != notificationTimeout_ ) {
-		notificationTimeout_ = notificationTimeout;
+void MonitorMainWindowModel::readPhoneBook(const QString &phoneBookPath) {
+	QString errorString;
+	if ( fritzBoxPhoneBook_.read(phoneBookPath, &errorString)) {
+		fritzBoxPhoneBook_.forEach([=](const QString &name, const QString &number) {
+			messagesModel_->showInformation( tr( "Read phone book entry for '%1' with the number: '%2'." ).arg( name ).arg( number ));
+		});
+	} else {
+		messagesModel_->showError( tr( "Unable to read '%1' because '%2'!" ).arg( phoneBookPath ).arg( errorString ));
+		beVisible();
 	}
 }
 

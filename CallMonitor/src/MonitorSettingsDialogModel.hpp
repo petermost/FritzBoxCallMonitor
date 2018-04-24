@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MonitorSettings.hpp"
 #include <pera_software/aidkit/qt/core/Socket.hpp>
 #include <pera_software/aidkit/qt/core/Persistable.hpp>
 #include <QDir>
@@ -37,9 +38,6 @@ class MonitorSettingsDialogModel : public QObject, pera_software::aidkit::qt::Pe
 		void setLastVisitedDirectory( const QDir &directory );
 
 	private:
-		QString hostName_;
-		pera_software::aidkit::qt::Port portNumber_ = 0;
-		std::chrono::milliseconds notificationTimeout_;
-		QString phoneBookPath_;
+		MonitorSettings settings_;
 		QDir lastVisitedDirectory_;
 };

@@ -59,16 +59,11 @@ MonitorMainWindow::MonitorMainWindow() {
 	messagesGroup->setLayout( messagesLayout );
 
 	setCentralWidget( messagesGroup );
-
-	QSettings settings;
-	readSettings(&settings);
 }
 
 //==================================================================================================
 
 MonitorMainWindow::~MonitorMainWindow() {
-	QSettings settings;
-	writeSettings(&settings);
 }
 
 //==================================================================================================
@@ -111,7 +106,7 @@ void MonitorMainWindow::addWindowMenu() {
 //==================================================================================================
 
 void MonitorMainWindow::addStatusBar() {
-	statusBar()->showMessage( QString::null );
+	statusBar()->showMessage( QString() );
 
 	connect( &model_, &MonitorMainWindowModel::showStatus, [ = ]( const QString &message, milliseconds timeout ) {
 		statusBar()->showMessage( message, int_cast< int >( timeout.count() ));
@@ -165,17 +160,19 @@ void MonitorMainWindow::quit() {
 void MonitorMainWindow::editSettings() {
 	MonitorSettingsDialog settingsDialog;
 	MonitorSettingsDialogModel *dialogModel = settingsDialog.model();
+	MonitorSettings settings = model_.settings();
 
-	dialogModel->setHostName( model_.hostName() );
-	dialogModel->setPortNumber( model_.portNumber() );
-	dialogModel->setPhoneBookPath( model_.phoneBookPath() );
-	dialogModel->setNotificationTimeout( model_.notificationTimeout() );
+	dialogModel->setHostName(settings.hostName);
+	dialogModel->setPortNumber(settings.portNumber);
+	dialogModel->setPhoneBookPath(settings.phoneBookPath);
+	dialogModel->setNotificationTimeout(settings.notificationTimeout);
 
 	if ( settingsDialog.exec() == QDialog::Accepted ) {
-		model_.setHostName(dialogModel->hostName());
-		model_.setPortNumber(dialogModel->portNumber());
-		model_.setPhoneBookPath(dialogModel->phoneBookPath());
-		model_.setNotificationTimeout(dialogModel->notificationTimeout());
+		settings.hostName = dialogModel->hostName();
+		settings.portNumber = dialogModel->portNumber();
+		settings.phoneBookPath = dialogModel->phoneBookPath();
+		settings.notificationTimeout = dialogModel->notificationTimeout();
+		model_.setSettings(settings);
 	}
 }
 

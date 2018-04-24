@@ -31,8 +31,8 @@ set( sources
 	CallMonitor/src/MonitorSettingsDialog.cpp
 	CallMonitor/src/MonitorSettingsDialogModel.hpp
 	CallMonitor/src/MonitorSettingsDialogModel.cpp
-	CallMonitor/src/Settings.cpp
-	CallMonitor/src/Settings.hpp
+	CallMonitor/src/MonitorSettings.cpp
+	CallMonitor/src/MonitorSettings.hpp
 	CallMonitor/resources/Images.qrc
 )
 

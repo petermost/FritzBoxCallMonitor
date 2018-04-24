@@ -1,6 +1,6 @@
 #include "MonitorSettingsDialogModel.hpp"
 #include "FritzBox.hpp"
-#include "Settings.hpp"
+#include "MonitorSettings.hpp"
 #include <pera_software/aidkit/qt/core/Chrono.hpp>
 #include <QSettings>
 #include <QStandardPaths>
@@ -16,9 +16,6 @@ static const QString LAST_VISITED_DIRECTORY_KEY( QStringLiteral( "lastVisitedDir
 MonitorSettingsDialogModel::MonitorSettingsDialogModel(QObject *parent)
 		: QObject(parent) {
 
-	hostName_ = DEFAULT_HOST_NAME;
-	portNumber_ = DEFAULT_CALL_MONITOR_PORT;
-	notificationTimeout_ = DEFAULT_NOTIFICATION_TIMEOUT;
 	lastVisitedDirectory_ = QStandardPaths::writableLocation( QStandardPaths::StandardLocation::HomeLocation );
 }
 
@@ -43,46 +40,46 @@ void MonitorSettingsDialogModel::writeSettings(QSettings *settings) const noexce
 //==================================================================================================
 
 void MonitorSettingsDialogModel::setHostName(const QString &hostName) {
-	if ( hostName != hostName_ ) {
-		hostName_ = hostName;
-		emit hostNameChanged( hostName_ );
+	if (hostName != settings_.hostName) {
+		settings_.hostName = hostName;
+		emit hostNameChanged(settings_.hostName);
 	}
 }
 
 //==================================================================================================
 
 QString MonitorSettingsDialogModel::hostName() const {
-	return hostName_;
+	return settings_.hostName;
 }
 
 //==================================================================================================
 
 void MonitorSettingsDialogModel::setPortNumber(Port portNumber) {
-	if ( portNumber != portNumber_ ) {
-		portNumber_ = portNumber;
-		emit portNumberChanged( portNumber_ );
+	if (portNumber != settings_.portNumber) {
+		settings_.portNumber = portNumber;
+		emit portNumberChanged(settings_.portNumber);
 	}
 }
 
 //==================================================================================================
 
 Port MonitorSettingsDialogModel::portNumber() const {
-	return portNumber_;
+	return settings_.portNumber;
 }
 
 //==================================================================================================
 
 void MonitorSettingsDialogModel::setPhoneBookPath(const QString &phoneBookPath) {
-	if ( phoneBookPath != phoneBookPath_ ) {
-		phoneBookPath_ = phoneBookPath;
-		emit phoneBookPathChanged( phoneBookPath_ );
+	if (phoneBookPath != settings_.phoneBookPath) {
+		settings_.phoneBookPath = phoneBookPath;
+		emit phoneBookPathChanged(settings_.phoneBookPath);
 	}
 }
 
 //==================================================================================================
 
 QString MonitorSettingsDialogModel::phoneBookPath() const {
-	return phoneBookPath_;
+	return settings_.phoneBookPath;
 }
 
 //==================================================================================================
@@ -102,9 +99,9 @@ QDir MonitorSettingsDialogModel::lastVisitedDirectory() const {
 //==================================================================================================
 
 void MonitorSettingsDialogModel::setNotificationTimeout(milliseconds timeout) {
-	if ( timeout != notificationTimeout_ ) {
-		notificationTimeout_ = timeout;
-		emit notificationTimeoutChanged( notificationTimeout_ );
+	if (timeout != settings_.notificationTimeout) {
+		settings_.notificationTimeout = timeout;
+		emit notificationTimeoutChanged(settings_.notificationTimeout);
 	}
 
 }
@@ -112,5 +109,5 @@ void MonitorSettingsDialogModel::setNotificationTimeout(milliseconds timeout) {
 //==================================================================================================
 
 milliseconds MonitorSettingsDialogModel::notificationTimeout() const {
-	return notificationTimeout_;
+	return settings_.notificationTimeout;
 }
