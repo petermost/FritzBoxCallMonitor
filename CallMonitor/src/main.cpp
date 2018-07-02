@@ -1,6 +1,5 @@
 #include "MonitorApplication.hpp"
 #include "MonitorMainWindow.hpp"
-#include "Settings.hpp"
 #include <pera_software/company/qt/PERAIniSettings.hpp>
 
 using namespace pera_software::company::qt;

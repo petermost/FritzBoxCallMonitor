@@ -12,7 +12,7 @@ class SimulatorMainWindow : public QMainWindow {
 	Q_OBJECT
 
 	public:
-		explicit SimulatorMainWindow(QWidget *parent = 0);
+		explicit SimulatorMainWindow(QWidget *parent = nullptr);
 		~SimulatorMainWindow();
 
 	private slots:
