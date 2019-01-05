@@ -10,7 +10,6 @@
 
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
-using namespace pera_software::aidkit::cpp;
 
 static const QString IS_VISIBLE_KEY( QStringLiteral( "isVisible" ));
 
@@ -145,7 +144,7 @@ bool MonitorMainWindowModel::isVisible() const {
 //==================================================================================================
 
 void MonitorMainWindowModel::beVisible( bool isVisible ) {
-	if ( !has_value( isVisible_ ) || *isVisible_ != isVisible ) {
+	if ( !isVisible_.has_value() || *isVisible_ != isVisible ) {
 		isVisible_ = isVisible;
 		emit visibleChanged( *isVisible_ );
 	}

@@ -3,11 +3,11 @@
 #include "FritzBox.hpp"
 #include "MonitorSettings.hpp"
 #include "FritzBoxPhoneBook.hpp"
-#include <pera_software/aidkit/cpp/optional.hpp>
 #include <pera_software/aidkit/qt/gui/ForwardDeclarations.hpp>
 #include <pera_software/aidkit/qt/core/Persistable.hpp>
 #include <QObject>
 #include <chrono>
+#include <optional>
 
 class FritzBox;
 class QSettings;
@@ -50,7 +50,7 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		void onPhoneConnected( unsigned connectionId, const QString &caller);
 		void onPhoneDisconnected( unsigned connectionId );
 
-		pera_software::aidkit::cpp::optional< bool > isVisible_;
+		std::optional< bool > isVisible_;
 
 		MonitorSettings settings_;
 		FritzBox *fritzBox_ = nullptr;
