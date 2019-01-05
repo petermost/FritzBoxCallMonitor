@@ -1,13 +1,17 @@
 #include "MonitorApplication.hpp"
 #include "MonitorMainWindow.hpp"
 #include <pera_software/company/qt/PERAIniSettings.hpp>
+#include <pera_software/aidkit/qt/Resources.hpp>
 
 using namespace pera_software::company::qt;
+using namespace pera_software::aidkit::qt;
 
 int main( int argc, char *argv[] ) {
 	// qInfo() << "Using Qt build: " << QLibraryInfo::build() << endl;
 
 	MonitorApplication application( argc, argv );
+
+	Resources::disableThemeSupport();
 
 	MonitorMainWindow mainWindow;
 

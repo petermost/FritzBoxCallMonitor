@@ -43,9 +43,12 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		void connectToFritzBox(const QString &hostName, pera_software::aidkit::qt::Port portNumber);
 		void readPhoneBook(const QString &phoneBookPath);
 
+		void onErrorOccured(QTcpSocket::SocketError, const QString &errorMessage );
+		void onStateChanged(QTcpSocket::SocketState state);
 		void onIncomingCall( unsigned connectionId, const QString &caller, const QString &callee );
 		void onOutgoingCall( unsigned connectionId, const QString &caller, const QString &callee);
 		void onPhoneConnected( unsigned connectionId, const QString &caller);
+		void onPhoneDisconnected( unsigned connectionId );
 
 		pera_software::aidkit::cpp::optional< bool > isVisible_;
 

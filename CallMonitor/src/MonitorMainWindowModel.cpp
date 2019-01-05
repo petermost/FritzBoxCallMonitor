@@ -16,33 +16,17 @@ static const QString IS_VISIBLE_KEY( QStringLiteral( "isVisible" ));
 
 
 MonitorMainWindowModel::MonitorMainWindowModel() {
-
 	fritzBox_ = new FritzBox( this );
 
 	messagesModel_ = new MessagesModel;
 	messagesModel_->setMaximumItemCount( 100 );
 
-	connect( fritzBox_, &FritzBox::errorOccured, [ = ]( QTcpSocket::SocketError, const QString &message ) {
-		messagesModel_->showError( message );
-		beVisible();
-	});
-
-	connect( fritzBox_, &FritzBox::stateChanged, [ = ]( QTcpSocket::SocketState state ) {
-		if ( state == QTcpSocket::SocketState::ConnectedState ) {
-			messagesModel_->showInformation(tr("Connected to '%1:%2'").arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()));
-			// emit showInformation( Enums::toString( state ));
-		}
-	});
-
+	connect( fritzBox_, &FritzBox::errorOccured, this, &MonitorMainWindowModel::onErrorOccured );
+	connect( fritzBox_, &FritzBox::stateChanged, this, &MonitorMainWindowModel::onStateChanged );
 	connect( fritzBox_, &FritzBox::incomingCall, this, &MonitorMainWindowModel::onIncomingCall );
-
 	connect( fritzBox_, &FritzBox::outgoingCall, this, &MonitorMainWindowModel::onOutgoingCall );
-
 	connect( fritzBox_, &FritzBox::phoneConnected, this, &MonitorMainWindowModel::onPhoneConnected );
-
-	connect( fritzBox_, &FritzBox::phoneDisconnected, [ = ]( unsigned /* connectionId */ ) {
-		messagesModel_->showInformation( tr( "Phone disconnected." ));
-	});
+	connect( fritzBox_, &FritzBox::phoneDisconnected, this, &MonitorMainWindowModel::onPhoneDisconnected );
 
 	connectToFritzBox(settings_.hostName, settings_.portNumber);
 }
@@ -56,6 +40,23 @@ MonitorMainWindowModel::~MonitorMainWindowModel() {
 
 void MonitorMainWindowModel::connectToFritzBox(const QString &hostName, Port portNumber) {
 	fritzBox_->connectTo(hostName, portNumber);
+}
+
+//==================================================================================================
+
+void MonitorMainWindowModel::onErrorOccured(QTcpSocket::SocketError, const QString &errorMessage) {
+	messagesModel_->showError(tr("Connecting to '%1:%2' failed, because: '%3'")
+		.arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()).arg(errorMessage ));
+	beVisible();
+}
+
+//==================================================================================================
+
+void MonitorMainWindowModel::onStateChanged(QTcpSocket::SocketState state) {
+	if ( state == QTcpSocket::SocketState::ConnectedState ) {
+		messagesModel_->showInformation(tr("Connected to '%1:%2'").arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()));
+		// emit showInformation( Enums::toString( state ));
+	}
 }
 
 //==================================================================================================
@@ -79,6 +80,12 @@ void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const Q
 void MonitorMainWindowModel::onPhoneConnected(unsigned /* connectionId */, const QString &caller) {
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	messagesModel_->showInformation(tr("Phone connected: Caller: '%1'.").arg(callerName));
+}
+
+//==================================================================================================
+
+void MonitorMainWindowModel::onPhoneDisconnected(unsigned /* connectionId */) {
+	messagesModel_->showInformation( tr( "Phone disconnected." ));
 }
 
 //==================================================================================================
@@ -157,6 +164,7 @@ void MonitorMainWindowModel::readPhoneBook(const QString &phoneBookPath) {
 		beVisible();
 	}
 }
+
 
 //==================================================================================================
 
