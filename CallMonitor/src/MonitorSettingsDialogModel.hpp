@@ -13,7 +13,7 @@ class MonitorSettingsDialogModel : public QObject, pera_software::aidkit::qt::Pe
 
 	public:
 		explicit MonitorSettingsDialogModel(QObject *parent = nullptr);
-		~MonitorSettingsDialogModel();
+		~MonitorSettingsDialogModel() override;
 
 		void readSettings(QSettings *settings) noexcept override;
 		void writeSettings(QSettings *settings) const noexcept override;

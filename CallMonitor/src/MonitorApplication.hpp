@@ -7,4 +7,5 @@ class MonitorApplication : public pera_software::company::qt::PERAApplication {
 		static const QString NAME;
 
 		MonitorApplication( int &argc, char *argv[] );
+		~MonitorApplication();
 };

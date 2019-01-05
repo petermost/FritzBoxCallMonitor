@@ -17,7 +17,7 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 	Q_OBJECT
 	public:
 		MonitorMainWindowModel();
-		~MonitorMainWindowModel();
+		~MonitorMainWindowModel() override;
 
 		void readSettings(QSettings *settings) noexcept override;
 		void writeSettings(QSettings *settings) const noexcept override;

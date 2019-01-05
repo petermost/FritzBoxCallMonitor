@@ -15,7 +15,7 @@ class MonitorSettingsDialog : public QDialog, public pera_software::aidkit::qt::
 	Q_OBJECT
 	public:
 		explicit MonitorSettingsDialog(QWidget *parent = nullptr);
-		~MonitorSettingsDialog();
+		~MonitorSettingsDialog() override;
 
 		void readSettings(QSettings *settings) noexcept override;
 		void writeSettings(QSettings *settings) const noexcept override;
