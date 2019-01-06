@@ -13,7 +13,7 @@ class SimulatorMainWindow : public QMainWindow {
 
 	public:
 		explicit SimulatorMainWindow(QWidget *parent = nullptr);
-		~SimulatorMainWindow();
+		~SimulatorMainWindow() override;
 
 	private slots:
 		void doIncomingCall();
