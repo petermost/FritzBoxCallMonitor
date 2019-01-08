@@ -1,6 +1,7 @@
 #include "FritzBox.hpp"
 #include <pera_software/aidkit/qt/core/Enums.hpp>
 #include <QTimer>
+#include <chrono>
 
 //03.11.16 13:17:08;RING;0;015146609763;90969248;SIP1;
 //03.11.16 13:17:16;CONNECT;0;1;015146609763;
@@ -9,7 +10,10 @@
 
 // http://www.ip-phone-forum.de/showthread.php?t=93501
 
+using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
+
+constexpr milliseconds RETRY_INTERVAL(seconds(10));
 
 const QString FritzBox::DEFAULT_HOST_NAME( QStringLiteral( "fritz.box" ));
 const FritzBox::Port FritzBox::DEFAULT_CALL_MONITOR_PORT = 1012;
@@ -64,13 +68,20 @@ void FritzBox::reconnect() {
 
 //==================================================================================================
 
+inline bool isRetryableError( QTcpSocket::SocketError socketError ) {
+	return socketError == QTcpSocket::SocketError::ConnectionRefusedError
+		|| socketError == QTcpSocket::SocketError::RemoteHostClosedError
+		|| socketError == QTcpSocket::SocketError::HostNotFoundError;
+}
+
+//==================================================================================================
+
 void FritzBox::onError( QTcpSocket::SocketError socketError ) {
+
 	emit errorOccured( socketError, socket_->errorString() );
 
-	// If we can't connect or lost the connection then try again:
-
-	if ( socketError == QTcpSocket::SocketError::ConnectionRefusedError || socketError == QTcpSocket::SocketError::RemoteHostClosedError ) {
-		QTimer::singleShot( 10000, [ = ] {
+	if ( isRetryableError( socketError )) {
+		QTimer::singleShot( RETRY_INTERVAL, [ = ] {
 			if ( socket_->state() == QTcpSocket::SocketState::UnconnectedState )
 				reconnect();
 		});
