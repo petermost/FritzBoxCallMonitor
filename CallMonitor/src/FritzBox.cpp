@@ -13,7 +13,8 @@
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
 
-constexpr milliseconds RETRY_INTERVAL(seconds(10));
+constexpr seconds RETRY_INTERVAL_S(10);
+constexpr milliseconds RETRY_INTERVAL_MS(RETRY_INTERVAL_S);
 
 const QString FritzBox::DEFAULT_HOST_NAME( QStringLiteral( "fritz.box" ));
 const FritzBox::Port FritzBox::DEFAULT_CALL_MONITOR_PORT = 1012;
@@ -78,10 +79,10 @@ inline bool isRetryableError( QTcpSocket::SocketError socketError ) {
 
 void FritzBox::onError( QTcpSocket::SocketError socketError ) {
 
-	emit errorOccured( socketError, socket_->errorString() );
+	emit errorOccured( socketError, socket_->errorString() + tr( " (Retry in %1 seconds ...)" ).arg( RETRY_INTERVAL_S.count() ));
 
 	if ( isRetryableError( socketError )) {
-		QTimer::singleShot( RETRY_INTERVAL, [ = ] {
+		QTimer::singleShot( RETRY_INTERVAL_MS, [ = ] {
 			if ( socket_->state() == QTcpSocket::SocketState::UnconnectedState )
 				reconnect();
 		});

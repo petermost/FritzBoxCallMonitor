@@ -1,6 +1,7 @@
 #include "MonitorMainWindow.hpp"
 #include "MonitorSettingsDialog.hpp"
 
+#include <pera_software/aidkit/qt/gui/Resources.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
 #include <pera_software/aidkit/cpp/stdlib.hpp>
@@ -84,7 +85,7 @@ void MonitorMainWindow::writeSettings(QSettings *settings) const noexcept {
 //==================================================================================================
 
 void MonitorMainWindow::addEditMenu() {
-	auto settingsAction = new QAction(tr("&Settings..."), this);
+	auto settingsAction = new QAction(Resources::settingsIcon(), tr("&Settings..."), this);
 	connect(settingsAction, &QAction::triggered, this, &MonitorMainWindow::editSettings);
 
 	auto editMenu = new QMenu(tr("&Edit"), this);
