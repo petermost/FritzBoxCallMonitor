@@ -1,5 +1,6 @@
 #include "MonitorMainWindow.hpp"
 #include "MonitorSettingsDialog.hpp"
+#include "MonitorApplication.hpp"
 
 #include <pera_software/aidkit/qt/gui/Resources.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
@@ -30,10 +31,8 @@ using namespace pera_software::company::qt;
 using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::cpp;
 
-//==================================================================================================
-
-MonitorMainWindow::MonitorMainWindow() {
-
+MonitorMainWindow::MonitorMainWindow()
+{
 	// Add the default menus:
 
 	addFileMenu();
@@ -43,8 +42,8 @@ MonitorMainWindow::MonitorMainWindow() {
 	addStatusBar();
 	addTrayIcon();
 
-	connect( quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::quit );
-	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::quit );
+	connect( quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::onQuit );
+	connect( quitAction(), &QAction::triggered, this, &MonitorMainWindow::onQuit );
 
 	connect( &model_, &MonitorMainWindowModel::visibleChanged, this, &MonitorMainWindow::onVisible );
 
@@ -62,40 +61,44 @@ MonitorMainWindow::MonitorMainWindow() {
 	setCentralWidget( messagesGroup );
 }
 
-//==================================================================================================
-
-MonitorMainWindow::~MonitorMainWindow() {
+MonitorMainWindow::~MonitorMainWindow()
+{
 }
 
-//==================================================================================================
-
-void MonitorMainWindow::readSettings(QSettings *settings) noexcept{
+void MonitorMainWindow::readSettings(QSettings *settings) noexcept
+{
 	PERAMainWindow::readSettings(settings);
 	model_.readSettings(settings);
 }
 
-//==================================================================================================
-
-void MonitorMainWindow::writeSettings(QSettings *settings) const noexcept {
+void MonitorMainWindow::writeSettings(QSettings *settings) const noexcept
+{
 	PERAMainWindow::writeSettings(settings);
 	model_.writeSettings(settings);
 }
 
-
-//==================================================================================================
-
-void MonitorMainWindow::addEditMenu() {
+void MonitorMainWindow::addEditMenu()
+{
 	auto settingsAction = new QAction(Resources::settingsIcon(), tr("&Settings..."), this);
-	connect(settingsAction, &QAction::triggered, this, &MonitorMainWindow::editSettings);
+	connect(settingsAction, &QAction::triggered, this, &MonitorMainWindow::onEditSettings);
 
 	auto editMenu = new QMenu(tr("&Edit"), this);
 	editMenu->addAction(settingsAction);
 	menuBar()->addMenu(editMenu);
 }
 
-//==================================================================================================
+void MonitorMainWindow::addHelpMenu()
+{
 
-void MonitorMainWindow::addWindowMenu() {
+	auto aboutAction = new QAction(tr("&About..."), this);
+	connect(aboutAction, &QAction::triggered, this, &MonitorMainWindow::onAbout);
+
+	auto helpMenu = PERAMainWindow::addHelpMenu();
+	helpMenu->addAction(aboutAction);
+}
+
+void MonitorMainWindow::addWindowMenu()
+{
 	auto hideAction = new QAction( tr( "&Hide..." ), this );
 	connect( hideAction, &QAction::triggered, [ = ] { model_.beVisible( false ); });
 
@@ -104,9 +107,8 @@ void MonitorMainWindow::addWindowMenu() {
 	menuBar()->addMenu( windowMenu );
 }
 
-//==================================================================================================
-
-void MonitorMainWindow::addStatusBar() {
+void MonitorMainWindow::addStatusBar()
+{
 	statusBar()->showMessage( QString() );
 
 	connect( &model_, &MonitorMainWindowModel::showStatus, [ = ]( const QString &message, milliseconds timeout ) {
@@ -114,9 +116,8 @@ void MonitorMainWindow::addStatusBar() {
 	});
 }
 
-//==================================================================================================
-
-void MonitorMainWindow::addTrayIcon() {
+void MonitorMainWindow::addTrayIcon()
+{
 	// Prepare the menu for the tray icon:
 
 	auto showAction = new QAction( tr( "&Show Window" ), this );
@@ -150,34 +151,25 @@ void MonitorMainWindow::addTrayIcon() {
 	});
 }
 
-//==================================================================================================
-
-void MonitorMainWindow::quit() {
+void MonitorMainWindow::onQuit()
+{
 	close();
 }
 
-//==================================================================================================
+void MonitorMainWindow::onAbout()
+{
+	QMessageBox::about(this, tr("About %1").arg(MonitorApplication::NAME), tr("Version 1.1"));
+}
 
-void MonitorMainWindow::editSettings() {
+void MonitorMainWindow::onEditSettings()
+{
 	MonitorSettingsDialog settingsDialog;
-	MonitorSettingsDialogModel *dialogModel = settingsDialog.model();
-	MonitorSettings settings = model_.settings();
-
-	dialogModel->setHostName(settings.hostName);
-	dialogModel->setPortNumber(settings.portNumber);
-	dialogModel->setPhoneBookPath(settings.phoneBookPath);
-	dialogModel->setNotificationTimeout(settings.notificationTimeout);
-
+	settingsDialog.setSettings(model_.settings());
 	if ( settingsDialog.exec() == QDialog::Accepted ) {
-		settings.hostName = dialogModel->hostName();
-		settings.portNumber = dialogModel->portNumber();
-		settings.phoneBookPath = dialogModel->phoneBookPath();
-		settings.notificationTimeout = dialogModel->notificationTimeout();
-		model_.setSettings(settings);
+		model_.setSettings(settingsDialog.settings());
 	}
 }
 
-//==================================================================================================
 
 //void MonitorMainWindow::onHide() {
 //	if ( trayIcon_->isVisible() ) {
@@ -185,17 +177,15 @@ void MonitorMainWindow::editSettings() {
 //	}
 //}
 
-//==================================================================================================
-
-void MonitorMainWindow::onVisible(bool isVisible) {
+void MonitorMainWindow::onVisible(bool isVisible)
+{
 	setVisible(isVisible);
 	if (isVisible)
 		activateWindow();
 }
 
-//==================================================================================================
 
-void MonitorMainWindow::onTrayIconActivated( QSystemTrayIcon::ActivationReason ) {
+void MonitorMainWindow::onTrayIconActivated( QSystemTrayIcon::ActivationReason )
+{
 	model_.beVisible( !model_.isVisible() );
 }
-

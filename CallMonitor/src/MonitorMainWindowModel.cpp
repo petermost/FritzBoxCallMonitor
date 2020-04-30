@@ -112,7 +112,7 @@ void MonitorMainWindowModel::writeSettings(QSettings *settings) const noexcept {
 
 //==================================================================================================
 
-void MonitorMainWindowModel::quit() {
+void MonitorMainWindowModel::onQuit() {
 	fritzBox_->disconnectFrom();
 }
 

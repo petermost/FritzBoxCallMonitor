@@ -16,15 +16,17 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 		void writeSettings(QSettings *settings) const noexcept override;
 
 	public slots:
-		void quit();
+		void onQuit();
+		void onAbout();
 
 	private slots:
-		void editSettings();
+		void onEditSettings();
 		void onTrayIconActivated( QSystemTrayIcon::ActivationReason reason );
 		void onVisible( bool isVisible );
 
 	private:
 		void addEditMenu();
+		void addHelpMenu();
 		void addWindowMenu();
 		void addStatusBar();
 		void addTrayIcon();

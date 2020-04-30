@@ -32,7 +32,7 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		void showStatus( const QString &message, std::chrono::milliseconds timeout ) const;
 
 	public slots:
-		void quit();
+		void onQuit();
 
 		void setSettings(const MonitorSettings &newSettings);
 		void beVisible( bool isVisible = true );

@@ -3,13 +3,8 @@
 #include <QDialog>
 #include "MonitorSettingsDialogModel.hpp"
 #include <pera_software/aidkit/qt/core/Persistable.hpp>
-#include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
 
-class QSpinBox;
-class QLineEdit;
-class QPushButton;
-class QListView;
-class QDialogButtonBox;
+class QGroupBox;
 
 class MonitorSettingsDialog : public QDialog, public pera_software::aidkit::qt::Persistable {
 	Q_OBJECT
@@ -17,12 +12,11 @@ class MonitorSettingsDialog : public QDialog, public pera_software::aidkit::qt::
 		explicit MonitorSettingsDialog(QWidget *parent = nullptr);
 		~MonitorSettingsDialog() override;
 
+		void setSettings(const MonitorSettings &settings);
+		MonitorSettings settings() const;
+
 		void readSettings(QSettings *settings) noexcept override;
 		void writeSettings(QSettings *settings) const noexcept override;
-
-		MonitorSettingsDialogModel *model() {
-			return &model_;
-		}
 
 	signals:
 
@@ -30,12 +24,8 @@ class MonitorSettingsDialog : public QDialog, public pera_software::aidkit::qt::
 		void browseForPhoneBook();
 
 	private:
-		MonitorSettingsDialogModel model_;
+		QGroupBox *createFritzBoxWidgets();
+		QGroupBox *createNotificationWidgets();
 
-		QLineEdit *hostName_;
-		pera_software::aidkit::qt::IntegerSpinBox *portNumber_;
-		QLineEdit *phoneBookPath_;
-		QPushButton *browsePhoneBookPathButton_;
-		pera_software::aidkit::qt::IntegerSpinBox *notificationTimeout_;
-		QDialogButtonBox *buttons_;
+		MonitorSettingsDialogModel model_;
 };

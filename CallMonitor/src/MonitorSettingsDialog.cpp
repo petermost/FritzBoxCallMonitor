@@ -16,130 +16,152 @@ using namespace chrono;
 using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::cpp;
 
-//==================================================================================================
-
 MonitorSettingsDialog::MonitorSettingsDialog(QWidget *parent)
-		: QDialog(parent) {
+		: QDialog(parent)
+{
+	auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+	connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
+	connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-	// Prepare the hostname widget:
+	auto layout = new QVBoxLayout;
+	layout->addWidget(createFritzBoxWidgets());
+	layout->addWidget(createNotificationWidgets());
+	layout->addWidget(buttons);
+	setLayout(layout);
 
-	hostName_ = new QLineEdit;
-	hostName_->setClearButtonEnabled( true );
-	hostName_->setText(model_.hostName());
-	connect( hostName_, &QLineEdit::editingFinished, [ = ] {
-		model_.setHostName( hostName_->text() );
+	QSettings fileSettings;
+	readSettings(&fileSettings);
+}
+
+MonitorSettingsDialog::~MonitorSettingsDialog()
+{
+	QSettings fileSettings;
+	writeSettings(&fileSettings);
+}
+
+QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
+{
+	// Hostname widget:
+
+	auto hostName = new QLineEdit;
+	hostName->setClearButtonEnabled( true );
+	hostName->setText(model_.settings().hostName);
+	connect( hostName, &QLineEdit::editingFinished, [ = ] {
+		model_.setHostName( hostName->text() );
 	});
-	connect( &model_, &MonitorSettingsDialogModel::hostNameChanged, hostName_, &QLineEdit::setText );
+	connect( &model_, &MonitorSettingsDialogModel::hostNameChanged, hostName, &QLineEdit::setText );
+
+	// Hostname label:
 
 	auto hostNameLabel = new QLabel( tr( "&Hostname:" ));
-	hostNameLabel->setBuddy( hostName_ );
+	hostNameLabel->setBuddy( hostName );
 
-	// Prepare the port number widget:
+	// Portnumber widget:
 
-	portNumber_ = new IntegerSpinBox;
-	portNumber_->setRange( PORT_MIN, PORT_MAX );
-	portNumber_->setValue( model_.portNumber() );
-	connect( portNumber_, &IntegerSpinBox::editingFinished, [ = ] {
-		model_.setPortNumber( static_cast< Port >( portNumber_->value() ));
+	auto portNumber = new IntegerSpinBox;
+	portNumber->setRange( PORT_MIN, PORT_MAX );
+	portNumber->setValue(model_.settings().portNumber);
+	connect( portNumber, &IntegerSpinBox::editingFinished, [ = ] {
+		model_.setPortNumber( static_cast< Port >( portNumber->value() ));
 	});
-	connect( &model_, &MonitorSettingsDialogModel::portNumberChanged, portNumber_, &IntegerSpinBox::setValue );
+	connect( &model_, &MonitorSettingsDialogModel::portNumberChanged, portNumber, &IntegerSpinBox::setValue );
 
+	// Portnumber label:
 
 	auto portNumberLabel = new QLabel( tr( "&Portnumber:" ));
-	portNumberLabel->setBuddy( portNumber_ );
+	portNumberLabel->setBuddy( portNumber );
 
-	// Prepare the phone book widget:
+	// Phonebook widget:
 
-	phoneBookPath_ = new QLineEdit;
-	phoneBookPath_->setClearButtonEnabled( true );
-	phoneBookPath_->setText( model_.phoneBookPath() );
-	connect( phoneBookPath_, &QLineEdit::editingFinished, &model_, [ = ] {
-		model_.setPhoneBookPath( phoneBookPath_->text() );
+	auto phoneBookPath = new QLineEdit;
+	phoneBookPath->setClearButtonEnabled( true );
+	phoneBookPath->setText(model_.settings().phoneBookPath);
+	connect( phoneBookPath, &QLineEdit::editingFinished, &model_, [ = ] {
+		model_.setPhoneBookPath( phoneBookPath->text() );
 	});
-	connect( &model_, &MonitorSettingsDialogModel::phoneBookPathChanged, phoneBookPath_, &QLineEdit::setText );
+	connect( &model_, &MonitorSettingsDialogModel::phoneBookPathChanged, phoneBookPath, &QLineEdit::setText );
+
+	// Phonebook label:
 
 	auto phoneBookLabel = new QLabel( tr( "&Phonebook:" ));
-	phoneBookLabel->setBuddy( phoneBookPath_ );
+	phoneBookLabel->setBuddy( phoneBookPath );
 
-	// Prepare the phone book browse widget:
+	// Browse phonebook widget:
 
-	browsePhoneBookPathButton_ = new QPushButton( tr( "&Browse..." ));
-	connect( browsePhoneBookPathButton_, &QPushButton::clicked, this, &MonitorSettingsDialog::browseForPhoneBook );
+	auto browsePhoneBookPathButton = new QPushButton( tr( "&Browse..." ));
+	connect( browsePhoneBookPathButton, &QPushButton::clicked, this, &MonitorSettingsDialog::browseForPhoneBook );
 
-	// Prepare the fritz box layout:
+	// FritzBox widgets:
 
 	auto fritzBoxLayout = new QGridLayout;
 	fritzBoxLayout->addWidget( hostNameLabel, 0, 0 );
-	fritzBoxLayout->addWidget( hostName_, 0, 1 );
+	fritzBoxLayout->addWidget( hostName, 0, 1 );
 	fritzBoxLayout->addWidget( portNumberLabel, 0, 2 );
-	fritzBoxLayout->addWidget( portNumber_, 0, 3 );
+	fritzBoxLayout->addWidget( portNumber, 0, 3 );
 
 	fritzBoxLayout->addWidget( phoneBookLabel, 1, 0 );
-	fritzBoxLayout->addWidget( phoneBookPath_, 1, 1 );
-	fritzBoxLayout->addWidget( browsePhoneBookPathButton_, 1, 2, 1, 2 );
+	fritzBoxLayout->addWidget( phoneBookPath, 1, 1 );
+	fritzBoxLayout->addWidget( browsePhoneBookPathButton, 1, 2, 1, 2 );
 
 	auto fritzBoxGroup = new QGroupBox( "FRITZ!Box" );
 	fritzBoxGroup->setLayout( fritzBoxLayout );
 
-	// Prepare the notification layout:
+	return fritzBoxGroup;
+}
 
-	notificationTimeout_ = new IntegerSpinBox;
-	notificationTimeout_->setSuffix( tr( "ms" ));
-	auto notificationTimeoutLabel = new QLabel( tr( "&Timeout:" ));
-	notificationTimeoutLabel->setBuddy( notificationTimeout_ );
-	notificationTimeout_->setValue( int_cast< int >( model_.notificationTimeout().count() ));
-	connect( notificationTimeout_, &IntegerSpinBox::editingFinished, [ = ] {
-		model_.setNotificationTimeout( milliseconds( notificationTimeout_->value() ));
+QGroupBox *MonitorSettingsDialog::createNotificationWidgets()
+{
+	// Timeout widget:
+
+	auto notificationTimeout = new IntegerSpinBox;
+	notificationTimeout->setSuffix( tr( "ms" ));
+	notificationTimeout->setValue( int_cast< int >(model_.settings().notificationTimeout.count() ));
+	connect( notificationTimeout, &IntegerSpinBox::editingFinished, [ = ] {
+		model_.setNotificationTimeout( milliseconds( notificationTimeout->value() ));
 	});
 	connect( &model_, &MonitorSettingsDialogModel::notificationTimeoutChanged, [ = ]( milliseconds timeout ) {
-		notificationTimeout_->setValue( int_cast< int >( timeout.count() ));
+		notificationTimeout->setValue( int_cast< int >( timeout.count() ));
 	});
 
+	// Timeout label:
+
+	auto notificationTimeoutLabel = new QLabel( tr( "&Timeout:" ));
+	notificationTimeoutLabel->setBuddy( notificationTimeout );
+
 	auto notificationLayout = new QHBoxLayout;
-	notificationLayout->addWidget( notificationTimeoutLabel );
-	notificationLayout->addWidget( notificationTimeout_ );
+	notificationLayout->addWidget(notificationTimeoutLabel);
+	notificationLayout->addWidget(notificationTimeout);
 
 	auto notificationGroup = new QGroupBox( tr( "Notification" ));
 	notificationGroup->setLayout( notificationLayout );
 
-	buttons_ = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-	connect(buttons_, &QDialogButtonBox::accepted, this, &QDialog::accept);
-	connect(buttons_, &QDialogButtonBox::rejected, this, &QDialog::reject);
-
-	auto layout = new QVBoxLayout;
-	layout->addWidget( fritzBoxGroup );
-	layout->addWidget( notificationGroup );
-	layout->addWidget(buttons_);
-	setLayout(layout);
-
-	QSettings settings;
-	readSettings(&settings);
+	return notificationGroup;
 }
 
-//==================================================================================================
-
-MonitorSettingsDialog::~MonitorSettingsDialog() {
-	QSettings settings;
-	writeSettings(&settings);
+void MonitorSettingsDialog::setSettings(const MonitorSettings &settings)
+{
+	model_.setSettings(settings);
 }
 
-//==================================================================================================
+MonitorSettings MonitorSettingsDialog::settings() const
+{
+	return model_.settings();
+}
 
-void MonitorSettingsDialog::readSettings(QSettings *settings) noexcept {
+void MonitorSettingsDialog::readSettings(QSettings *settings) noexcept
+{
 	model_.readSettings(settings);
 	Widgets::readGeometry(this, settings);
 }
 
-//==================================================================================================
-
-void MonitorSettingsDialog::writeSettings(QSettings *settings) const noexcept {
+void MonitorSettingsDialog::writeSettings(QSettings *settings) const noexcept
+{
 	model_.writeSettings(settings);
 	Widgets::writeGeometry(this, settings);
 }
 
-//==================================================================================================
-
-void MonitorSettingsDialog::browseForPhoneBook() {
+void MonitorSettingsDialog::browseForPhoneBook()
+{
 	QFileDialog fileDialog( this );
 	fileDialog.setAcceptMode( QFileDialog::AcceptMode::AcceptOpen );
 	fileDialog.setWindowTitle( tr( "Select exported phone book"));
@@ -156,3 +178,4 @@ void MonitorSettingsDialog::browseForPhoneBook() {
 		model_.setLastVisitedDirectory( fileDialog.directory() );
 	}
 }
+
