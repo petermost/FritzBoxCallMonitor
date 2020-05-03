@@ -1,12 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phonebooks>
-<phonebook><contact><category /><person><realName>AVM Ansage (HD)</realName></person><telephony
-nid="1"><number prio="1" type="work" quickdial="99" id="0">500@hd-telefonie.avm.de</number></telephony><services /><setup /><uniqueid>0</uniqueid></contact><contact><category /><person><realName>HD-Musik</realName></person><telephony
-nid="1"><number prio="1" type="home" quickdial="97" id="0">200@hd-telefonie.avm.de</number></telephony><services /><setup /><uniqueid>1</uniqueid></contact><contact><category /><person><realName>HD-Sprache</realName></person><telephony
-nid="1"><number prio="1" type="home" quickdial="98" id="0">100@hd-telefonie.avm.de</number></telephony><services /><setup /><uniqueid>2</uniqueid></contact><contact><category>0</category><person><realName>FirstPerson</realName></person><telephony
-nid="1"><number type="home" prio="1" id="0">1111111111</number></telephony><services /><setup /><mod_time>1438596810</mod_time><uniqueid>12</uniqueid></contact><contact><category>0</category><person><realName>SecondPerson</realName></person><telephony
-nid="1"><number type="home" prio="1" id="0">2222222222</number></telephony><services /><setup /><features
-doorphone="0" /><mod_time>1486653841</mod_time><uniqueid>18</uniqueid></contact><contact><category>0</category><person><realName>ThirdPerson</realName></person><telephony
-nid="1"><number type="home" prio="1" id="0">3333333333</number></telephony><services /><setup /><features
-doorphone="0" /><mod_time>1478703118</mod_time><uniqueid>17</uniqueid></contact></phonebook>
+    <phonebook>
+        <contact>
+            <category>0</category>
+            <person>
+                <realName>FirstPerson</realName>
+            </person>
+            <telephony nid="4">
+                <number type="work" prio="1" id="0">1111111111</number>
+                <number type="mobile" prio="0" id="1">2222222222</number>
+                <number type="work" prio="0" id="2">3333333333</number>
+                <number type="home" prio="0" id="3">4444444444</number>
+            </telephony>
+            <services />
+            <setup />
+            <features doorphone="0" />
+            <mod_time>1540840249</mod_time>
+            <uniqueid>23</uniqueid>
+        </contact>
+        <contact>
+            <category>0</category>
+            <person>
+                <realName>SecondPerson</realName>
+            </person>
+            <telephony nid="1">
+                <number type="home" prio="1" id="0">5555555555</number>
+            </telephony>
+            <services />
+            <setup />
+            <features doorphone="0" />
+            <mod_time>1507970522</mod_time>
+            <uniqueid>22</uniqueid>
+        </contact>
+        <contact>
+            <category>0</category>
+            <person>
+                <realName>ThirdPerson</realName>
+            </person>
+            <telephony nid="1">
+                <number type="home" prio="1" id="0">6666666666</number>
+            </telephony>
+            <services />
+            <setup />
+            <mod_time>1438596810</mod_time>
+            <uniqueid>12</uniqueid>
+        </contact>
+    </phonebook>
 </phonebooks>

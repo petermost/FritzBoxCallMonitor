@@ -6,21 +6,29 @@ using namespace std;
 
 static FritzBoxPhoneBookTest fritzBoxPhoneBookTest;
 
-void FritzBoxPhoneBookTest::testRead() {
-	// To prevent real names ending up on GitHub.com, this XML file has been edited (with Eclipse)
-	// and the real names have been replaced with dummy names:
+void FritzBoxPhoneBookTest::testRead()
+{
+	// To prevent real names ending up on GitHub.com, this XML file has been edited (with Visual
+	// Studio Code) and the real names have been replaced with dummy names:
 
 	QString errorString;
 	FritzBoxPhoneBook book;
-	QVERIFY( book.read( ":/FRITZ.Box_Telefonbuch.xml", &errorString ));
-	QCOMPARE( book.count(), 6 );
+	QVERIFY(book.read(":/FRITZ.Box_Telefonbuch.xml", &errorString));
+	QCOMPARE(book.count(), 6);
 
-	QCOMPARE( book.findName( QStringLiteral( "1111111111" )), QStringLiteral( "FirstPerson" ));
-	QCOMPARE( book.findName( QStringLiteral( "2222222222" )), QStringLiteral( "SecondPerson" ));
-	QCOMPARE( book.findName( QStringLiteral( "3333333333" )), QStringLiteral( "ThirdPerson" ));
+	// One person can have multiple phone numbers:
+
+	QCOMPARE(book.findName("1111111111"), "FirstPerson");
+	QCOMPARE(book.findName("2222222222"), "FirstPerson");
+	QCOMPARE(book.findName("3333333333"), "FirstPerson");
+
+	QCOMPARE(book.findName("5555555555"), "SecondPerson");
+
+	QCOMPARE(book.findName("6666666666"), "ThirdPerson");
 }
 
-void FritzBoxPhoneBookTest::testFindNameOrDefault() {
+void FritzBoxPhoneBookTest::testFindNameOrDefault()
+{
 	FritzBoxPhoneBook book;
 
 	QString defaultName(QStringLiteral("defaultName"));

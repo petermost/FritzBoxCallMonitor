@@ -48,8 +48,6 @@ bool FritzBoxPhoneBook::read(QIODevice *device, QString *errorString)
 				if (elementName == "number") {
 					number = reader.readElementText();
 					entries_.insert(number, name);
-					name.clear();
-					number.clear();
 				}
 				break;
 			}

@@ -16,7 +16,7 @@ using namespace pera_software::aidkit::qt;
 constexpr seconds RETRY_INTERVAL_S(10);
 constexpr milliseconds RETRY_INTERVAL_MS(RETRY_INTERVAL_S);
 
-const QString FritzBox::DEFAULT_HOST_NAME(QStringLiteral("fritz.box"));
+const char FritzBox::DEFAULT_HOST_NAME[] = "fritz.box";
 const FritzBox::Port FritzBox::DEFAULT_CALL_MONITOR_PORT = 1012;
 
 //==================================================================================================

@@ -157,7 +157,7 @@ void MonitorMainWindow::onQuit()
 
 void MonitorMainWindow::onAbout()
 {
-	QMessageBox::about(this, tr("About %1").arg(MonitorApplication::NAME), tr("Version 1.1"));
+	QMessageBox::about(this, tr("About %1").arg(MonitorApplication::NAME), tr("Version 1.2"));
 }
 
 void MonitorMainWindow::onEditSettings()
