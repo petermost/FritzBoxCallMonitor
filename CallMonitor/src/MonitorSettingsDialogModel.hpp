@@ -1,16 +1,15 @@
 #pragma once
 
 #include "MonitorSettings.hpp"
-#include <pera_software/aidkit/qt/core/Socket.hpp>
-#include <pera_software/aidkit/qt/core/Persistable.hpp>
 #include <QDir>
 #include <QObject>
+#include <pera_software/aidkit/qt/core/Persistable.hpp>
+#include <pera_software/aidkit/qt/core/Socket.hpp>
 
 class QSettings;
 
 class MonitorSettingsDialogModel : public QObject, pera_software::aidkit::qt::Persistable {
 	Q_OBJECT
-
 	public:
 		explicit MonitorSettingsDialogModel(QObject *parent = nullptr);
 		~MonitorSettingsDialogModel() override;
@@ -24,17 +23,17 @@ class MonitorSettingsDialogModel : public QObject, pera_software::aidkit::qt::Pe
 		QDir lastVisitedDirectory() const;
 
 	public slots:
-		void setHostName( const QString &hostName );
-		void setPortNumber( pera_software::aidkit::qt::Port portNumber );
-		void setNotificationTimeout( std::chrono::milliseconds timeout );
-		void setPhoneBookPath( const QString &phoneBookPath );
-		void setLastVisitedDirectory( const QDir &directory );
+		void setHostName(const QString &hostName);
+		void setPortNumber(pera_software::aidkit::qt::Port portNumber);
+		void setNotificationTimeout(std::chrono::milliseconds timeout);
+		void setPhoneBookPath(const QString &phoneBookPath);
+		void setLastVisitedDirectory(const QDir &directory);
 
 	signals:
-		void hostNameChanged( const QString &hostName );
-		void portNumberChanged( pera_software::aidkit::qt::Port portNumber );
-		void notificationTimeoutChanged( std::chrono::milliseconds timeout );
-		void phoneBookPathChanged( const QString &phoneBookPath );
+		void hostNameChanged(const QString &hostName);
+		void portNumberChanged(pera_software::aidkit::qt::Port portNumber);
+		void notificationTimeoutChanged(std::chrono::milliseconds timeout);
+		void phoneBookPathChanged(const QString &phoneBookPath);
 
 	private:
 		MonitorSettings settings_;

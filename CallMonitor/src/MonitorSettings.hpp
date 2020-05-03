@@ -1,10 +1,10 @@
 #pragma once
 
 #include "FritzBox.hpp"
-#include <pera_software/aidkit/qt/core/Socket.hpp>
-#include <pera_software/aidkit/qt/core/Persistable.hpp>
 #include <QString>
 #include <chrono>
+#include <pera_software/aidkit/qt/core/Persistable.hpp>
+#include <pera_software/aidkit/qt/core/Socket.hpp>
 
 class QSettings;
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QDialog>
 #include "MonitorSettingsDialogModel.hpp"
+#include <QDialog>
 #include <pera_software/aidkit/qt/core/Persistable.hpp>
 
 class QGroupBox;

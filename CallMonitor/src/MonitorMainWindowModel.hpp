@@ -1,13 +1,13 @@
 #pragma once
 
 #include "FritzBox.hpp"
-#include "MonitorSettings.hpp"
 #include "FritzBoxPhoneBook.hpp"
-#include <pera_software/aidkit/qt/gui/ForwardDeclarations.hpp>
-#include <pera_software/aidkit/qt/core/Persistable.hpp>
+#include "MonitorSettings.hpp"
 #include <QObject>
 #include <chrono>
 #include <optional>
+#include <pera_software/aidkit/qt/core/Persistable.hpp>
+#include <pera_software/aidkit/qt/gui/ForwardDeclarations.hpp>
 
 class FritzBox;
 class QSettings;
@@ -26,16 +26,16 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		QAbstractItemModel *messagesModel() const;
 
 	signals:
-		void visibleChanged( bool isVisible );
+		void visibleChanged(bool isVisible);
 
-		void showNotification( const QString &title, const QString &message, std::chrono::milliseconds timeout );
-		void showStatus( const QString &message, std::chrono::milliseconds timeout ) const;
+		void showNotification(const QString &title, const QString &message, std::chrono::milliseconds timeout);
+		void showStatus(const QString &message, std::chrono::milliseconds timeout) const;
 
 	public slots:
 		void onQuit();
 
 		void setSettings(const MonitorSettings &newSettings);
-		void beVisible( bool isVisible = true );
+		void beVisible(bool isVisible = true);
 
 		MonitorSettings settings() const;
 
@@ -43,14 +43,14 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		void connectToFritzBox(const QString &hostName, pera_software::aidkit::qt::Port portNumber);
 		void readPhoneBook(const QString &phoneBookPath);
 
-		void onErrorOccured(QTcpSocket::SocketError, const QString &errorMessage );
+		void onErrorOccured(QTcpSocket::SocketError, const QString &errorMessage);
 		void onStateChanged(QTcpSocket::SocketState state);
-		void onIncomingCall( unsigned connectionId, const QString &caller, const QString &callee );
-		void onOutgoingCall( unsigned connectionId, const QString &caller, const QString &callee);
-		void onPhoneConnected( unsigned connectionId, const QString &caller);
-		void onPhoneDisconnected( unsigned connectionId );
+		void onIncomingCall(unsigned connectionId, const QString &caller, const QString &callee);
+		void onOutgoingCall(unsigned connectionId, const QString &caller, const QString &callee);
+		void onPhoneConnected(unsigned connectionId, const QString &caller);
+		void onPhoneDisconnected(unsigned connectionId);
 
-		std::optional< bool > isVisible_;
+		std::optional<bool> isVisible_;
 
 		MonitorSettings settings_;
 		FritzBox *fritzBox_ = nullptr;

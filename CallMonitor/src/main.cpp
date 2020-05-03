@@ -5,23 +5,24 @@
 using namespace pera_software::company::qt;
 using namespace pera_software::aidkit::qt;
 
-int main( int argc, char *argv[] ) {
+int main(int argc, char *argv[])
+{
 	// qInfo() << "Using Qt build: " << QLibraryInfo::build() << endl;
 
-	MonitorApplication application( argc, argv );
+	MonitorApplication application(argc, argv);
 
 	MonitorMainWindow mainWindow;
 
-	PERAIniSettings settings( MonitorApplication::NAME );
+	PERAIniSettings settings(MonitorApplication::NAME);
 
-	mainWindow.readSettings( &settings );
+	mainWindow.readSettings(&settings);
 
 	// Visible status is stored in settings, so we don't need to explicitly show it via
 	// mainWindow.show();
 
 	auto result = application.exec();
 
-	mainWindow.writeSettings( &settings );
+	mainWindow.writeSettings(&settings);
 
 	return result;
 }

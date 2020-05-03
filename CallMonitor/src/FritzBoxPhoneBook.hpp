@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject>
 #include <QHash>
+#include <QObject>
 #include <QXmlStreamReader>
 #include <functional>
 
@@ -10,15 +10,15 @@ class QIODevice;
 class FritzBoxPhoneBook : public QObject {
 	Q_OBJECT
 	public:
-		using Container = QHash< QString, QString >;
+		using Container = QHash<QString, QString>;
 
-		FritzBoxPhoneBook( QObject *parent = nullptr ) noexcept;
+		FritzBoxPhoneBook(QObject *parent = nullptr) noexcept;
 
 		/// Reads the phone book from the given file.
-		bool read( const QString &fileName , QString *errorString );
+		bool read(const QString &fileName, QString *errorString);
 
 		/// Reads the phone book from the given device.
-		bool read( QIODevice *device , QString *errorString );
+		bool read(QIODevice *device, QString *errorString);
 
 		/// Find the number for the name.
 		QString findNumber(const QString &name) const;
@@ -31,7 +31,7 @@ class FritzBoxPhoneBook : public QObject {
 		/// Returns the number of entries.
 		int count() const;
 
-		void forEach( const std::function< void ( const QString &name, const QString &number )> & ) const;
+		void forEach(const std::function<void(const QString &name, const QString &number)> &) const;
 
 	private:
 		Container entries_;

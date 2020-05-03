@@ -1,13 +1,12 @@
 #pragma once
 
 #include "MonitorMainWindowModel.hpp"
-#include <pera_software/company/qt/PERAMainWindow.hpp>
-#include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
 #include <QSystemTrayIcon>
+#include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
+#include <pera_software/company/qt/PERAMainWindow.hpp>
 
 class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 	Q_OBJECT
-
 	public:
 		MonitorMainWindow();
 		~MonitorMainWindow() override;
@@ -21,8 +20,8 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 
 	private slots:
 		void onEditSettings();
-		void onTrayIconActivated( QSystemTrayIcon::ActivationReason reason );
-		void onVisible( bool isVisible );
+		void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
+		void onVisible(bool isVisible);
 
 	private:
 		void addEditMenu();

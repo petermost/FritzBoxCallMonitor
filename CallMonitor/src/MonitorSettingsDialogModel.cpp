@@ -1,22 +1,22 @@
 #include "MonitorSettingsDialogModel.hpp"
 #include "FritzBox.hpp"
 #include "MonitorSettings.hpp"
-#include <pera_software/aidkit/qt/core/Chrono.hpp>
 #include <QSettings>
 #include <QStandardPaths>
+#include <pera_software/aidkit/qt/core/Chrono.hpp>
 
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
 // using namespace pera_software::aidkit::cpp;
 
-static const QString LAST_VISITED_DIRECTORY_KEY( QStringLiteral( "lastVisitedDirectory" ));
+static const QString LAST_VISITED_DIRECTORY_KEY(QStringLiteral("lastVisitedDirectory"));
 
 //==================================================================================================
 
 MonitorSettingsDialogModel::MonitorSettingsDialogModel(QObject *parent)
 	: QObject(parent)
 {
-	lastVisitedDirectory_ = QStandardPaths::writableLocation( QStandardPaths::StandardLocation::HomeLocation );
+	lastVisitedDirectory_ = QStandardPaths::writableLocation(QStandardPaths::StandardLocation::HomeLocation);
 }
 
 //==================================================================================================
@@ -46,15 +46,15 @@ MonitorSettings MonitorSettingsDialogModel::settings() const
 
 void MonitorSettingsDialogModel::readSettings(QSettings *settings) noexcept
 {
-	setLastVisitedDirectory( qvariant_cast< QString >( settings->value( LAST_VISITED_DIRECTORY_KEY,
-		lastVisitedDirectory().absolutePath() )));
+	setLastVisitedDirectory(qvariant_cast<QString>(settings->value(LAST_VISITED_DIRECTORY_KEY,
+		lastVisitedDirectory().absolutePath())));
 }
 
 //==================================================================================================
 
 void MonitorSettingsDialogModel::writeSettings(QSettings *settings) const noexcept
 {
-	settings->setValue( LAST_VISITED_DIRECTORY_KEY, lastVisitedDirectory().absolutePath() );
+	settings->setValue(LAST_VISITED_DIRECTORY_KEY, lastVisitedDirectory().absolutePath());
 }
 
 //==================================================================================================
@@ -91,7 +91,7 @@ void MonitorSettingsDialogModel::setPhoneBookPath(const QString &phoneBookPath)
 
 void MonitorSettingsDialogModel::setLastVisitedDirectory(const QDir &directory)
 {
-	if (directory != lastVisitedDirectory_ ) {
+	if (directory != lastVisitedDirectory_) {
 		lastVisitedDirectory_ = directory;
 	}
 }
@@ -111,5 +111,4 @@ void MonitorSettingsDialogModel::setNotificationTimeout(milliseconds timeout)
 		settings_.notificationTimeout = timeout;
 		emit notificationTimeoutChanged(settings_.notificationTimeout);
 	}
-
 }
