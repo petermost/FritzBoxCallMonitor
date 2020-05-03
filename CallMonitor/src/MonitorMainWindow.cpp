@@ -98,7 +98,7 @@ void MonitorMainWindow::addHelpMenu()
 
 void MonitorMainWindow::addWindowMenu()
 {
-	auto hideAction = new QAction(tr("&Hide..."), this);
+	auto hideAction = new QAction(tr("&Hide"), this);
 	connect(hideAction, &QAction::triggered, [=] { model_.beVisible(false); });
 
 	auto windowMenu = new QMenu(tr("&Window"), this);
