@@ -7,14 +7,14 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSettings>
-#include <pera_software/aidkit/cpp/stdlib.hpp>
+#include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/widgets/Widgets.hpp>
 
 using namespace std;
 using namespace chrono;
 using namespace pera_software::aidkit::qt;
-using namespace pera_software::aidkit::cpp;
+using namespace pera_software::aidkit::stdlib;
 
 MonitorSettingsDialog::MonitorSettingsDialog(QWidget *parent)
 	: QDialog(parent)

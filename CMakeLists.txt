@@ -1,15 +1,19 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16)
 project(FritzBoxCallMonitor)
 
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/all_options.cmake)
 
-find_package(Qt5 COMPONENTS REQUIRED Widgets Network)
+find_package(Qt5 COMPONENTS REQUIRED Widgets Network Sql Test)
+# Alternative but not recommended!: find_package(GTest)
+if (NOT TARGET gtest AND NOT TARGET gtest_main)
+	add_subdirectory(/usr/src/googletest googletest)
+endif()
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+# set(CMAKE_AUTOMOC ON)
+# set(CMAKE_AUTORCC ON)
 # set(CMAKE_AUTOUIC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ####################################################################################################
 # Setup Monitor:
@@ -19,13 +23,20 @@ add_library(fritzboxlib STATIC
 	CallMonitor/src/FritzBox.cpp
 	CallMonitor/src/FritzBoxPhoneBook.hpp
 	CallMonitor/src/FritzBoxPhoneBook.cpp
+	CallMonitor/src/PhoneBook.hpp
+	CallMonitor/src/PhoneBook.cpp
 )
 set_default_target_options(fritzboxlib)
+	target_include_directories(fritzboxlib
+		PUBLIC
+			.
+	)
 
 target_link_libraries(fritzboxlib
 	PUBLIC
 		AidKit
 		Qt5::Network
+		Qt5::Sql
 )
 
 add_executable(fritzboxcallmonitor
@@ -60,15 +71,15 @@ add_executable(simulator
 	Simulator/src/main.cpp
 	Simulator/src/SimulatorMainWindow.hpp
 	Simulator/src/SimulatorMainWindow.cpp
-	CallMonitor/test/FritzBoxTest.hpp
-	CallMonitor/test/FritzBoxTest.cpp
+	CallMonitor/test/FritzBoxData.hpp
+	CallMonitor/test/FritzBoxData.cpp
 )
+
 set_default_target_options(simulator)
 
 target_link_libraries(simulator
 	fritzboxlib
 	AidKit
-	AidKitTest
 	Qt5::Widgets
 	Qt5::Network
 )
@@ -77,17 +88,18 @@ target_link_libraries(simulator
 # Setup tests:
 
 add_executable(fritztest
-	CallMonitor/test/TestMain.cpp
-	CallMonitor/test/FritzBoxTest.hpp
 	CallMonitor/test/FritzBoxTest.cpp
-	CallMonitor/test/FritzBoxPhoneBookTest.hpp
 	CallMonitor/test/FritzBoxPhoneBookTest.cpp
+	CallMonitor/test/PhoneBookTest.cpp
+	CallMonitor/test/FritzBoxData.hpp
+	CallMonitor/test/FritzBoxData.cpp
 	CallMonitor/test/Data.qrc
 )
 set_default_target_options(fritztest)
 
 target_link_libraries(fritztest
 	fritzboxlib
-	AidKitTest
-	Qt5::Network
+	Qt5::Test
+	gtest
+	gtest_main
 )

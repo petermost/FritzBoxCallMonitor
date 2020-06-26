@@ -2,7 +2,7 @@
 #include "MonitorApplication.hpp"
 #include "MonitorSettingsDialog.hpp"
 
-#include <pera_software/aidkit/cpp/stdlib.hpp>
+#include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/qt/gui/Resources.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
@@ -29,7 +29,7 @@ using namespace std;
 using namespace chrono;
 using namespace pera_software::company::qt;
 using namespace pera_software::aidkit::qt;
-using namespace pera_software::aidkit::cpp;
+using namespace pera_software::aidkit::stdlib;
 
 MonitorMainWindow::MonitorMainWindow()
 {

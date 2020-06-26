@@ -1,5 +1,5 @@
 #include "SimulatorMainWindow.hpp"
-#include <CallMonitor/test/FritzBoxTest.hpp>
+#include <CallMonitor/test/FritzBoxData.hpp>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QMessageBox>
@@ -103,7 +103,7 @@ void SimulatorMainWindow::onBytesWritten( QTcpSocket *, qint64 /* count */ ) {
 
 void SimulatorMainWindow::doIncomingCall() {
 	for ( auto socket : sockets_ ) {
-		socket->write( FritzBoxTest::RING_DATA );
+		socket->write( FritzBoxData::RING_DATA );
 	}
 }
 
@@ -111,7 +111,7 @@ void SimulatorMainWindow::doIncomingCall() {
 
 void SimulatorMainWindow::doOutgoingCall() {
 	for ( auto socket : sockets_ ) {
-		socket->write( FritzBoxTest::CALLING_DATA );
+		socket->write( FritzBoxData::CALLING_DATA );
 	}
 }
 
@@ -119,7 +119,7 @@ void SimulatorMainWindow::doOutgoingCall() {
 
 void SimulatorMainWindow::doConnectPhone() {
 	for ( auto socket : sockets_ ) {
-		socket->write( FritzBoxTest::CONNECT_DATA );
+		socket->write( FritzBoxData::CONNECT_DATA );
 	}
 }
 
@@ -127,7 +127,7 @@ void SimulatorMainWindow::doConnectPhone() {
 
 void SimulatorMainWindow::doDisconnectPhone() {
 	for ( auto socket : sockets_ ) {
-		socket->write( FritzBoxTest::DISCONNECT_DATA );
+		socket->write( FritzBoxData::DISCONNECT_DATA );
 	}
 }
 
