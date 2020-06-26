@@ -22,14 +22,14 @@ class MonitorSettingsDialogModel : public QObject, pera_software::aidkit::qt::Pe
 
 		QDir lastVisitedDirectory() const;
 
-	public slots:
+	public Q_SLOTS:
 		void setHostName(const QString &hostName);
 		void setPortNumber(pera_software::aidkit::qt::Port portNumber);
 		void setNotificationTimeout(std::chrono::milliseconds timeout);
 		void setPhoneBookPath(const QString &phoneBookPath);
 		void setLastVisitedDirectory(const QDir &directory);
 
-	signals:
+	Q_SIGNALS:
 		void hostNameChanged(const QString &hostName);
 		void portNumberChanged(pera_software::aidkit::qt::Port portNumber);
 		void notificationTimeoutChanged(std::chrono::milliseconds timeout);

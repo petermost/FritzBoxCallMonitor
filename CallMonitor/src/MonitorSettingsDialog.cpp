@@ -46,7 +46,7 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 	auto hostName = new QLineEdit;
 	hostName->setClearButtonEnabled(true);
 	hostName->setText(model_.settings().hostName);
-	connect(hostName, &QLineEdit::editingFinished, [=] {
+	connect(hostName, &QLineEdit::editingFinished, [=, this] {
 		model_.setHostName(hostName->text());
 	});
 	connect(&model_, &MonitorSettingsDialogModel::hostNameChanged, hostName, &QLineEdit::setText);
@@ -61,7 +61,7 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 	auto portNumber = new IntegerSpinBox;
 	portNumber->setRange(PORT_MIN, PORT_MAX);
 	portNumber->setValue(model_.settings().portNumber);
-	connect(portNumber, &IntegerSpinBox::editingFinished, [=] {
+	connect(portNumber, &IntegerSpinBox::editingFinished, [=, this] {
 		model_.setPortNumber(static_cast<Port>(portNumber->value()));
 	});
 	connect(&model_, &MonitorSettingsDialogModel::portNumberChanged, portNumber, &IntegerSpinBox::setValue);
@@ -76,7 +76,7 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 	auto phoneBookPath = new QLineEdit;
 	phoneBookPath->setClearButtonEnabled(true);
 	phoneBookPath->setText(model_.settings().phoneBookPath);
-	connect(phoneBookPath, &QLineEdit::editingFinished, &model_, [=] {
+	connect(phoneBookPath, &QLineEdit::editingFinished, &model_, [=, this] {
 		model_.setPhoneBookPath(phoneBookPath->text());
 	});
 	connect(&model_, &MonitorSettingsDialogModel::phoneBookPathChanged, phoneBookPath, &QLineEdit::setText);
@@ -116,7 +116,7 @@ QGroupBox *MonitorSettingsDialog::createNotificationWidgets()
 	auto notificationTimeout = new IntegerSpinBox;
 	notificationTimeout->setSuffix(tr("ms"));
 	notificationTimeout->setValue(int_cast<int>(model_.settings().notificationTimeout.count()));
-	connect(notificationTimeout, &IntegerSpinBox::editingFinished, [=] {
+	connect(notificationTimeout, &IntegerSpinBox::editingFinished, [=, this] {
 		model_.setNotificationTimeout(milliseconds(notificationTimeout->value()));
 	});
 	connect(&model_, &MonitorSettingsDialogModel::notificationTimeoutChanged, [=](milliseconds timeout) {

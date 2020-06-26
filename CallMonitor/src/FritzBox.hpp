@@ -30,7 +30,7 @@ class FritzBox : public QObject {
 			return portNumber_;
 		}
 
-	signals:
+	Q_SIGNALS:
 		void stateChanged(QTcpSocket::SocketState state);
 		void errorOccured(QTcpSocket::SocketError error, const QString &message);
 
@@ -39,7 +39,7 @@ class FritzBox : public QObject {
 		void phoneDisconnected(unsigned connectionId);
 		void outgoingCall(unsigned connectionId, const QString &caller, const QString &callee);
 
-	private slots:
+	private Q_SLOTS:
 		void onConnected();
 		void onError(QTcpSocket::SocketError socketError);
 		void onReadyRead();

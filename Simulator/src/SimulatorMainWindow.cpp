@@ -44,7 +44,7 @@ SimulatorMainWindow::SimulatorMainWindow( QWidget *parent )
 		server_->close();
 		return;
 	}
-	connect( server_, &QTcpServer::newConnection, [ = ] {
+	connect( server_, &QTcpServer::newConnection, [ =, this ] {
 		onNewConnection( server_->nextPendingConnection() );
 	});
 	statusBar()->showMessage( QString( "Socket is listening on %1.").arg( server_->serverPort() ));
@@ -67,15 +67,15 @@ SimulatorMainWindow::~SimulatorMainWindow() {
 void SimulatorMainWindow::onNewConnection( QTcpSocket *socket ) {
 	sockets_.append( socket );
 
-	connect( socket, &QTcpSocket::readyRead, [ = ] {
+	connect( socket, &QTcpSocket::readyRead, [ =, this ] {
 		onReadyRead( socket );
 	});
 
-	connect( socket, &QTcpSocket::bytesWritten, [ = ]( qint64 count ) {
+	connect( socket, &QTcpSocket::bytesWritten, [ =, this ]( qint64 count ) {
 		onBytesWritten( socket, count );
 	});
 
-	connect( socket, &QTcpSocket::disconnected, [ = ] {
+	connect( socket, &QTcpSocket::disconnected, [ =, this ] {
 		onDisconnected( socket );
 	});
 }

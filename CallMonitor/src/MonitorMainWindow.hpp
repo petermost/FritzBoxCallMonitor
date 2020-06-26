@@ -14,11 +14,11 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 		void readSettings(QSettings *settings) noexcept override;
 		void writeSettings(QSettings *settings) const noexcept override;
 
-	public slots:
+	public Q_SLOTS:
 		void onQuit();
 		void onAbout();
 
-	private slots:
+	private Q_SLOTS:
 		void onEditSettings();
 		void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
 		void onVisible(bool isVisible);

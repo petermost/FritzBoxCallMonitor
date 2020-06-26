@@ -83,11 +83,10 @@ inline bool isRetryableError(QTcpSocket::SocketError socketError)
 
 void FritzBox::onError(QTcpSocket::SocketError socketError)
 {
-
-	emit errorOccured(socketError, socket_->errorString() + tr(" (Retry in %1 seconds ...)").arg(RETRY_INTERVAL_S.count()));
+	Q_EMIT errorOccured(socketError, socket_->errorString() + tr(" (Retry in %1 seconds ...)").arg(RETRY_INTERVAL_S.count()));
 
 	if (isRetryableError(socketError)) {
-		QTimer::singleShot(RETRY_INTERVAL_MS, [=] {
+		QTimer::singleShot(RETRY_INTERVAL_MS, [=, this] {
 			if (socket_->state() == QTcpSocket::SocketState::UnconnectedState)
 				reconnect();
 		});
@@ -106,21 +105,21 @@ void FritzBox::parseAndSignal(const QString &line)
 	if (command == "RING") {
 		QString caller = parts[3];
 		QString callee = parts[4];
-		emit incomingCall(connectionId, caller, callee);
+		Q_EMIT incomingCall(connectionId, caller, callee);
 	} else if (command == "CONNECT") {
 		QString extension = parts[3];
 		QString caller = parts[4];
-		emit phoneConnected(connectionId, caller);
+		Q_EMIT phoneConnected(connectionId, caller);
 	} else if (command == "DISCONNECT") {
 		QString durationSeconds = parts[3];
-		emit phoneDisconnected(connectionId);
+		Q_EMIT phoneDisconnected(connectionId);
 	} else if (command == "CALL") {
 		QString extension = parts[3];
 		QString caller = parts[4];
 		QString callee = parts[5];
-		emit outgoingCall(connectionId, caller, callee);
+		Q_EMIT outgoingCall(connectionId, caller, callee);
 	} else {
-		emit errorOccured(QTcpSocket::SocketError::UnknownSocketError, tr("Unknown command '%1'!").arg(line));
+		Q_EMIT errorOccured(QTcpSocket::SocketError::UnknownSocketError, tr("Unknown command '%1'!").arg(line));
 	}
 }
 

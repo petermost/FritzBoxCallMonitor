@@ -15,7 +15,7 @@ class SimulatorMainWindow : public QMainWindow {
 		explicit SimulatorMainWindow(QWidget *parent = nullptr);
 		~SimulatorMainWindow() override;
 
-	private slots:
+	private Q_SLOTS:
 		void doIncomingCall();
 		void doOutgoingCall();
 		void doConnectPhone();

@@ -58,7 +58,7 @@ void MonitorMainWindowModel::onStateChanged(QTcpSocket::SocketState state)
 {
 	if (state == QTcpSocket::SocketState::ConnectedState) {
 		messagesModel_->showInformation(tr("Connected to '%1:%2'").arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()));
-		// emit showInformation( Enums::toString( state ));
+		// Q_EMIT showInformation( Enums::toString( state ));
 	}
 }
 
@@ -69,7 +69,7 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	messagesModel_->showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(callee));
 
-	emit showNotification(tr("Incoming Call"), callerName, settings_.notificationTimeout);
+	Q_EMIT showNotification(tr("Incoming Call"), callerName, settings_.notificationTimeout);
 }
 
 //==================================================================================================
@@ -105,7 +105,7 @@ void MonitorMainWindowModel::readSettings(QSettings *settings) noexcept
 	monitorSettings.readSettings(settings);
 	setSettings(monitorSettings);
 
-	emit showStatus(tr("Loaded settings from: '%1'").arg(settings->fileName()), milliseconds(0));
+	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settings->fileName()), milliseconds(0));
 
 	// connectToFritzBox();
 }
@@ -117,7 +117,7 @@ void MonitorMainWindowModel::writeSettings(QSettings *settings) const noexcept
 	settings->setValue(IS_VISIBLE_KEY, isVisible());
 	settings_.writeSettings(settings);
 
-	emit showStatus(tr("Saved settings to: '%1'").arg(settings->fileName()), milliseconds(0));
+	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settings->fileName()), milliseconds(0));
 }
 
 //==================================================================================================
@@ -161,7 +161,7 @@ void MonitorMainWindowModel::beVisible(bool isVisible)
 {
 	if (!isVisible_.has_value() || *isVisible_ != isVisible) {
 		isVisible_ = isVisible;
-		emit visibleChanged(*isVisible_);
+		Q_EMIT visibleChanged(*isVisible_);
 	}
 }
 
@@ -171,7 +171,7 @@ void MonitorMainWindowModel::readPhoneBook(const QString &phoneBookPath)
 {
 	QString errorString;
 	if (fritzBoxPhoneBook_.read(phoneBookPath, &errorString)) {
-		fritzBoxPhoneBook_.forEach([=](const QString &name, const QString &number) {
+		fritzBoxPhoneBook_.forEach([=, this](const QString &name, const QString &number) {
 			messagesModel_->showInformation(tr("Read phone book entry for '%1' with the number: '%2'.").arg(name).arg(number));
 		});
 	} else {

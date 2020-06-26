@@ -63,7 +63,7 @@ void MonitorSettingsDialogModel::setHostName(const QString &hostName)
 {
 	if (hostName != settings_.hostName) {
 		settings_.hostName = hostName;
-		emit hostNameChanged(settings_.hostName);
+		Q_EMIT hostNameChanged(settings_.hostName);
 	}
 }
 
@@ -73,7 +73,7 @@ void MonitorSettingsDialogModel::setPortNumber(Port portNumber)
 {
 	if (portNumber != settings_.portNumber) {
 		settings_.portNumber = portNumber;
-		emit portNumberChanged(settings_.portNumber);
+		Q_EMIT portNumberChanged(settings_.portNumber);
 	}
 }
 
@@ -83,7 +83,7 @@ void MonitorSettingsDialogModel::setPhoneBookPath(const QString &phoneBookPath)
 {
 	if (phoneBookPath != settings_.phoneBookPath) {
 		settings_.phoneBookPath = phoneBookPath;
-		emit phoneBookPathChanged(settings_.phoneBookPath);
+		Q_EMIT phoneBookPathChanged(settings_.phoneBookPath);
 	}
 }
 
@@ -109,6 +109,6 @@ void MonitorSettingsDialogModel::setNotificationTimeout(milliseconds timeout)
 {
 	if (timeout != settings_.notificationTimeout) {
 		settings_.notificationTimeout = timeout;
-		emit notificationTimeoutChanged(settings_.notificationTimeout);
+		Q_EMIT notificationTimeoutChanged(settings_.notificationTimeout);
 	}
 }

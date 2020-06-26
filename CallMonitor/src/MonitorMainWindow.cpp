@@ -99,7 +99,7 @@ void MonitorMainWindow::addHelpMenu()
 void MonitorMainWindow::addWindowMenu()
 {
 	auto hideAction = new QAction(tr("&Hide"), this);
-	connect(hideAction, &QAction::triggered, [=] { model_.beVisible(false); });
+	connect(hideAction, &QAction::triggered, [=, this] { model_.beVisible(false); });
 
 	auto windowMenu = new QMenu(tr("&Window"), this);
 	windowMenu->addAction(hideAction);
@@ -110,7 +110,7 @@ void MonitorMainWindow::addStatusBar()
 {
 	statusBar()->showMessage(QString());
 
-	connect(&model_, &MonitorMainWindowModel::showStatus, [=](const QString &message, milliseconds timeout) {
+	connect(&model_, &MonitorMainWindowModel::showStatus, [=, this](const QString &message, milliseconds timeout) {
 		statusBar()->showMessage(message, int_cast<int>(timeout.count()));
 	});
 }
@@ -120,10 +120,10 @@ void MonitorMainWindow::addTrayIcon()
 	// Prepare the menu for the tray icon:
 
 	auto showAction = new QAction(tr("&Show Window"), this);
-	connect(showAction, &QAction::triggered, [=] { model_.beVisible(true); });
+	connect(showAction, &QAction::triggered, [=, this] { model_.beVisible(true); });
 
 	auto hideAction = new QAction(tr("&Hide Window"), this);
-	connect(hideAction, &QAction::triggered, [=] { model_.beVisible(false); });
+	connect(hideAction, &QAction::triggered, [=, this] { model_.beVisible(false); });
 
 	connect(&model_, &MonitorMainWindowModel::visibleChanged, [=](bool isVisible) {
 		showAction->setDisabled(isVisible);
@@ -145,7 +145,7 @@ void MonitorMainWindow::addTrayIcon()
 	trayIcon_->show();
 
 	connect(trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated);
-	connect(&model_, &MonitorMainWindowModel::showNotification, [=](const QString &title, const QString &message, milliseconds timeout) {
+	connect(&model_, &MonitorMainWindowModel::showNotification, [=, this](const QString &title, const QString &message, milliseconds timeout) {
 		trayIcon_->showMessage(title, message, QSystemTrayIcon::MessageIcon::Information, int_cast<int>(timeout.count()));
 	});
 }

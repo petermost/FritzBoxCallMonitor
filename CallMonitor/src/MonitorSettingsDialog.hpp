@@ -18,9 +18,9 @@ class MonitorSettingsDialog : public QDialog, public pera_software::aidkit::qt::
 		void readSettings(QSettings *settings) noexcept override;
 		void writeSettings(QSettings *settings) const noexcept override;
 
-	signals:
+	Q_SIGNALS:
 
-	public slots:
+	public Q_SLOTS:
 		void browseForPhoneBook();
 
 	private:
