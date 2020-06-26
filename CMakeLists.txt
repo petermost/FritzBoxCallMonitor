@@ -27,10 +27,11 @@ add_library(fritzboxlib STATIC
 	CallMonitor/src/PhoneBook.cpp
 )
 set_default_target_options(fritzboxlib)
-	target_include_directories(fritzboxlib
-		PUBLIC
-			.
-	)
+
+target_include_directories(fritzboxlib
+	PUBLIC
+		.
+)
 
 target_link_libraries(fritzboxlib
 	PUBLIC
