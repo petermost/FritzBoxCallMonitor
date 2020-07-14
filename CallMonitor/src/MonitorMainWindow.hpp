@@ -1,7 +1,7 @@
 #pragma once
 
+#include "MonitorTrayIcon.hpp"
 #include "MonitorMainWindowModel.hpp"
-#include <QSystemTrayIcon>
 #include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
 #include <pera_software/company/qt/PERAMainWindow.hpp>
 
@@ -10,6 +10,9 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 	public:
 		MonitorMainWindow();
 		~MonitorMainWindow() override;
+
+		QAction *showAction();
+		QAction *hideAction();
 
 		void readSettings(QSettings *settings) noexcept override;
 		void writeSettings(QSettings *settings) const noexcept override;
@@ -20,10 +23,12 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 
 	private Q_SLOTS:
 		void onEditSettings();
-		void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
 		void onVisible(bool isVisible);
 
 	private:
+		QAction *showAction_ = nullptr;
+		QAction *hideAction_ = nullptr;
+
 		void addEditMenu();
 		void addHelpMenu();
 		void addWindowMenu();
@@ -31,8 +36,6 @@ class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
 		void addTrayIcon();
 
 		MonitorMainWindowModel model_;
-
 		pera_software::aidkit::qt::MessagesView *messages_;
-
-		QSystemTrayIcon *trayIcon_;
+		MonitorTrayIcon *trayIcon_;
 };

@@ -29,7 +29,7 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		void visibleChanged(bool isVisible);
 
 		void showNotification(const QString &title, const QString &message, std::chrono::milliseconds timeout);
-		void showStatus(const QString &message, std::chrono::milliseconds timeout) const;
+		void showStatus(const QString &message) const;
 
 	public Q_SLOTS:
 		void onQuit();

@@ -1,6 +1,7 @@
 #include "MonitorMainWindow.hpp"
 #include "MonitorApplication.hpp"
 #include "MonitorSettingsDialog.hpp"
+#include "MonitorTrayIcon.hpp"
 
 #include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/qt/gui/Resources.hpp>
@@ -22,6 +23,7 @@
 #include <QSettings>
 #include <QStatusBar>
 #include <QTcpSocket>
+#include <QAction>
 
 // TODO: Add what's this actions.
 
@@ -30,6 +32,7 @@ using namespace chrono;
 using namespace pera_software::company::qt;
 using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::stdlib;
+
 
 MonitorMainWindow::MonitorMainWindow()
 {
@@ -65,6 +68,22 @@ MonitorMainWindow::~MonitorMainWindow()
 {
 }
 
+QAction *MonitorMainWindow::showAction()
+{
+	if (showAction_ == nullptr) {
+		showAction_ = new QAction(tr("&Show Window"));
+	}
+	return showAction_;
+}
+
+QAction *MonitorMainWindow::hideAction()
+{
+	if (hideAction_ == nullptr) {
+		hideAction_ = new QAction(tr("&Hide Window"));
+	}
+	return hideAction_;
+}
+
 void MonitorMainWindow::readSettings(QSettings *settings) noexcept
 {
 	PERAMainWindow::readSettings(settings);
@@ -98,55 +117,41 @@ void MonitorMainWindow::addHelpMenu()
 
 void MonitorMainWindow::addWindowMenu()
 {
-	auto hideAction = new QAction(tr("&Hide"), this);
-	connect(hideAction, &QAction::triggered, [=, this] { model_.beVisible(false); });
-
 	auto windowMenu = new QMenu(tr("&Window"), this);
-	windowMenu->addAction(hideAction);
+	windowMenu->addAction(hideAction());
 	menuBar()->addMenu(windowMenu);
+
+	connect(showAction(), &QAction::triggered, [this] {
+		model_.beVisible(true);
+	});
+	connect(hideAction(), &QAction::triggered, [this] {
+		model_.beVisible(false);
+	});
+	connect(&model_, &MonitorMainWindowModel::visibleChanged, [=, this](bool isVisible) {
+		showAction()->setDisabled(isVisible);
+		hideAction()->setEnabled(isVisible);
+	});
 }
 
 void MonitorMainWindow::addStatusBar()
 {
 	statusBar()->showMessage(QString());
 
-	connect(&model_, &MonitorMainWindowModel::showStatus, [=, this](const QString &message, milliseconds timeout) {
-		statusBar()->showMessage(message, int_cast<int>(timeout.count()));
+	connect(&model_, &MonitorMainWindowModel::showStatus, [=, this](const QString &message) {
+		statusBar()->showMessage(message);
 	});
 }
 
 void MonitorMainWindow::addTrayIcon()
 {
-	// Prepare the menu for the tray icon:
+	trayIcon_ = new MonitorTrayIcon(this);
 
-	auto showAction = new QAction(tr("&Show Window"), this);
-	connect(showAction, &QAction::triggered, [=, this] { model_.beVisible(true); });
-
-	auto hideAction = new QAction(tr("&Hide Window"), this);
-	connect(hideAction, &QAction::triggered, [=, this] { model_.beVisible(false); });
-
-	connect(&model_, &MonitorMainWindowModel::visibleChanged, [=](bool isVisible) {
-		showAction->setDisabled(isVisible);
-		hideAction->setEnabled(isVisible);
+	connect(trayIcon_, &MonitorTrayIcon::activated, [this] {
+		model_.beVisible(!model_.isVisible());
 	});
 
-	auto trayMenu = new QMenu("TrayMenu", this);
-	trayMenu->addAction(showAction);
-	trayMenu->addAction(hideAction);
-	trayMenu->addSeparator();
-	trayMenu->addAction(quitAction());
-
-	// Prepare the tray icon:
-
-	trayIcon_ = new QSystemTrayIcon(this);
-	QIcon fritzBoxIcon(":/telephone-icon.png");
-	trayIcon_->setIcon(fritzBoxIcon);
-	trayIcon_->setContextMenu(trayMenu);
-	trayIcon_->show();
-
-	connect(trayIcon_, &QSystemTrayIcon::activated, this, &MonitorMainWindow::onTrayIconActivated);
-	connect(&model_, &MonitorMainWindowModel::showNotification, [=, this](const QString &title, const QString &message, milliseconds timeout) {
-		trayIcon_->showMessage(title, message, QSystemTrayIcon::MessageIcon::Information, int_cast<int>(timeout.count()));
+	connect(&model_, &MonitorMainWindowModel::showNotification, [this](const QString &title, const QString &message, milliseconds timeout) {
+		trayIcon_->showMessage(title, message, MonitorTrayIcon::MessageIcon::Information, int_cast<int>(timeout.count()));
 	});
 }
 
@@ -157,7 +162,7 @@ void MonitorMainWindow::onQuit()
 
 void MonitorMainWindow::onAbout()
 {
-	QMessageBox::about(this, tr("About %1").arg(MonitorApplication::NAME), tr("Version 1.3"));
+	QMessageBox::about(this, tr("About %1").arg(MonitorApplication::NAME), tr("Version 1.4.0"));
 }
 
 void MonitorMainWindow::onEditSettings()
@@ -169,12 +174,6 @@ void MonitorMainWindow::onEditSettings()
 	}
 }
 
-//void MonitorMainWindow::onHide() {
-//	if ( trayIcon_->isVisible() ) {
-//		model_.beVisible( false );
-//	}
-//}
-
 void MonitorMainWindow::onVisible(bool isVisible)
 {
 	setVisible(isVisible);
@@ -182,9 +181,4 @@ void MonitorMainWindow::onVisible(bool isVisible)
 		activateWindow();
 		raise();
 	}
-}
-
-void MonitorMainWindow::onTrayIconActivated(QSystemTrayIcon::ActivationReason)
-{
-	model_.beVisible(!model_.isVisible());
 }

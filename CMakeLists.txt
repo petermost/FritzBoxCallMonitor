@@ -44,6 +44,8 @@ add_executable(fritzboxcallmonitor
 	CallMonitor/src/main.cpp
 	CallMonitor/src/MonitorApplication.hpp
 	CallMonitor/src/MonitorApplication.cpp
+	CallMonitor/src/MonitorTrayIcon.hpp
+	CallMonitor/src/MonitorTrayIcon.cpp
 	CallMonitor/src/MonitorMainWindow.hpp
 	CallMonitor/src/MonitorMainWindow.cpp
 	CallMonitor/src/MonitorMainWindowModel.hpp

@@ -67,17 +67,20 @@ void MonitorMainWindowModel::onStateChanged(QTcpSocket::SocketState state)
 void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const QString &caller, const QString &callee)
 {
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
-	messagesModel_->showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(callee));
+	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
+	messagesModel_->showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 
-	Q_EMIT showNotification(tr("Incoming Call"), callerName, settings_.notificationTimeout);
+	QString message = tr("%1 => %2").arg(callerName).arg(calleeName);
+	Q_EMIT showNotification(tr("Incoming Call"), message, settings_.notificationTimeout);
 }
 
 //==================================================================================================
 
 void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const QString &caller, const QString &callee)
 {
+	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
-	messagesModel_->showInformation(tr("Outgoing call: Caller: '%1', Callee: '%2'.").arg(caller).arg(calleeName));
+	messagesModel_->showInformation(tr("Outgoing call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 }
 
 //==================================================================================================
@@ -105,7 +108,7 @@ void MonitorMainWindowModel::readSettings(QSettings *settings) noexcept
 	monitorSettings.readSettings(settings);
 	setSettings(monitorSettings);
 
-	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settings->fileName()), milliseconds(0));
+	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settings->fileName()));
 
 	// connectToFritzBox();
 }
@@ -117,7 +120,7 @@ void MonitorMainWindowModel::writeSettings(QSettings *settings) const noexcept
 	settings->setValue(IS_VISIBLE_KEY, isVisible());
 	settings_.writeSettings(settings);
 
-	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settings->fileName()), milliseconds(0));
+	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settings->fileName()));
 }
 
 //==================================================================================================
