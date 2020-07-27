@@ -8,4 +8,5 @@ TEST(PhoneBookTest, testOpen)
 	PhoneBook phoneBook;
 
 	phoneBook.open(PhoneBook::defaultFileName());
+	phoneBook.close();
 }

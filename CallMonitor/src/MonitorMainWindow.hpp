@@ -3,9 +3,9 @@
 #include "MonitorTrayIcon.hpp"
 #include "MonitorMainWindowModel.hpp"
 #include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
-#include <pera_software/company/qt/PERAMainWindow.hpp>
+#include <pera_software/aidkit/qt/widgets/PERAMainWindow.hpp>
 
-class MonitorMainWindow : public pera_software::company::qt::PERAMainWindow {
+class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 	Q_OBJECT
 	public:
 		MonitorMainWindow();

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QByteArray>
+#include <QString>
 
 class FritzBoxData {
 	public:
-		static const QByteArray CALLER;
-		static const QByteArray CALLEE;
+		static const QString CALLER;
+		static const QString CALLEE;
 
-		static const QByteArray RING_DATA;
-		static const QByteArray CONNECT_DATA;
-		static const QByteArray DISCONNECT_DATA;
-		static const QByteArray CALLING_DATA;
+		static const QString RING_DATA;
+		static const QString CONNECT_DATA;
+		static const QString DISCONNECT_DATA;
+		static const QString CALLING_DATA;
 };

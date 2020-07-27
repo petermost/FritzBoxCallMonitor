@@ -1,8 +1,10 @@
 #include "PhoneBook.hpp"
 #include <QSqlError>
 #include <QStandardPaths>
+#include <pera_software/aidkit/qt/core/Strings.hpp>
 
 using namespace std;
+using namespace pera_software::aidkit::qt;
 
 const QString PhoneBook::CONNECTION_NAME(QStringLiteral("PhoneBook"));
 
@@ -14,11 +16,17 @@ QString PhoneBook::defaultFileName()
 PhoneBook::PhoneBook(QObject *parent)
 	: QObject(parent)
 {
-	database_ = QSqlDatabase::addDatabase("QSQLITE", CONNECTION_NAME);
+	database_ = QSqlDatabase::addDatabase("QSQLITE"_qs, CONNECTION_NAME);
 }
 
 PhoneBook::~PhoneBook()
 {
+	Q_ASSERT(!database_.isOpen());
+
+	// TODO: database_ needs to be out of scope i.e. the destructor was called, otherwise we get
+	// the runtime-warning:
+	// "QSqlDatabasePrivate::removeDatabase: connection 'PhoneBook' is still in use, all queries will cease to work."
+
 	QSqlDatabase::removeDatabase(CONNECTION_NAME);
 }
 
@@ -26,6 +34,15 @@ bool PhoneBook::open(const QString &fileName)
 {
 	database_.setDatabaseName(fileName);
 	if (!database_.open())
+		throw database_.lastError();
+
+	return true;
+}
+
+bool PhoneBook::close()
+{
+	database_.close();
+	if (database_.isOpen())
 		throw database_.lastError();
 
 	return true;

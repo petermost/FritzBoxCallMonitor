@@ -2,6 +2,7 @@
 #include <QTimer>
 #include <chrono>
 #include <pera_software/aidkit/qt/core/Enums.hpp>
+#include <pera_software/aidkit/qt/core/Strings.hpp>
 
 //03.11.16 13:17:08;RING;0;015146609763;90969248;SIP1;
 //03.11.16 13:17:16;CONNECT;0;1;015146609763;
@@ -16,7 +17,7 @@ using namespace pera_software::aidkit::qt;
 constexpr seconds RETRY_INTERVAL_S(10);
 constexpr milliseconds RETRY_INTERVAL_MS(RETRY_INTERVAL_S);
 
-const char FritzBox::DEFAULT_HOST_NAME[] = "fritz.box";
+const QString FritzBox::DEFAULT_HOST_NAME(QStringLiteral("fritz.box"));
 const FritzBox::Port FritzBox::DEFAULT_CALL_MONITOR_PORT = 1012;
 
 //==================================================================================================
@@ -97,23 +98,23 @@ void FritzBox::onError(QTcpSocket::SocketError socketError)
 
 void FritzBox::parseAndSignal(const QString &line)
 {
-	QStringList parts = line.split(';');
+	QStringList parts = line.split(';'_qc);
 	QString dateTime = parts[0];
 	QString command = parts[1];
 	unsigned connectionId = parts[2].toUInt();
 
-	if (command == "RING") {
+	if (command == "RING"_qs) {
 		QString caller = parts[3];
 		QString callee = parts[4];
 		Q_EMIT incomingCall(connectionId, caller, callee);
-	} else if (command == "CONNECT") {
+	} else if (command == "CONNECT"_qs) {
 		QString extension = parts[3];
 		QString caller = parts[4];
 		Q_EMIT phoneConnected(connectionId, caller);
-	} else if (command == "DISCONNECT") {
+	} else if (command == "DISCONNECT"_qs) {
 		QString durationSeconds = parts[3];
 		Q_EMIT phoneDisconnected(connectionId);
-	} else if (command == "CALL") {
+	} else if (command == "CALL"_qs) {
 		QString extension = parts[3];
 		QString caller = parts[4];
 		QString callee = parts[5];
@@ -131,7 +132,7 @@ void FritzBox::onReadyRead()
 	char buffer[100];
 
 	if ((length = socket_->readLine(buffer, sizeof(buffer))) != -1) {
-		QString line = QString::fromLatin1(buffer, static_cast<int>(length)).remove('\n');
+		QString line = QString::fromLatin1(buffer, static_cast<int>(length)).remove('\n'_qc);
 		parseAndSignal(line);
 	}
 }

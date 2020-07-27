@@ -70,7 +70,7 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
 	messagesModel_->showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 
-	QString message = tr("%1 => %2").arg(callerName).arg(calleeName);
+	QString message = tr("%1 --> %2").arg(callerName).arg(calleeName);
 	Q_EMIT showNotification(tr("Incoming Call"), message, settings_.notificationTimeout);
 }
 

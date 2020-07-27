@@ -2,8 +2,10 @@
 #include <QFile>
 #include <QIODevice>
 #include <QXmlStreamReader>
+#include <pera_software/aidkit/qt/core/Strings.hpp>
 
 using namespace std;
+using namespace pera_software::aidkit::qt;
 
 using XmlToken = QXmlStreamReader::TokenType;
 //==================================================================================================
@@ -42,10 +44,10 @@ bool FritzBoxPhoneBook::read(QIODevice *device, QString *errorString)
 		switch (token) {
 			case XmlToken::StartElement: {
 				auto elementName = reader.name();
-				if (elementName == "realName") {
+				if (elementName == "realName"_qs) {
 					name = reader.readElementText();
 				}
-				if (elementName == "number") {
+				if (elementName == "number"_qs) {
 					number = reader.readElementText();
 					entries_.insert(number, name);
 				}

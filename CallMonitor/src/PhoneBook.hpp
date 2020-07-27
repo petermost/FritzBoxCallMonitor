@@ -13,6 +13,7 @@ class PhoneBook : public QObject {
 		~PhoneBook() override;
 
 		bool open(const QString &fileName);
+		bool close();
 
 		/// Find the number for the name.
 		QString findNumber(const QString &name) const;

@@ -29,7 +29,6 @@
 
 using namespace std;
 using namespace chrono;
-using namespace pera_software::company::qt;
 using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::stdlib;
 

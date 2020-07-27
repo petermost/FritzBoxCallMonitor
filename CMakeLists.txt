@@ -1,19 +1,26 @@
 cmake_minimum_required(VERSION 3.16)
-project(FritzBoxCallMonitor)
+project(FritzBoxCallMonitor VERSION 1.4.0)
 
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/all_options.cmake)
 
-find_package(Qt5 COMPONENTS REQUIRED Widgets Network Sql Test)
-# Alternative but not recommended!: find_package(GTest)
+find_package(Qt5 COMPONENTS REQUIRED Widgets Network Sql Test LinguistTools)
+
 if (NOT TARGET gtest AND NOT TARGET gtest_main)
 	add_subdirectory(/usr/src/googletest googletest)
+	# Alternative but not recommended!: find_package(GTest)
 endif()
 
 # set(CMAKE_AUTOMOC ON)
 # set(CMAKE_AUTORCC ON)
 # set(CMAKE_AUTOUIC ON)
 # set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# Embed translation files as a resource:
+# From "The missing example to use cmake qt5_create_translation" (https://gist.github.com/giraldeau/546ba5512a74dfe9d8ea0862d66db412)
+
+configure_file(CallMonitor/translations/Translations.qrc ${CMAKE_BINARY_DIR} COPYONLY)
+qt5_create_translation(TRANSLATION_FILES ${CMAKE_SOURCE_DIR} CallMonitor/translations/fritzboxcallmonitor_de.ts)
 
 ####################################################################################################
 # Setup Monitor:
@@ -57,6 +64,8 @@ add_executable(fritzboxcallmonitor
 	CallMonitor/src/MonitorSettings.cpp
 	CallMonitor/src/MonitorSettings.hpp
 	CallMonitor/resources/Images.qrc
+	${TRANSLATION_FILES}
+	${CMAKE_BINARY_DIR}/Translations.qrc
 )
 set_default_target_options(fritzboxcallmonitor)
 

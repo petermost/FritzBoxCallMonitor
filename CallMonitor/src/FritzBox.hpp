@@ -10,7 +10,7 @@ class FritzBox : public QObject {
 	public:
 		using Port = pera_software::aidkit::qt::Port;
 
-		static const char DEFAULT_HOST_NAME[];
+		static const QString DEFAULT_HOST_NAME;
 		static const Port DEFAULT_CALL_MONITOR_PORT;
 
 		FritzBox(QObject *parent = nullptr) noexcept;

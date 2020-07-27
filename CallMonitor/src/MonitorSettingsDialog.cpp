@@ -103,7 +103,7 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 	fritzBoxLayout->addWidget(phoneBookPath, 1, 1);
 	fritzBoxLayout->addWidget(browsePhoneBookPathButton, 1, 2, 1, 2);
 
-	auto fritzBoxGroup = new QGroupBox("FRITZ!Box");
+	auto fritzBoxGroup = new QGroupBox(tr("FRITZ!Box"));
 	fritzBoxGroup->setLayout(fritzBoxLayout);
 
 	return fritzBoxGroup;
