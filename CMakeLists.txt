@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(FritzBoxCallMonitor VERSION 1.4.0)
+project(FritzBoxCallMonitor VERSION 1.4.1)
 
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/all_options.cmake)
@@ -14,13 +14,16 @@ endif()
 # set(CMAKE_AUTOMOC ON)
 # set(CMAKE_AUTORCC ON)
 # set(CMAKE_AUTOUIC ON)
-# set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# Prepare version information:
+configure_file(CallMonitor/src/MonitorVersion.h.in MonitorVersion.h)
 
 # Embed translation files as a resource:
 # From "The missing example to use cmake qt5_create_translation" (https://gist.github.com/giraldeau/546ba5512a74dfe9d8ea0862d66db412)
 
-configure_file(CallMonitor/translations/Translations.qrc ${CMAKE_BINARY_DIR} COPYONLY)
-qt5_create_translation(TRANSLATION_FILES ${CMAKE_SOURCE_DIR} CallMonitor/translations/fritzboxcallmonitor_de.ts)
+configure_file(CallMonitor/translations/Translations.qrc Translations.qrc COPYONLY)
+qt5_create_translation(TRANSLATION_FILES ${CMAKE_CURRENT_SOURCE_DIR} CallMonitor/translations/fritzboxcallmonitor_de.ts)
 
 ####################################################################################################
 # Setup Monitor:
@@ -34,11 +37,6 @@ add_library(fritzboxlib STATIC
 	CallMonitor/src/PhoneBook.cpp
 )
 set_default_target_options(fritzboxlib)
-
-target_include_directories(fritzboxlib
-	PUBLIC
-		.
-)
 
 target_link_libraries(fritzboxlib
 	PUBLIC
@@ -63,9 +61,13 @@ add_executable(fritzboxcallmonitor
 	CallMonitor/src/MonitorSettingsDialogModel.cpp
 	CallMonitor/src/MonitorSettings.cpp
 	CallMonitor/src/MonitorSettings.hpp
+	CallMonitor/src/MonitorVersion.h.in
+	${CMAKE_CURRENT_BINARY_DIR}/MonitorVersion.h
+	CallMonitor/src/MonitorVersion.hpp
+	CallMonitor/src/MonitorVersion.cpp
 	CallMonitor/resources/Images.qrc
 	${TRANSLATION_FILES}
-	${CMAKE_BINARY_DIR}/Translations.qrc
+	${CMAKE_CURRENT_BINARY_DIR}/Translations.qrc
 )
 set_default_target_options(fritzboxcallmonitor)
 

@@ -2,6 +2,7 @@
 #include "MonitorApplication.hpp"
 #include "MonitorSettingsDialog.hpp"
 #include "MonitorTrayIcon.hpp"
+#include "MonitorVersion.hpp"
 
 #include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/qt/gui/Resources.hpp>
@@ -161,7 +162,7 @@ void MonitorMainWindow::onQuit()
 
 void MonitorMainWindow::onAbout()
 {
-	QMessageBox::about(this, tr("About %1").arg(MonitorApplication::NAME), tr("Version 1.4.0"));
+	QMessageBox::about(this, QString(), tr("%1\nVersion %2").arg(MonitorApplication::NAME).arg(MonitorVersion::version()));
 }
 
 void MonitorMainWindow::onEditSettings()
