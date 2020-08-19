@@ -1,6 +1,5 @@
 #include "MonitorApplication.hpp"
 #include "MonitorMainWindow.hpp"
-#include <pera_software/aidkit/qt/core/PERAIniSettings.hpp>
 
 using namespace pera_software::aidkit::qt;
 
@@ -8,20 +7,13 @@ int main(int argc, char *argv[])
 {
 	// qInfo() << "Using Qt build: " << QLibraryInfo::build() << endl;
 
+	auto settings = QSharedPointer<MonitorSettingsStorage>::create();
+
 	MonitorApplication application(&argc, argv);
-
-	MonitorMainWindow mainWindow;
-
-	PERAIniSettings settings(MonitorApplication::NAME);
-
-	mainWindow.readSettings(&settings);
+	MonitorMainWindow mainWindow(settings);
 
 	// Visible status is stored in settings, so we don't need to explicitly show it via
 	// mainWindow.show();
 
-	auto result = application.exec();
-
-	mainWindow.writeSettings(&settings);
-
-	return result;
+	return application.exec();
 }

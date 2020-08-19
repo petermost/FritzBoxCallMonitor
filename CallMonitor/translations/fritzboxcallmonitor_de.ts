@@ -17,43 +17,43 @@
 <context>
     <name>MonitorMainWindow</name>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="61"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="62"/>
         <location filename="../../prototypes/MonitorMainWindow.cpp" line="132"/>
         <source>Messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="74"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="72"/>
         <source>&amp;Show Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="82"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="80"/>
         <source>&amp;Hide Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="101"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="87"/>
         <source>&amp;Settings...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="104"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="90"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="111"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="97"/>
         <source>&amp;About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="120"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="106"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="165"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="151"/>
         <source>%1
 Version %2</source>
         <translation type="unfinished"></translation>
@@ -102,61 +102,66 @@ Version %2</source>
 <context>
     <name>MonitorMainWindowModel</name>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="50"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="34"/>
+        <source>Loaded settings from: &apos;%1&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="44"/>
+        <source>Saved settings to: &apos;%1&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="58"/>
         <source>Connecting to &apos;%1:%2&apos; failed, because: &apos;%3&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="60"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="68"/>
         <source>Connected to &apos;%1:%2&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="71"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="79"/>
         <source>Incoming call: Caller: &apos;%1&apos;, Callee: &apos;%2&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="73"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="81"/>
         <source>%1 --&gt; %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="74"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="82"/>
         <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="75"/>
         <source>Incoming Call</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="83"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="91"/>
         <source>Outgoing call: Caller: &apos;%1&apos;, Callee: &apos;%2&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="91"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="99"/>
         <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="45"/>
         <source>Phone connected: Caller: &apos;%1&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="98"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="106"/>
         <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="49"/>
         <source>Phone disconnected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="111"/>
-        <source>Loaded settings from: &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="178"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="158"/>
         <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="157"/>
         <source>Read phone book entry for &apos;%1&apos; with the number: &apos;%2&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindowModel.cpp" line="181"/>
+        <location filename="../src/MonitorMainWindowModel.cpp" line="161"/>
         <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="160"/>
         <source>Unable to read &apos;%1&apos; because &apos;%2&apos;!</source>
         <translation type="unfinished"></translation>
@@ -190,52 +195,52 @@ Version %2</source>
 <context>
     <name>MonitorSettingsDialog</name>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="56"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="53"/>
         <source>&amp;Hostname:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="71"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="68"/>
         <source>&amp;Portnumber:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="86"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="83"/>
         <source>&amp;Phonebook:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="91"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="88"/>
         <source>&amp;Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="106"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="103"/>
         <source>FRITZ!Box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="117"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="114"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="128"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="125"/>
         <source>&amp;Timeout:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="135"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="132"/>
         <source>Notification</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="167"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="153"/>
         <source>Select exported phone book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="170"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="156"/>
         <source>Phonebooks (*.xml)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -310,17 +315,17 @@ Version %2</source>
 <context>
     <name>pera_software::aidkit::qt::PERAMainWindow</name>
     <message>
-        <location filename="../../CppAidKit/src/pera_software/aidkit/qt/widgets/PERAMainWindow.cpp" line="57"/>
+        <location filename="../../CppAidKit/src/pera_software/aidkit/qt/widgets/PERAMainWindow.cpp" line="56"/>
         <source>%1 - (c) by %2 - %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../CppAidKit/src/pera_software/aidkit/qt/widgets/PERAMainWindow.cpp" line="95"/>
+        <location filename="../../CppAidKit/src/pera_software/aidkit/qt/widgets/PERAMainWindow.cpp" line="101"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../CppAidKit/src/pera_software/aidkit/qt/widgets/PERAMainWindow.cpp" line="102"/>
+        <location filename="../../CppAidKit/src/pera_software/aidkit/qt/widgets/PERAMainWindow.cpp" line="108"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>

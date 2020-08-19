@@ -2,21 +2,17 @@
 
 #include "MonitorSettingsDialogModel.hpp"
 #include <QDialog>
-#include <pera_software/aidkit/qt/core/Persistable.hpp>
 
 class QGroupBox;
 
-class MonitorSettingsDialog : public QDialog, public pera_software::aidkit::qt::Persistable {
+class MonitorSettingsDialog : public QDialog {
 	Q_OBJECT
 	public:
-		explicit MonitorSettingsDialog(QWidget *parent = nullptr);
+		MonitorSettingsDialog(QSharedPointer<MonitorSettingsStorage> settingsStorage, QWidget *parent = nullptr);
 		~MonitorSettingsDialog() override;
 
 		void setSettings(const MonitorSettings &settings);
 		MonitorSettings settings() const;
-
-		void readSettings(QSettings *settings) noexcept override;
-		void writeSettings(QSettings *settings) const noexcept override;
 
 	Q_SIGNALS:
 
@@ -27,5 +23,6 @@ class MonitorSettingsDialog : public QDialog, public pera_software::aidkit::qt::
 		QGroupBox *createFritzBoxWidgets();
 		QGroupBox *createNotificationWidgets();
 
+		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
 		MonitorSettingsDialogModel model_;
 };

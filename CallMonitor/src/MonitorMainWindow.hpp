@@ -8,14 +8,10 @@
 class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 	Q_OBJECT
 	public:
-		MonitorMainWindow();
-		~MonitorMainWindow() override;
+		MonitorMainWindow(QSharedPointer<MonitorSettingsStorage> settingsStorage);
 
 		QAction *showAction();
 		QAction *hideAction();
-
-		void readSettings(QSettings *settings) noexcept override;
-		void writeSettings(QSettings *settings) const noexcept override;
 
 	public Q_SLOTS:
 		void onQuit();
@@ -26,16 +22,18 @@ class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 		void onVisible(bool isVisible);
 
 	private:
-		QAction *showAction_ = nullptr;
-		QAction *hideAction_ = nullptr;
-
 		void addEditMenu();
 		void addHelpMenu();
 		void addWindowMenu();
 		void addStatusBar();
 		void addTrayIcon();
 
+		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
 		MonitorMainWindowModel model_;
+
+		QAction *showAction_ = nullptr;
+		QAction *hideAction_ = nullptr;
+
 		pera_software::aidkit::qt::MessagesView *messages_;
 		MonitorTrayIcon *trayIcon_;
 };

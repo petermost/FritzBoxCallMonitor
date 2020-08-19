@@ -3,29 +3,25 @@
 #include "MonitorSettings.hpp"
 #include <QDir>
 #include <QObject>
-#include <pera_software/aidkit/qt/core/Persistable.hpp>
 #include <pera_software/aidkit/qt/core/Socket.hpp>
 
 class QSettings;
 
-class MonitorSettingsDialogModel : public QObject, pera_software::aidkit::qt::Persistable {
+class MonitorSettingsDialogModel : public QObject {
 	Q_OBJECT
 	public:
-		explicit MonitorSettingsDialogModel(QObject *parent = nullptr);
+		MonitorSettingsDialogModel(QSharedPointer<MonitorSettingsStorage> settingsStorage, QObject *parent = nullptr);
 		~MonitorSettingsDialogModel() override;
 
 		void setSettings(const MonitorSettings &settings);
 		MonitorSettings settings() const;
-
-		void readSettings(QSettings *settings) noexcept override;
-		void writeSettings(QSettings *settings) const noexcept override;
 
 		QDir lastVisitedDirectory() const;
 
 	public Q_SLOTS:
 		void setHostName(const QString &hostName);
 		void setPortNumber(pera_software::aidkit::qt::Port portNumber);
-		void setNotificationTimeout(std::chrono::milliseconds timeout);
+		void setNotificationTimeout(std::chrono::milliseconds notificationTimeout);
 		void setPhoneBookPath(const QString &phoneBookPath);
 		void setLastVisitedDirectory(const QDir &directory);
 
@@ -36,6 +32,7 @@ class MonitorSettingsDialogModel : public QObject, pera_software::aidkit::qt::Pe
 		void phoneBookPathChanged(const QString &phoneBookPath);
 
 	private:
+		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
 		MonitorSettings settings_;
 		QDir lastVisitedDirectory_;
 };

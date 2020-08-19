@@ -6,27 +6,23 @@
 #include <QObject>
 #include <chrono>
 #include <optional>
-#include <pera_software/aidkit/qt/core/Persistable.hpp>
 #include <pera_software/aidkit/qt/gui/ForwardDeclarations.hpp>
 
 class FritzBox;
 class QSettings;
 class QAbstractItemModel;
 
-class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt::Persistable {
+class MonitorMainWindowModel : public QObject {
 	Q_OBJECT
 	public:
-		MonitorMainWindowModel();
+		MonitorMainWindowModel(QSharedPointer<MonitorSettingsStorage> settingsStorage);
 		~MonitorMainWindowModel() override;
-
-		void readSettings(QSettings *settings) noexcept override;
-		void writeSettings(QSettings *settings) const noexcept override;
 
 		bool isVisible() const;
 		QAbstractItemModel *messagesModel() const;
 
 	Q_SIGNALS:
-		void visibleChanged(bool isVisible);
+		void visibilityChanged(bool isVisible);
 
 		void showNotification(const QString &title, const QString &message, std::chrono::milliseconds timeout);
 		void showStatus(const QString &message) const;
@@ -34,9 +30,10 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 	public Q_SLOTS:
 		void onQuit();
 
-		void setSettings(const MonitorSettings &newSettings);
+		void setSettings(MonitorSettings settings);
 		void beVisible(bool isVisible = true);
 
+	public:
 		MonitorSettings settings() const;
 
 	private:
@@ -50,6 +47,7 @@ class MonitorMainWindowModel : public QObject, public pera_software::aidkit::qt:
 		void onPhoneConnected(unsigned connectionId, const QString &caller);
 		void onPhoneDisconnected(unsigned connectionId);
 
+		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
 		std::optional<bool> isVisible_;
 
 		MonitorSettings settings_;

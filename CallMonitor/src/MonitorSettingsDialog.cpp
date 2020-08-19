@@ -9,15 +9,14 @@
 #include <QSettings>
 #include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
-#include <pera_software/aidkit/qt/widgets/Widgets.hpp>
 
 using namespace std;
 using namespace chrono;
 using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::stdlib;
 
-MonitorSettingsDialog::MonitorSettingsDialog(QWidget *parent)
-	: QDialog(parent)
+MonitorSettingsDialog::MonitorSettingsDialog(QSharedPointer<MonitorSettingsStorage> settingsStorage, QWidget *parent)
+	: QDialog(parent), settingsStorage_(settingsStorage), model_(settingsStorage)
 {
 	auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
@@ -29,14 +28,12 @@ MonitorSettingsDialog::MonitorSettingsDialog(QWidget *parent)
 	layout->addWidget(buttons);
 	setLayout(layout);
 
-	QSettings fileSettings;
-	readSettings(&fileSettings);
+	settingsStorage_->readSize(this);
 }
 
 MonitorSettingsDialog::~MonitorSettingsDialog()
 {
-	QSettings fileSettings;
-	writeSettings(&fileSettings);
+	settingsStorage_->writeSize(this);
 }
 
 QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
@@ -148,17 +145,6 @@ MonitorSettings MonitorSettingsDialog::settings() const
 	return model_.settings();
 }
 
-void MonitorSettingsDialog::readSettings(QSettings *settings) noexcept
-{
-	model_.readSettings(settings);
-	Widgets::readGeometry(this, settings);
-}
-
-void MonitorSettingsDialog::writeSettings(QSettings *settings) const noexcept
-{
-	model_.writeSettings(settings);
-	Widgets::writeGeometry(this, settings);
-}
 
 void MonitorSettingsDialog::browseForPhoneBook()
 {

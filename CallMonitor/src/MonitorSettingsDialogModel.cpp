@@ -7,22 +7,20 @@
 
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
-// using namespace pera_software::aidkit::cpp;
-
-static const QString LAST_VISITED_DIRECTORY_KEY(QStringLiteral("lastVisitedDirectory"));
 
 //==================================================================================================
 
-MonitorSettingsDialogModel::MonitorSettingsDialogModel(QObject *parent)
-	: QObject(parent)
+MonitorSettingsDialogModel::MonitorSettingsDialogModel(QSharedPointer<MonitorSettingsStorage> settingsStorage, QObject *parent)
+	: QObject(parent), settingsStorage_(settingsStorage)
 {
-	lastVisitedDirectory_ = QStandardPaths::writableLocation(QStandardPaths::StandardLocation::HomeLocation);
+	lastVisitedDirectory_ = settingsStorage_->readLastVisitedDirectory();
 }
 
 //==================================================================================================
 
 MonitorSettingsDialogModel::~MonitorSettingsDialogModel()
 {
+	settingsStorage_->writeLastVisitedDirectory(lastVisitedDirectory_);
 }
 
 //==================================================================================================
@@ -44,24 +42,9 @@ MonitorSettings MonitorSettingsDialogModel::settings() const
 
 //==================================================================================================
 
-void MonitorSettingsDialogModel::readSettings(QSettings *settings) noexcept
-{
-	setLastVisitedDirectory(qvariant_cast<QString>(settings->value(LAST_VISITED_DIRECTORY_KEY,
-		lastVisitedDirectory().absolutePath())));
-}
-
-//==================================================================================================
-
-void MonitorSettingsDialogModel::writeSettings(QSettings *settings) const noexcept
-{
-	settings->setValue(LAST_VISITED_DIRECTORY_KEY, lastVisitedDirectory().absolutePath());
-}
-
-//==================================================================================================
-
 void MonitorSettingsDialogModel::setHostName(const QString &hostName)
 {
-	if (hostName != settings_.hostName) {
+	if (settings_.hostName != hostName) {
 		settings_.hostName = hostName;
 		Q_EMIT hostNameChanged(settings_.hostName);
 	}
@@ -71,7 +54,7 @@ void MonitorSettingsDialogModel::setHostName(const QString &hostName)
 
 void MonitorSettingsDialogModel::setPortNumber(Port portNumber)
 {
-	if (portNumber != settings_.portNumber) {
+	if (settings_.portNumber != portNumber) {
 		settings_.portNumber = portNumber;
 		Q_EMIT portNumberChanged(settings_.portNumber);
 	}
@@ -81,7 +64,7 @@ void MonitorSettingsDialogModel::setPortNumber(Port portNumber)
 
 void MonitorSettingsDialogModel::setPhoneBookPath(const QString &phoneBookPath)
 {
-	if (phoneBookPath != settings_.phoneBookPath) {
+	if (settings_.phoneBookPath != phoneBookPath) {
 		settings_.phoneBookPath = phoneBookPath;
 		Q_EMIT phoneBookPathChanged(settings_.phoneBookPath);
 	}
@@ -91,7 +74,7 @@ void MonitorSettingsDialogModel::setPhoneBookPath(const QString &phoneBookPath)
 
 void MonitorSettingsDialogModel::setLastVisitedDirectory(const QDir &directory)
 {
-	if (directory != lastVisitedDirectory_) {
+	if (lastVisitedDirectory_ != directory) {
 		lastVisitedDirectory_ = directory;
 	}
 }
@@ -105,10 +88,10 @@ QDir MonitorSettingsDialogModel::lastVisitedDirectory() const
 
 //==================================================================================================
 
-void MonitorSettingsDialogModel::setNotificationTimeout(milliseconds timeout)
+void MonitorSettingsDialogModel::setNotificationTimeout(milliseconds notificationTimeout)
 {
-	if (timeout != settings_.notificationTimeout) {
-		settings_.notificationTimeout = timeout;
+	if (settings_.notificationTimeout != notificationTimeout) {
+		settings_.notificationTimeout = notificationTimeout;
 		Q_EMIT notificationTimeoutChanged(settings_.notificationTimeout);
 	}
 }

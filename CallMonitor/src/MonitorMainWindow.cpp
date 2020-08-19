@@ -34,7 +34,8 @@ using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::stdlib;
 
 
-MonitorMainWindow::MonitorMainWindow()
+MonitorMainWindow::MonitorMainWindow(QSharedPointer<MonitorSettingsStorage> settingsStorage)
+	: PERAMainWindow(settingsStorage), settingsStorage_(settingsStorage), model_(settingsStorage)
 {
 	// Add the default menus:
 
@@ -48,7 +49,7 @@ MonitorMainWindow::MonitorMainWindow()
 	connect(quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::onQuit);
 	connect(quitAction(), &QAction::triggered, this, &MonitorMainWindow::onQuit);
 
-	connect(&model_, &MonitorMainWindowModel::visibleChanged, this, &MonitorMainWindow::onVisible);
+	connect(&model_, &MonitorMainWindowModel::visibilityChanged, this, &MonitorMainWindow::onVisible);
 
 	// Create the message(s) widget:
 
@@ -62,10 +63,7 @@ MonitorMainWindow::MonitorMainWindow()
 	messagesGroup->setLayout(messagesLayout);
 
 	setCentralWidget(messagesGroup);
-}
-
-MonitorMainWindow::~MonitorMainWindow()
-{
+	setVisible(model_.isVisible());
 }
 
 QAction *MonitorMainWindow::showAction()
@@ -84,21 +82,9 @@ QAction *MonitorMainWindow::hideAction()
 	return hideAction_;
 }
 
-void MonitorMainWindow::readSettings(QSettings *settings) noexcept
-{
-	PERAMainWindow::readSettings(settings);
-	model_.readSettings(settings);
-}
-
-void MonitorMainWindow::writeSettings(QSettings *settings) const noexcept
-{
-	PERAMainWindow::writeSettings(settings);
-	model_.writeSettings(settings);
-}
-
 void MonitorMainWindow::addEditMenu()
 {
-	auto settingsAction = new QAction(Resources::settingsIcon(), tr("&Settings..."), this);
+	auto settingsAction = new QAction(Resources::instance().settingsIcon(), tr("&Settings..."), this);
 	connect(settingsAction, &QAction::triggered, this, &MonitorMainWindow::onEditSettings);
 
 	auto editMenu = new QMenu(tr("&Edit"), this);
@@ -127,7 +113,7 @@ void MonitorMainWindow::addWindowMenu()
 	connect(hideAction(), &QAction::triggered, [this] {
 		model_.beVisible(false);
 	});
-	connect(&model_, &MonitorMainWindowModel::visibleChanged, [=, this](bool isVisible) {
+	connect(&model_, &MonitorMainWindowModel::visibilityChanged, [=, this](bool isVisible) {
 		showAction()->setDisabled(isVisible);
 		hideAction()->setEnabled(isVisible);
 	});
@@ -167,7 +153,7 @@ void MonitorMainWindow::onAbout()
 
 void MonitorMainWindow::onEditSettings()
 {
-	MonitorSettingsDialog settingsDialog;
+	MonitorSettingsDialog settingsDialog(settingsStorage_, this);
 	settingsDialog.setSettings(model_.settings());
 	if (settingsDialog.exec() == QDialog::Accepted) {
 		model_.setSettings(settingsDialog.settings());

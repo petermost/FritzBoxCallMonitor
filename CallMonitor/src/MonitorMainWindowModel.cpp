@@ -11,9 +11,8 @@
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
 
-static const QString IS_VISIBLE_KEY(QStringLiteral("isVisible"));
-
-MonitorMainWindowModel::MonitorMainWindowModel()
+MonitorMainWindowModel::MonitorMainWindowModel(QSharedPointer<MonitorSettingsStorage> settingsStorage)
+	: settingsStorage_(settingsStorage)
 {
 	fritzBox_ = new FritzBox(this);
 
@@ -27,13 +26,22 @@ MonitorMainWindowModel::MonitorMainWindowModel()
 	connect(fritzBox_, &FritzBox::phoneConnected, this, &MonitorMainWindowModel::onPhoneConnected);
 	connect(fritzBox_, &FritzBox::phoneDisconnected, this, &MonitorMainWindowModel::onPhoneDisconnected);
 
-	connectToFritzBox(settings_.hostName, settings_.portNumber);
+	beVisible(settingsStorage_->readVisibility());
+	setSettings(settingsStorage_->readSettings());
+
+	// connectToFritzBox(settings_.hostName, settings_.portNumber);
+
+	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settingsStorage_->fileName()));
 }
 
 //==================================================================================================
 
 MonitorMainWindowModel::~MonitorMainWindowModel()
 {
+	settingsStorage_->writeVisibility(isVisible());
+	settingsStorage_->writeSettings(settings_);
+
+	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settingsStorage_->fileName()));
 }
 
 //==================================================================================================
@@ -70,7 +78,7 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
 	messagesModel_->showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 
-	QString message = tr("%1 --> %2").arg(callerName).arg(calleeName);
+	QString message = tr("%1 🡆 %2").arg(callerName).arg(calleeName);
 	Q_EMIT showNotification(tr("Incoming Call"), message, settings_.notificationTimeout);
 }
 
@@ -98,33 +106,6 @@ void MonitorMainWindowModel::onPhoneDisconnected(unsigned /* connectionId */)
 	messagesModel_->showInformation(tr("Phone disconnected."));
 }
 
-//==================================================================================================
-
-void MonitorMainWindowModel::readSettings(QSettings *settings) noexcept
-{
-	beVisible(qvariant_cast<bool>(settings->value(IS_VISIBLE_KEY, true)));
-
-	MonitorSettings monitorSettings;
-	monitorSettings.readSettings(settings);
-	setSettings(monitorSettings);
-
-	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settings->fileName()));
-
-	// connectToFritzBox();
-}
-
-//==================================================================================================
-
-void MonitorMainWindowModel::writeSettings(QSettings *settings) const noexcept
-{
-	settings->setValue(IS_VISIBLE_KEY, isVisible());
-	settings_.writeSettings(settings);
-
-	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settings->fileName()));
-}
-
-//==================================================================================================
-
 void MonitorMainWindowModel::onQuit()
 {
 	fritzBox_->disconnectFrom();
@@ -132,12 +113,12 @@ void MonitorMainWindowModel::onQuit()
 
 //==================================================================================================
 
-void MonitorMainWindowModel::setSettings(const MonitorSettings &settings)
+void MonitorMainWindowModel::setSettings(MonitorSettings settings)
 {
-	if (settings.hostName != settings_.hostName || settings.portNumber != settings_.portNumber) {
+	if (settings_.hostName != settings.hostName || settings_.portNumber != settings.portNumber) {
 		connectToFritzBox(settings.hostName, settings.portNumber);
 	}
-	if (settings.phoneBookPath != settings_.phoneBookPath) {
+	if (settings_.phoneBookPath != settings.phoneBookPath) {
 		readPhoneBook(settings.phoneBookPath);
 	}
 	settings_ = settings;
@@ -154,7 +135,6 @@ MonitorSettings MonitorMainWindowModel::settings() const
 
 bool MonitorMainWindowModel::isVisible() const
 {
-	//	Q_ASSERT( has_value( isVisible_ ));
 	return *isVisible_;
 }
 
@@ -164,7 +144,7 @@ void MonitorMainWindowModel::beVisible(bool isVisible)
 {
 	if (!isVisible_.has_value() || *isVisible_ != isVisible) {
 		isVisible_ = isVisible;
-		Q_EMIT visibleChanged(*isVisible_);
+		Q_EMIT visibilityChanged(*isVisible_);
 	}
 }
 
