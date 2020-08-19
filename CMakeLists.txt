@@ -1,15 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
-project(FritzBoxCallMonitor VERSION 1.4.1)
+project(FritzBoxCallMonitor VERSION 1.5.0)
 
 add_subdirectory(CppAidKit)
-include(CppAidKit/cmake/all_options.cmake)
+include(CppAidKit/cmake/AidKit.cmake)
 
 find_package(Qt5 COMPONENTS REQUIRED Widgets Network Sql Test LinguistTools)
 
-if (NOT TARGET gtest AND NOT TARGET gtest_main)
-	add_subdirectory(/usr/src/googletest googletest)
-	# Alternative but not recommended!: find_package(GTest)
-endif()
+add_googletest_subdirectory()
 
 # set(CMAKE_AUTOMOC ON)
 # set(CMAKE_AUTORCC ON)
@@ -101,19 +98,20 @@ target_link_libraries(simulator
 ####################################################################################################
 # Setup tests:
 
-add_executable(fritztest
-	CallMonitor/test/FritzBoxTest.cpp
-	CallMonitor/test/FritzBoxPhoneBookTest.cpp
-	CallMonitor/test/PhoneBookTest.cpp
-	CallMonitor/test/FritzBoxData.hpp
-	CallMonitor/test/FritzBoxData.cpp
-	CallMonitor/test/Data.qrc
-)
-set_default_target_options(fritztest)
+if (TARGET AidKitTest)
+	add_executable(fritztest
+		CallMonitor/test/FritzBoxTest.cpp
+		CallMonitor/test/FritzBoxPhoneBookTest.cpp
+		CallMonitor/test/PhoneBookTest.cpp
+		CallMonitor/test/FritzBoxData.hpp
+		CallMonitor/test/FritzBoxData.cpp
+		CallMonitor/test/Data.qrc
+	)
+	set_default_target_options(fritztest)
 
-target_link_libraries(fritztest
-	fritzboxlib
-	Qt5::Test
-	gtest
-	gtest_main
-)
+	target_link_libraries(fritztest
+		fritzboxlib
+		Qt5::Test
+		AidKitTest
+	)
+endif()
