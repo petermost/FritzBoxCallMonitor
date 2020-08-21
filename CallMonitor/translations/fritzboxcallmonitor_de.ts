@@ -128,7 +128,7 @@ Version %2</source>
     </message>
     <message>
         <location filename="../src/MonitorMainWindowModel.cpp" line="81"/>
-        <source>%1 --&gt; %2</source>
+        <source>%1 🡆 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
