@@ -17,43 +17,43 @@
 <context>
     <name>MonitorMainWindow</name>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="62"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="65"/>
         <location filename="../../prototypes/MonitorMainWindow.cpp" line="132"/>
         <source>Messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="72"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="75"/>
         <source>&amp;Show Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="80"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="83"/>
         <source>&amp;Hide Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="87"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="90"/>
         <source>&amp;Settings...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="90"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="93"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="97"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="100"/>
         <source>&amp;About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="106"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="109"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="151"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="154"/>
         <source>%1
 Version %2</source>
         <translation type="unfinished"></translation>
@@ -128,7 +128,8 @@ Version %2</source>
     </message>
     <message>
         <location filename="../src/MonitorMainWindowModel.cpp" line="81"/>
-        <source>%1 🡆 %2</source>
+        <source>Caller: %1
+Callee: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
