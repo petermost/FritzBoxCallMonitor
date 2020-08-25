@@ -17,15 +17,16 @@
 
 #include "MonitorTrayIcon.hpp"
 #include "MonitorMainWindow.hpp"
-#include <QMenu>
+#include "MonitorResources.hpp"
 #include <pera_software/aidkit/qt/core/Strings.hpp>
+#include <QMenu>
 
 using namespace pera_software::aidkit::qt;
 
 MonitorTrayIcon::MonitorTrayIcon(MonitorMainWindow *mainWindow)
 	: QSystemTrayIcon(mainWindow)
 {
-	// Prepare the menu:
+	// Setup the menu:
 
 	auto menu = new QMenu("TrayMenu"_qs, mainWindow);
 	menu->addAction(mainWindow->showAction());
@@ -34,10 +35,9 @@ MonitorTrayIcon::MonitorTrayIcon(MonitorMainWindow *mainWindow)
 	menu->addAction(mainWindow->quitAction());
 	setContextMenu(menu);
 
-	// Prepare the icon:
+	// Setup the icon:
 
-	QIcon fritzBoxIcon(":/telephone-icon.png"_qs);
-	setIcon(fritzBoxIcon);
+	setIcon(MonitorResources::icon());
 
 	show();
 }

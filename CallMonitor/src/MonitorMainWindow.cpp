@@ -3,13 +3,12 @@
 #include "MonitorSettingsDialog.hpp"
 #include "MonitorTrayIcon.hpp"
 #include "MonitorVersion.hpp"
+#include "MonitorResources.hpp"
 
 #include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/qt/gui/Resources.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
-
-#include <chrono>
 
 #include <QApplication>
 #include <QCloseEvent>
@@ -25,6 +24,8 @@
 #include <QStatusBar>
 #include <QTcpSocket>
 #include <QAction>
+
+#include <chrono>
 
 // TODO: Add what's this actions.
 
@@ -45,6 +46,8 @@ MonitorMainWindow::MonitorMainWindow(QSharedPointer<MonitorSettingsStorage> sett
 	addHelpMenu();
 	addStatusBar();
 	addTrayIcon();
+
+	setWindowIcon(MonitorResources::icon());
 
 	connect(quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::onQuit);
 	connect(quitAction(), &QAction::triggered, this, &MonitorMainWindow::onQuit);

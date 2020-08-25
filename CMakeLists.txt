@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(FritzBoxCallMonitor VERSION 1.5.0)
+project(FritzBoxCallMonitor VERSION 1.6.0.0)
 
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/AidKit.cmake)
@@ -58,6 +58,8 @@ add_executable(fritzboxcallmonitor
 	CallMonitor/src/MonitorSettingsDialogModel.cpp
 	CallMonitor/src/MonitorSettings.cpp
 	CallMonitor/src/MonitorSettings.hpp
+	CallMonitor/src/MonitorResources.hpp
+	CallMonitor/src/MonitorResources.cpp
 	CallMonitor/src/MonitorVersion.h.in
 	${CMAKE_CURRENT_BINARY_DIR}/MonitorVersion.h
 	CallMonitor/src/MonitorVersion.hpp

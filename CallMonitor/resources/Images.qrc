@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>telephone-icon.png</file>
+        <file>telephone-icon-48x48.png</file>
+        <file>telephone-icon-2400x2400.png</file>
+        <file>telephone-icon-256x256.png</file>
     </qresource>
 </RCC>
