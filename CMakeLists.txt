@@ -4,7 +4,14 @@ project(FritzBoxCallMonitor VERSION 1.6.0.0)
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/AidKit.cmake)
 
-find_package(Qt5 COMPONENTS REQUIRED Widgets Network Sql Test LinguistTools)
+find_package(Qt5 REQUIRED
+	COMPONENTS
+		Widgets
+		Network
+		Test
+		LinguistTools
+		# Sql
+)
 
 add_googletest_subdirectory()
 
@@ -30,8 +37,8 @@ add_library(fritzboxlib STATIC
 	CallMonitor/src/FritzBox.cpp
 	CallMonitor/src/FritzBoxPhoneBook.hpp
 	CallMonitor/src/FritzBoxPhoneBook.cpp
-	CallMonitor/src/PhoneBook.hpp
-	CallMonitor/src/PhoneBook.cpp
+	# CallMonitor/src/PhoneBook.hpp
+	# CallMonitor/src/PhoneBook.cpp
 )
 set_default_target_options(fritzboxlib)
 
@@ -39,7 +46,7 @@ target_link_libraries(fritzboxlib
 	PUBLIC
 		AidKit
 		Qt5::Network
-		Qt5::Sql
+		# Qt5::Sql
 )
 
 add_executable(fritzboxcallmonitor
@@ -104,10 +111,10 @@ if (TARGET AidKitTest)
 	add_executable(fritztest
 		CallMonitor/test/FritzBoxTest.cpp
 		CallMonitor/test/FritzBoxPhoneBookTest.cpp
-		CallMonitor/test/PhoneBookTest.cpp
 		CallMonitor/test/FritzBoxData.hpp
 		CallMonitor/test/FritzBoxData.cpp
 		CallMonitor/test/Data.qrc
+		# CallMonitor/test/PhoneBookTest.cpp
 	)
 	set_default_target_options(fritztest)
 
