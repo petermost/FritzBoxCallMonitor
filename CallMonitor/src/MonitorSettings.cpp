@@ -18,46 +18,46 @@ static const QString NOTIFICATION_TIMEOUT_KEY(QStringLiteral("notificationTimeou
 static const milliseconds DEFAULT_NOTIFICATION_TIMEOUT(10s);
 
 
-MonitorSettingsStorage::MonitorSettingsStorage()
-	: PERASettingsStorage(MonitorApplication::NAME)
+MonitorSettings::MonitorSettings()
+	: PERASettings(MonitorApplication::NAME)
 {
 }
 
-bool MonitorSettingsStorage::readVisibility()
+bool MonitorSettings::readVisibility()
 {
 	return qvariant_cast<bool>(iniFile_.value(IS_VISIBLE_KEY, true));
 }
 
-void MonitorSettingsStorage::writeVisibility(bool isVisible)
+void MonitorSettings::writeVisibility(bool isVisible)
 {
 	iniFile_.setValue(IS_VISIBLE_KEY, isVisible);
 }
 
-QDir MonitorSettingsStorage::readLastVisitedDirectory()
+QDir MonitorSettings::readLastVisitedDirectory()
 {
 	return qvariant_cast<QString>(iniFile_.value(LAST_VISITED_DIRECTORY_KEY, QStandardPaths::writableLocation(QStandardPaths::StandardLocation::HomeLocation)));
 }
 
-void MonitorSettingsStorage::writeLastVisitedDirectory(const QDir &lastVisitedDirectory)
+void MonitorSettings::writeLastVisitedDirectory(const QDir &lastVisitedDirectory)
 {
 	iniFile_.setValue(LAST_VISITED_DIRECTORY_KEY, lastVisitedDirectory.absolutePath());
 }
 
-MonitorSettings MonitorSettingsStorage::readSettings()
+MonitorData MonitorSettings::readData()
 {
-	MonitorSettings settings = {
+	MonitorData data = {
 		.hostName = qvariant_cast<QString>(iniFile_.value(HOST_NAME_KEY, FritzBox::DEFAULT_HOST_NAME)),
 		.portNumber = qvariant_cast<FritzBox::Port>(iniFile_.value(PORT_NUMBER_KEY, FritzBox::DEFAULT_CALL_MONITOR_PORT)),
 		.notificationTimeout = qvariant_cast<milliseconds>(iniFile_.value(NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue(DEFAULT_NOTIFICATION_TIMEOUT))),
 		.phoneBookPath = qvariant_cast<QString>(iniFile_.value(PHONE_BOOK_PATH_KEY))
 	};
-	return settings;
+	return data;
 }
 
-void MonitorSettingsStorage::writeSettings(const MonitorSettings &settings)
+void MonitorSettings::writeData(const MonitorData &data)
 {
-	iniFile_.setValue(HOST_NAME_KEY, settings.hostName);
-	iniFile_.setValue(PORT_NUMBER_KEY, settings.portNumber);
-	iniFile_.setValue(PHONE_BOOK_PATH_KEY, settings.phoneBookPath);
-	iniFile_.setValue(NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue(settings.notificationTimeout));
+	iniFile_.setValue(HOST_NAME_KEY, data.hostName);
+	iniFile_.setValue(PORT_NUMBER_KEY, data.portNumber);
+	iniFile_.setValue(PHONE_BOOK_PATH_KEY, data.phoneBookPath);
+	iniFile_.setValue(NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue(data.notificationTimeout));
 }

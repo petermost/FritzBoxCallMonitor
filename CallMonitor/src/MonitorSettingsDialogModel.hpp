@@ -10,11 +10,11 @@ class QSettings;
 class MonitorSettingsDialogModel : public QObject {
 	Q_OBJECT
 	public:
-		MonitorSettingsDialogModel(QSharedPointer<MonitorSettingsStorage> settingsStorage, QObject *parent = nullptr);
+		MonitorSettingsDialogModel(QSharedPointer<MonitorSettings> settings, QObject *parent = nullptr);
 		~MonitorSettingsDialogModel() override;
 
-		void setSettings(const MonitorSettings &settings);
-		MonitorSettings settings() const;
+		void setData(const MonitorData &data);
+		MonitorData data() const;
 
 		QDir lastVisitedDirectory() const;
 
@@ -32,7 +32,7 @@ class MonitorSettingsDialogModel : public QObject {
 		void phoneBookPathChanged(const QString &phoneBookPath);
 
 	private:
-		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
-		MonitorSettings settings_;
+		QSharedPointer<MonitorSettings> settings_;
+		MonitorData data_;
 		QDir lastVisitedDirectory_;
 };

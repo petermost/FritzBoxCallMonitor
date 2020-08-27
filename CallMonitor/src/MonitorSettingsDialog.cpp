@@ -15,8 +15,8 @@ using namespace chrono;
 using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::stdlib;
 
-MonitorSettingsDialog::MonitorSettingsDialog(QSharedPointer<MonitorSettingsStorage> settingsStorage, QWidget *parent)
-	: QDialog(parent), settingsStorage_(settingsStorage), model_(settingsStorage)
+MonitorSettingsDialog::MonitorSettingsDialog(QSharedPointer<MonitorSettings> settings, QWidget *parent)
+	: QDialog(parent), settings_(settings), model_(settings)
 {
 	auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
@@ -28,12 +28,12 @@ MonitorSettingsDialog::MonitorSettingsDialog(QSharedPointer<MonitorSettingsStora
 	layout->addWidget(buttons);
 	setLayout(layout);
 
-	settingsStorage_->readSize(this);
+	settings_->readSize(this);
 }
 
 MonitorSettingsDialog::~MonitorSettingsDialog()
 {
-	settingsStorage_->writeSize(this);
+	settings_->writeSize(this);
 }
 
 QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
@@ -42,7 +42,7 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 
 	auto hostName = new QLineEdit;
 	hostName->setClearButtonEnabled(true);
-	hostName->setText(model_.settings().hostName);
+	hostName->setText(model_.data().hostName);
 	connect(hostName, &QLineEdit::editingFinished, [=, this] {
 		model_.setHostName(hostName->text());
 	});
@@ -57,7 +57,7 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 
 	auto portNumber = new IntegerSpinBox;
 	portNumber->setRange(PORT_MIN, PORT_MAX);
-	portNumber->setValue(model_.settings().portNumber);
+	portNumber->setValue(model_.data().portNumber);
 	connect(portNumber, &IntegerSpinBox::editingFinished, [=, this] {
 		model_.setPortNumber(static_cast<Port>(portNumber->value()));
 	});
@@ -72,7 +72,7 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 
 	auto phoneBookPath = new QLineEdit;
 	phoneBookPath->setClearButtonEnabled(true);
-	phoneBookPath->setText(model_.settings().phoneBookPath);
+	phoneBookPath->setText(model_.data().phoneBookPath);
 	connect(phoneBookPath, &QLineEdit::editingFinished, &model_, [=, this] {
 		model_.setPhoneBookPath(phoneBookPath->text());
 	});
@@ -112,7 +112,7 @@ QGroupBox *MonitorSettingsDialog::createNotificationWidgets()
 
 	auto notificationTimeout = new IntegerSpinBox;
 	notificationTimeout->setSuffix(tr("ms"));
-	notificationTimeout->setValue(int_cast<int>(model_.settings().notificationTimeout.count()));
+	notificationTimeout->setValue(int_cast<int>(model_.data().notificationTimeout.count()));
 	connect(notificationTimeout, &IntegerSpinBox::editingFinished, [=, this] {
 		model_.setNotificationTimeout(milliseconds(notificationTimeout->value()));
 	});
@@ -135,14 +135,14 @@ QGroupBox *MonitorSettingsDialog::createNotificationWidgets()
 	return notificationGroup;
 }
 
-void MonitorSettingsDialog::setSettings(const MonitorSettings &settings)
+void MonitorSettingsDialog::setData(const MonitorData &data)
 {
-	model_.setSettings(settings);
+	model_.setData(data);
 }
 
-MonitorSettings MonitorSettingsDialog::settings() const
+MonitorData MonitorSettingsDialog::data() const
 {
-	return model_.settings();
+	return model_.data();
 }
 
 

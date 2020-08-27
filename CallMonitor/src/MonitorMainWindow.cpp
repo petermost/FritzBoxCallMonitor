@@ -35,8 +35,8 @@ using namespace pera_software::aidkit::qt;
 using namespace pera_software::aidkit::stdlib;
 
 
-MonitorMainWindow::MonitorMainWindow(QSharedPointer<MonitorSettingsStorage> settingsStorage)
-	: PERAMainWindow(settingsStorage), settingsStorage_(settingsStorage), model_(settingsStorage)
+MonitorMainWindow::MonitorMainWindow(QSharedPointer<MonitorSettings> settings)
+	: PERAMainWindow(settings), settings_(settings), model_(settings)
 {
 	// Add the default menus:
 
@@ -156,10 +156,10 @@ void MonitorMainWindow::onAbout()
 
 void MonitorMainWindow::onEditSettings()
 {
-	MonitorSettingsDialog settingsDialog(settingsStorage_, this);
-	settingsDialog.setSettings(model_.settings());
+	MonitorSettingsDialog settingsDialog(settings_, this);
+	settingsDialog.setData(model_.data());
 	if (settingsDialog.exec() == QDialog::Accepted) {
-		model_.setSettings(settingsDialog.settings());
+		model_.setData(settingsDialog.data());
 	}
 }
 

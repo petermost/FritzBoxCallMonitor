@@ -15,7 +15,7 @@ class QAbstractItemModel;
 class MonitorMainWindowModel : public QObject {
 	Q_OBJECT
 	public:
-		MonitorMainWindowModel(QSharedPointer<MonitorSettingsStorage> settingsStorage);
+		MonitorMainWindowModel(QSharedPointer<MonitorSettings> settings);
 		~MonitorMainWindowModel() override;
 
 		bool isVisible() const;
@@ -30,11 +30,11 @@ class MonitorMainWindowModel : public QObject {
 	public Q_SLOTS:
 		void onQuit();
 
-		void setSettings(MonitorSettings settings);
+		void setData(MonitorData data);
 		void beVisible(bool isVisible = true);
 
 	public:
-		MonitorSettings settings() const;
+		MonitorData data() const;
 
 	private:
 		void connectToFritzBox(const QString &hostName, pera_software::aidkit::qt::Port portNumber);
@@ -47,10 +47,10 @@ class MonitorMainWindowModel : public QObject {
 		void onPhoneConnected(unsigned connectionId, const QString &caller);
 		void onPhoneDisconnected(unsigned connectionId);
 
-		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
+		QSharedPointer<MonitorSettings> settings_;
 		std::optional<bool> isVisible_;
 
-		MonitorSettings settings_;
+		MonitorData data_;
 		FritzBox *fritzBox_ = nullptr;
 		FritzBoxPhoneBook fritzBoxPhoneBook_;
 		pera_software::aidkit::qt::MessagesModel *messagesModel_;

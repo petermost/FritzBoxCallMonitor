@@ -3,22 +3,22 @@
 #include "FritzBox.hpp"
 #include <QString>
 #include <chrono>
-#include <pera_software/aidkit/qt/core/PERASettingsStorage.hpp>
+#include <pera_software/aidkit/qt/core/PERASettings.hpp>
 #include <pera_software/aidkit/qt/core/Socket.hpp>
 
 class QDir;
 class QSettings;
 
-struct MonitorSettings {
+struct MonitorData {
 	QString hostName;
 	pera_software::aidkit::qt::Port portNumber = 0;
 	std::chrono::milliseconds notificationTimeout;
 	QString phoneBookPath;
 };
 
-class MonitorSettingsStorage : public pera_software::aidkit::qt::PERASettingsStorage {
+class MonitorSettings : public pera_software::aidkit::qt::PERASettings {
 	public:
-		MonitorSettingsStorage();
+		MonitorSettings();
 
 		bool readVisibility();
 		void writeVisibility(bool isVisible);
@@ -26,6 +26,6 @@ class MonitorSettingsStorage : public pera_software::aidkit::qt::PERASettingsSto
 		QDir readLastVisitedDirectory();
 		void writeLastVisitedDirectory(const QDir &lastVisitedDirectory);
 
-		MonitorSettings readSettings();
-		void writeSettings(const MonitorSettings &settings);
+		MonitorData readData();
+		void writeData(const MonitorData &data);
 };

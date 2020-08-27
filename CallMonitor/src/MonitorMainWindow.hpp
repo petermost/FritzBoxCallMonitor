@@ -8,7 +8,7 @@
 class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 	Q_OBJECT
 	public:
-		MonitorMainWindow(QSharedPointer<MonitorSettingsStorage> settingsStorage);
+		MonitorMainWindow(QSharedPointer<MonitorSettings> settings);
 
 		QAction *showAction();
 		QAction *hideAction();
@@ -28,7 +28,7 @@ class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 		void addStatusBar();
 		void addTrayIcon();
 
-		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
+		QSharedPointer<MonitorSettings> settings_;
 		MonitorMainWindowModel model_;
 
 		QAction *showAction_ = nullptr;

@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
 	// qInfo() << "Using Qt build: " << QLibraryInfo::build() << endl;
 
-	auto settings = QSharedPointer<MonitorSettingsStorage>::create();
+	auto settings = QSharedPointer<MonitorSettings>::create();
 
 	MonitorApplication application(&argc, argv);
 	MonitorMainWindow mainWindow(settings);

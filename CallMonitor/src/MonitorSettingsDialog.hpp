@@ -8,11 +8,11 @@ class QGroupBox;
 class MonitorSettingsDialog : public QDialog {
 	Q_OBJECT
 	public:
-		MonitorSettingsDialog(QSharedPointer<MonitorSettingsStorage> settingsStorage, QWidget *parent = nullptr);
+		MonitorSettingsDialog(QSharedPointer<MonitorSettings> settings, QWidget *parent = nullptr);
 		~MonitorSettingsDialog() override;
 
-		void setSettings(const MonitorSettings &settings);
-		MonitorSettings settings() const;
+		void setData(const MonitorData &data);
+		MonitorData data() const;
 
 	Q_SIGNALS:
 
@@ -23,6 +23,6 @@ class MonitorSettingsDialog : public QDialog {
 		QGroupBox *createFritzBoxWidgets();
 		QGroupBox *createNotificationWidgets();
 
-		QSharedPointer<MonitorSettingsStorage> settingsStorage_;
+		QSharedPointer<MonitorSettings> settings_;
 		MonitorSettingsDialogModel model_;
 };

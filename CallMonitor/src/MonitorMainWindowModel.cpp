@@ -11,8 +11,8 @@
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
 
-MonitorMainWindowModel::MonitorMainWindowModel(QSharedPointer<MonitorSettingsStorage> settingsStorage)
-	: settingsStorage_(settingsStorage)
+MonitorMainWindowModel::MonitorMainWindowModel(QSharedPointer<MonitorSettings> settings)
+	: settings_(settings)
 {
 	fritzBox_ = new FritzBox(this);
 
@@ -26,22 +26,22 @@ MonitorMainWindowModel::MonitorMainWindowModel(QSharedPointer<MonitorSettingsSto
 	connect(fritzBox_, &FritzBox::phoneConnected, this, &MonitorMainWindowModel::onPhoneConnected);
 	connect(fritzBox_, &FritzBox::phoneDisconnected, this, &MonitorMainWindowModel::onPhoneDisconnected);
 
-	beVisible(settingsStorage_->readVisibility());
-	setSettings(settingsStorage_->readSettings());
+	beVisible(settings_->readVisibility());
+	setData(settings_->readData());
 
 	// connectToFritzBox(settings_.hostName, settings_.portNumber);
 
-	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settingsStorage_->fileName()));
+	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settings_->fileName()));
 }
 
 //==================================================================================================
 
 MonitorMainWindowModel::~MonitorMainWindowModel()
 {
-	settingsStorage_->writeVisibility(isVisible());
-	settingsStorage_->writeSettings(settings_);
+	settings_->writeVisibility(isVisible());
+	settings_->writeData(data_);
 
-	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settingsStorage_->fileName()));
+	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settings_->fileName()));
 }
 
 //==================================================================================================
@@ -79,7 +79,7 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 	messagesModel_->showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 
 	QString message = tr("Caller: %1\nCallee: %2").arg(callerName).arg(calleeName);
-	Q_EMIT showNotification(tr("Incoming Call"), message, settings_.notificationTimeout);
+	Q_EMIT showNotification(tr("Incoming Call"), message, data_.notificationTimeout);
 }
 
 //==================================================================================================
@@ -113,22 +113,22 @@ void MonitorMainWindowModel::onQuit()
 
 //==================================================================================================
 
-void MonitorMainWindowModel::setSettings(MonitorSettings settings)
+void MonitorMainWindowModel::setData(MonitorData data)
 {
-	if (settings_.hostName != settings.hostName || settings_.portNumber != settings.portNumber) {
-		connectToFritzBox(settings.hostName, settings.portNumber);
+	if (data_.hostName != data.hostName || data_.portNumber != data.portNumber) {
+		connectToFritzBox(data.hostName, data.portNumber);
 	}
-	if (settings_.phoneBookPath != settings.phoneBookPath) {
-		readPhoneBook(settings.phoneBookPath);
+	if (data_.phoneBookPath != data.phoneBookPath) {
+		readPhoneBook(data.phoneBookPath);
 	}
-	settings_ = settings;
+	data_ = data;
 }
 
 //==================================================================================================
 
-MonitorSettings MonitorMainWindowModel::settings() const
+MonitorData MonitorMainWindowModel::data() const
 {
-	return settings_;
+	return data_;
 }
 
 //==================================================================================================
