@@ -74,6 +74,7 @@ add_executable(fritzboxcallmonitor
 	CallMonitor/resources/Images.qrc
 	${TRANSLATION_FILES}
 	${CMAKE_CURRENT_BINARY_DIR}/Translations.qrc
+	CallMonitor/resources/Icon.rc
 )
 set_default_target_options(fritzboxcallmonitor)
 

@@ -27,7 +27,7 @@ FritzBox::FritzBox(QObject *parent) noexcept
 {
 	socket_ = new QTcpSocket(this);
 	connect(socket_, &QTcpSocket::disconnected, this, &FritzBox::onConnected);
-	connect(socket_, qOverload<QTcpSocket::SocketError>(&QTcpSocket::error), this, &FritzBox::onError);
+	connect(socket_, &QTcpSocket::errorOccurred, this, &FritzBox::onError);
 	connect(socket_, &QTcpSocket::stateChanged, this, &FritzBox::stateChanged);
 	connect(socket_, &QTcpSocket::readyRead, this, &FritzBox::onReadyRead);
 }
