@@ -4,12 +4,12 @@
 <context>
     <name>FritzBox</name>
     <message>
-        <location filename="../src/FritzBox.cpp" line="87"/>
+        <location filename="../src/FritzBox.cpp" line="91"/>
         <source> (Retry in %1 seconds ...)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/FritzBox.cpp" line="123"/>
+        <location filename="../src/FritzBox.cpp" line="127"/>
         <source>Unknown command &apos;%1&apos;!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -18,7 +18,6 @@
     <name>MonitorMainWindow</name>
     <message>
         <location filename="../src/MonitorMainWindow.cpp" line="65"/>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="132"/>
         <source>Messages</source>
         <translation type="unfinished"></translation>
     </message>
@@ -58,46 +57,6 @@
 Version %2</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="46"/>
-        <source>&amp;Hostname:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="59"/>
-        <source>&amp;Portnumber:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="72"/>
-        <source>&amp;Phonebook:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="77"/>
-        <source>&amp;Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="99"/>
-        <source>ms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="107"/>
-        <source>&amp;Timeout:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="114"/>
-        <source>Notification</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindow.cpp" line="186"/>
-        <source>The program will keep running in the system tray. To terminate the program, choose &lt;b&gt;Quit&lt;/b&gt; in the context menu of the system tray entry.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>MonitorMainWindowModel</name>
@@ -134,7 +93,6 @@ Callee: %2</source>
     </message>
     <message>
         <location filename="../src/MonitorMainWindowModel.cpp" line="82"/>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="75"/>
         <source>Incoming Call</source>
         <translation type="unfinished"></translation>
     </message>
@@ -145,51 +103,22 @@ Callee: %2</source>
     </message>
     <message>
         <location filename="../src/MonitorMainWindowModel.cpp" line="99"/>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="45"/>
         <source>Phone connected: Caller: &apos;%1&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/MonitorMainWindowModel.cpp" line="106"/>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="49"/>
         <source>Phone disconnected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/MonitorMainWindowModel.cpp" line="158"/>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="157"/>
         <source>Read phone book entry for &apos;%1&apos; with the number: &apos;%2&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/MonitorMainWindowModel.cpp" line="161"/>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="160"/>
         <source>Unable to read &apos;%1&apos; because &apos;%2&apos;!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="36"/>
-        <source>Connected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="41"/>
-        <source>Phone calling: Caller: &apos;%1&apos;, Callee: &apos;%2&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="74"/>
-        <source>Phone ringing: Caller: &apos;%1&apos;, Callee: &apos;%2&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="105"/>
-        <source>Select exported phone book</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../prototypes/MonitorMainWindowModel.cpp" line="107"/>
-        <source>Phonebooks (*.xml)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
