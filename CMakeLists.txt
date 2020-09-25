@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(FritzBoxCallMonitor VERSION 1.6.1)
+project(FritzBoxCallMonitor VERSION 1.6.2)
 
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/AidKit.cmake)

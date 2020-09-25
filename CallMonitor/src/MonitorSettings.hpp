@@ -12,7 +12,7 @@ class QSettings;
 struct MonitorData {
 	QString hostName;
 	pera_software::aidkit::qt::Port portNumber = 0;
-	std::chrono::milliseconds notificationTimeout;
+	std::chrono::milliseconds notificationTimeout = std::chrono::milliseconds(0);
 	QString phoneBookPath;
 };
 
