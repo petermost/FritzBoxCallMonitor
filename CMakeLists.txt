@@ -49,7 +49,7 @@ target_link_libraries(fritzboxlib
 		# Qt5::Sql
 )
 
-add_executable(fritzboxcallmonitor
+add_executable(fritzboxcallmonitor WIN32
 	CallMonitor/src/main.cpp
 	CallMonitor/src/MonitorApplication.hpp
 	CallMonitor/src/MonitorApplication.cpp
