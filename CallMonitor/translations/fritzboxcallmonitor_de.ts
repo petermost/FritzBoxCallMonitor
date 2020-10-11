@@ -125,52 +125,57 @@ Callee: %2</source>
 <context>
     <name>MonitorSettingsDialog</name>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="53"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="64"/>
         <source>&amp;Hostname:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="68"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="75"/>
         <source>&amp;Portnumber:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="83"/>
-        <source>&amp;Phonebook:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="88"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="107"/>
         <source>&amp;Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="103"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="86"/>
         <source>FRITZ!Box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="114"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="102"/>
+        <source>&amp;Filename:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="115"/>
+        <source>Phonebook</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="126"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="125"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="132"/>
         <source>&amp;Timeout:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="132"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="137"/>
         <source>Notification</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="153"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="158"/>
         <source>Select exported phone book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="156"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="161"/>
         <source>Phonebooks (*.xml)</source>
         <translation type="unfinished"></translation>
     </message>

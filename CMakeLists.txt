@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(FritzBoxCallMonitor VERSION 1.6.2)
+project(FritzBoxCallMonitor VERSION 1.7.0)
 
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/AidKit.cmake)
@@ -48,7 +48,6 @@ target_link_libraries(fritzboxlib
 		Qt5::Network
 		# Qt5::Sql
 )
-
 add_executable(fritzboxcallmonitor WIN32
 	CallMonitor/src/main.cpp
 	CallMonitor/src/MonitorApplication.hpp
@@ -61,6 +60,8 @@ add_executable(fritzboxcallmonitor WIN32
 	CallMonitor/src/MonitorMainWindowModel.cpp
 	CallMonitor/src/MonitorSettingsDialog.hpp
 	CallMonitor/src/MonitorSettingsDialog.cpp
+	CallMonitor/src/MillisecondsProperty.hpp
+	CallMonitor/src/MillisecondsProperty.cpp
 	CallMonitor/src/MonitorSettingsDialogModel.hpp
 	CallMonitor/src/MonitorSettingsDialogModel.cpp
 	CallMonitor/src/MonitorSettings.cpp

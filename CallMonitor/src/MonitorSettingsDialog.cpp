@@ -1,19 +1,21 @@
 #include "MonitorSettingsDialog.hpp"
 #include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QFormLayout>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSettings>
-#include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
+#include <pera_software/aidkit/qt/properties/Bindings.hpp>
+#include <pera_software/aidkit/qt/properties/BooleanProperty.hpp>
+#include <pera_software/aidkit/qt/core/Strings.hpp>
 
 using namespace std;
 using namespace chrono;
 using namespace pera_software::aidkit::qt;
-using namespace pera_software::aidkit::stdlib;
 
 MonitorSettingsDialog::MonitorSettingsDialog(QSharedPointer<MonitorSettings> settings, QWidget *parent)
 	: QDialog(parent), settings_(settings), model_(settings)
@@ -21,6 +23,9 @@ MonitorSettingsDialog::MonitorSettingsDialog(QSharedPointer<MonitorSettings> set
 	auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
 	connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+	auto okButton = buttons->button(QDialogButtonBox::StandardButton::Ok);
+	bindWidgetEnabledProperty(okButton, &model_.okButton);
 
 	auto layout = new QVBoxLayout;
 	layout->addWidget(createFritzBoxWidgets());
@@ -40,48 +45,38 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 {
 	// Hostname widget:
 
-	auto hostName = new QLineEdit;
-	hostName->setClearButtonEnabled(true);
-	hostName->setText(model_.data().hostName);
-	connect(hostName, &QLineEdit::editingFinished, [=, this] {
-		model_.setHostName(hostName->text());
-	});
-	connect(&model_, &MonitorSettingsDialogModel::hostNameChanged, hostName, &QLineEdit::setText);
+	auto hostNameWidget = new QLineEdit;
+	hostNameWidget->setClearButtonEnabled(true);
+	hostNameWidget->setPlaceholderText(tr("Enter hostname (default fritz.box)"));
+	bindLineEditTextProperty(hostNameWidget, &model_.hostName);
 
 	// Hostname label:
 
 	auto hostNameLabel = new QLabel(tr("&Hostname:"));
-	hostNameLabel->setBuddy(hostName);
+	hostNameLabel->setBuddy(hostNameWidget);
 
 	// Portnumber widget:
 
-	auto portNumber = new IntegerSpinBox;
-	portNumber->setRange(PORT_MIN, PORT_MAX);
-	portNumber->setValue(model_.data().portNumber);
-	connect(portNumber, &IntegerSpinBox::editingFinished, [=, this] {
-		model_.setPortNumber(static_cast<Port>(portNumber->value()));
-	});
-	connect(&model_, &MonitorSettingsDialogModel::portNumberChanged, portNumber, &IntegerSpinBox::setValue);
+	auto portNumberWidget = new IntegerSpinBox;
+	portNumberWidget->setRange(PORT_MIN, PORT_MAX);
+	bindSpinBoxValueProperty(portNumberWidget, &model_.portNumber);
 
 	// Portnumber label:
 
 	auto portNumberLabel = new QLabel(tr("&Portnumber:"));
-	portNumberLabel->setBuddy(portNumber);
+	portNumberLabel->setBuddy(portNumberWidget);
 
 	// Phonebook widget:
 
-	auto phoneBookPath = new QLineEdit;
-	phoneBookPath->setClearButtonEnabled(true);
-	phoneBookPath->setText(model_.data().phoneBookPath);
-	connect(phoneBookPath, &QLineEdit::editingFinished, &model_, [=, this] {
-		model_.setPhoneBookPath(phoneBookPath->text());
-	});
-	connect(&model_, &MonitorSettingsDialogModel::phoneBookPathChanged, phoneBookPath, &QLineEdit::setText);
+	auto phoneBookPathWidget = new QLineEdit;
+	phoneBookPathWidget->setClearButtonEnabled(true);
+	phoneBookPathWidget->setPlaceholderText(tr("Enter exported phonebook filename"));
+	bindLineEditTextProperty(phoneBookPathWidget, &model_.phoneBookPath);
 
 	// Phonebook label:
 
 	auto phoneBookLabel = new QLabel(tr("&Phonebook:"));
-	phoneBookLabel->setBuddy(phoneBookPath);
+	phoneBookLabel->setBuddy(phoneBookPathWidget);
 
 	// Browse phonebook widget:
 
@@ -92,12 +87,12 @@ QGroupBox *MonitorSettingsDialog::createFritzBoxWidgets()
 
 	auto fritzBoxLayout = new QGridLayout;
 	fritzBoxLayout->addWidget(hostNameLabel, 0, 0);
-	fritzBoxLayout->addWidget(hostName, 0, 1);
+	fritzBoxLayout->addWidget(hostNameWidget, 0, 1);
 	fritzBoxLayout->addWidget(portNumberLabel, 0, 2);
-	fritzBoxLayout->addWidget(portNumber, 0, 3);
+	fritzBoxLayout->addWidget(portNumberWidget, 0, 3);
 
 	fritzBoxLayout->addWidget(phoneBookLabel, 1, 0);
-	fritzBoxLayout->addWidget(phoneBookPath, 1, 1);
+	fritzBoxLayout->addWidget(phoneBookPathWidget, 1, 1);
 	fritzBoxLayout->addWidget(browsePhoneBookPathButton, 1, 2, 1, 2);
 
 	auto fritzBoxGroup = new QGroupBox(tr("FRITZ!Box"));
@@ -110,24 +105,19 @@ QGroupBox *MonitorSettingsDialog::createNotificationWidgets()
 {
 	// Timeout widget:
 
-	auto notificationTimeout = new IntegerSpinBox;
-	notificationTimeout->setSuffix(tr("ms"));
-	notificationTimeout->setValue(int_cast<int>(model_.data().notificationTimeout.count()));
-	connect(notificationTimeout, &IntegerSpinBox::editingFinished, [=, this] {
-		model_.setNotificationTimeout(milliseconds(notificationTimeout->value()));
-	});
-	connect(&model_, &MonitorSettingsDialogModel::notificationTimeoutChanged, [=](milliseconds timeout) {
-		notificationTimeout->setValue(int_cast<int>(timeout.count()));
-	});
+	auto notificationTimeoutWidget = new IntegerSpinBox;
+	notificationTimeoutWidget->setSuffix(tr("ms"));
+	auto currentPolicy = notificationTimeoutWidget->sizePolicy();
+	notificationTimeoutWidget->setSizePolicy(QSizePolicy::Expanding, currentPolicy.verticalPolicy());
+	bindSpinBoxValueProperty(notificationTimeoutWidget, &model_.notificationTimeout);
 
 	// Timeout label:
 
 	auto notificationTimeoutLabel = new QLabel(tr("&Timeout:"));
-	notificationTimeoutLabel->setBuddy(notificationTimeout);
-
+	notificationTimeoutLabel->setBuddy(notificationTimeoutWidget);
 	auto notificationLayout = new QHBoxLayout;
 	notificationLayout->addWidget(notificationTimeoutLabel);
-	notificationLayout->addWidget(notificationTimeout);
+	notificationLayout->addWidget(notificationTimeoutWidget);
 
 	auto notificationGroup = new QGroupBox(tr("Notification"));
 	notificationGroup->setLayout(notificationLayout);
@@ -160,7 +150,7 @@ void MonitorSettingsDialog::browseForPhoneBook()
 	if (fileDialog.exec() == QFileDialog::Accepted) {
 		QStringList phoneBookPaths = fileDialog.selectedFiles();
 		Q_ASSERT(phoneBookPaths.size() >= 1);
-		model_.setPhoneBookPath(phoneBookPaths[0]);
+		model_.phoneBookPath = phoneBookPaths[0];
 		model_.setLastVisitedDirectory(fileDialog.directory());
 	}
 }
