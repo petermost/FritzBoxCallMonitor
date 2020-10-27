@@ -18,13 +18,15 @@ MonitorSettingsDialogModel::MonitorSettingsDialogModel(QSharedPointer<MonitorSet
 {
 	lastVisitedDirectory_ = settings_->readLastVisitedDirectory();
 
-	auto enableOkButton = [=, this]() {
+	auto updateOkButton = [=, this]() {
 		hostNameValid = !hostName.value().isEmpty();
 		okButton = hostNameValid;
 	};
 
-	connect(&hostName, &StringProperty::valueChanged, enableOkButton);
-	connect(&portNumber, &IntegerProperty::valueChanged, enableOkButton);
+	connect(&hostName, &StringProperty::valueChanged, updateOkButton);
+	connect(&portNumber, &IntegerProperty::valueChanged, updateOkButton);
+
+	connect(&browseForPhoneBookAction, &QAction::triggered, this, &MonitorSettingsDialogModel::onBrowseForPhoneBook);
 }
 
 //==================================================================================================
@@ -36,37 +38,10 @@ MonitorSettingsDialogModel::~MonitorSettingsDialogModel()
 
 //==================================================================================================
 
-void MonitorSettingsDialogModel::setData(const MonitorData &data)
+void MonitorSettingsDialogModel::onBrowseForPhoneBook()
 {
-	hostName = data.hostName;
-	portNumber = data.portNumber;
-	phoneBookPath = data.phoneBookPath;
-	notificationTimeout = data.notificationTimeout;
-}
-
-//==================================================================================================
-
-MonitorData MonitorSettingsDialogModel::data() const
-{
-	MonitorData data = {
-		.hostName = hostName,
-		.portNumber = static_cast<Port>(portNumber),
-		.notificationTimeout = notificationTimeout,
-		.phoneBookPath = phoneBookPath
-	};
-	return data;
-}
-
-//==================================================================================================
-
-void MonitorSettingsDialogModel::setLastVisitedDirectory(const QDir &directory)
-{
-	lastVisitedDirectory_ = directory;
-}
-
-//==================================================================================================
-
-QDir MonitorSettingsDialogModel::lastVisitedDirectory() const
-{
-	return lastVisitedDirectory_;
+	QString selectedPhoneBookPath;
+	Q_EMIT browseForPhoneBook(&lastVisitedDirectory_, &selectedPhoneBookPath);
+	if (!selectedPhoneBookPath.isEmpty())
+		phoneBookPath = selectedPhoneBookPath;
 }

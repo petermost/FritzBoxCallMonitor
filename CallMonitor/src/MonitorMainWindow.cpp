@@ -6,7 +6,9 @@
 #include "MonitorResources.hpp"
 
 #include <pera_software/aidkit/stdlib/stdlib.hpp>
+#include <pera_software/aidkit/stdlib/memory.hpp>
 #include <pera_software/aidkit/qt/gui/Resources.hpp>
+#include <pera_software/aidkit/qt/core/Pointer.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
 
@@ -154,12 +156,21 @@ void MonitorMainWindow::onAbout()
 	QMessageBox::about(this, QString(), tr("%1\nVersion %2").arg(MonitorApplication::NAME).arg(MonitorVersion::version()));
 }
 
+
 void MonitorMainWindow::onEditSettings()
 {
+	MonitorSettingsDialogModel dialogModel(settings_);
+	dialogModel.hostName = model_.data().hostName;
+	dialogModel.portNumber = model_.data().portNumber;
+	dialogModel.phoneBookPath = model_.data().phoneBookPath;
+	dialogModel.notificationTimeout = model_.data().notificationTimeout;
+
 	MonitorSettingsDialog settingsDialog(settings_, this);
-	settingsDialog.setData(model_.data());
+	QSharedPointer modelPtr(&dialogModel, null_deleter());
+	settingsDialog.setModel(modelPtr);
+
 	if (settingsDialog.exec() == QDialog::Accepted) {
-		model_.setData(settingsDialog.data());
+		// model_.setData(settingsDialog.data());
 	}
 }
 

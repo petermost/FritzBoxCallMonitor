@@ -17,42 +17,42 @@
 <context>
     <name>MonitorMainWindow</name>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="65"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="67"/>
         <source>Messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="75"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="77"/>
         <source>&amp;Show Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="83"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="85"/>
         <source>&amp;Hide Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="90"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="92"/>
         <source>&amp;Settings...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="93"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="95"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="100"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="102"/>
         <source>&amp;About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="109"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="111"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="154"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="156"/>
         <source>%1
 Version %2</source>
         <translation type="unfinished"></translation>
@@ -125,57 +125,65 @@ Callee: %2</source>
 <context>
     <name>MonitorSettingsDialog</name>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="64"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="54"/>
         <source>&amp;Hostname:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="75"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="64"/>
         <source>&amp;Portnumber:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="107"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="80"/>
         <source>&amp;Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="86"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="94"/>
         <source>FRITZ!Box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="102"/>
-        <source>&amp;Filename:</source>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="50"/>
+        <source>Enter hostname (default fritz.box)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="115"/>
-        <source>Phonebook</source>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="71"/>
+        <source>Enter exported phonebook filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="126"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="75"/>
+        <source>&amp;Phonebook:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="105"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="132"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="111"/>
         <source>&amp;Timeout:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="137"/>
+        <location filename="../src/MonitorSettingsDialog.cpp" line="117"/>
         <source>Notification</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>MonitorSettingsDialogModel</name>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="158"/>
+        <location filename="../src/MonitorSettingsDialogModel.cpp" line="47"/>
         <source>Select exported phone book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorSettingsDialog.cpp" line="161"/>
+        <location filename="../src/MonitorSettingsDialogModel.cpp" line="50"/>
         <source>Phonebooks (*.xml)</source>
         <translation type="unfinished"></translation>
     </message>
