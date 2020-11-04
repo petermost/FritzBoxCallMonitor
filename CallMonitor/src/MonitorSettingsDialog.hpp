@@ -1,12 +1,15 @@
 #pragma once
 
-#include "MonitorSettingsDialogModel.hpp"
 #include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
 #include <QDialog>
 
+class QDir;
 class QGroupBox;
 class QPushButton;
 class QLineEdit;
+
+class MonitorSettings;
+class MonitorSettingsDialogModel;
 
 class MonitorSettingsDialog : public QDialog {
 	Q_OBJECT

@@ -1,16 +1,17 @@
 #include "MonitorMainWindow.hpp"
 #include "MonitorApplication.hpp"
 #include "MonitorSettingsDialog.hpp"
-#include "MonitorTrayIcon.hpp"
+#include "MonitorSettingsDialogModel.hpp"
 #include "MonitorVersion.hpp"
 #include "MonitorResources.hpp"
+#include "MonitorMainWindowModel.hpp"
 
 #include <pera_software/aidkit/stdlib/stdlib.hpp>
 #include <pera_software/aidkit/stdlib/memory.hpp>
 #include <pera_software/aidkit/qt/gui/Resources.hpp>
 #include <pera_software/aidkit/qt/core/Pointer.hpp>
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
-#include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
+#include <pera_software/aidkit/qt/properties/Bindings.hpp>
 
 #include <QApplication>
 #include <QCloseEvent>
@@ -38,7 +39,9 @@ using namespace pera_software::aidkit::stdlib;
 
 
 MonitorMainWindow::MonitorMainWindow(QSharedPointer<MonitorSettings> settings)
-	: PERAMainWindow(settings), settings_(settings), model_(settings)
+	: PERAMainWindow(settings),
+	  settings_(settings),
+	  trayIcon_(this)
 {
 	// Add the default menus:
 
@@ -47,28 +50,20 @@ MonitorMainWindow::MonitorMainWindow(QSharedPointer<MonitorSettings> settings)
 	addWindowMenu();
 	addHelpMenu();
 	addStatusBar();
-	addTrayIcon();
 
 	setWindowIcon(MonitorResources::icon());
 
-	connect(quitAction(), &QAction::triggered, &model_, &MonitorMainWindowModel::onQuit);
 	connect(quitAction(), &QAction::triggered, this, &MonitorMainWindow::onQuit);
-
-	connect(&model_, &MonitorMainWindowModel::visibilityChanged, this, &MonitorMainWindow::onVisible);
 
 	// Create the message(s) widget:
 
-	messages_ = new MessagesView;
-	messages_->setModel(model_.messagesModel());
-
 	auto messagesLayout = new QHBoxLayout;
-	messagesLayout->addWidget(messages_);
+	messagesLayout->addWidget(&messages_);
 
 	auto messagesGroup = new QGroupBox(tr("Messages"));
 	messagesGroup->setLayout(messagesLayout);
 
 	setCentralWidget(messagesGroup);
-	setVisible(model_.isVisible());
 }
 
 QAction *MonitorMainWindow::showAction()
@@ -86,6 +81,7 @@ QAction *MonitorMainWindow::hideAction()
 	}
 	return hideAction_;
 }
+
 
 void MonitorMainWindow::addEditMenu()
 {
@@ -111,39 +107,50 @@ void MonitorMainWindow::addWindowMenu()
 	auto windowMenu = new QMenu(tr("&Window"), this);
 	windowMenu->addAction(hideAction());
 	menuBar()->addMenu(windowMenu);
-
-	connect(showAction(), &QAction::triggered, [this] {
-		model_.beVisible(true);
-	});
-	connect(hideAction(), &QAction::triggered, [this] {
-		model_.beVisible(false);
-	});
-	connect(&model_, &MonitorMainWindowModel::visibilityChanged, [=, this](bool isVisible) {
-		showAction()->setDisabled(isVisible);
-		hideAction()->setEnabled(isVisible);
-	});
 }
 
 void MonitorMainWindow::addStatusBar()
 {
 	statusBar()->showMessage(QString());
-
-	connect(&model_, &MonitorMainWindowModel::showStatus, [=, this](const QString &message) {
-		statusBar()->showMessage(message);
-	});
 }
 
-void MonitorMainWindow::addTrayIcon()
+void bindValueChangedProperty(StringProperty *property, function<void (QString)> handler)
 {
-	trayIcon_ = new MonitorTrayIcon(this);
+	handler(property->value());
 
-	connect(trayIcon_, &MonitorTrayIcon::activated, [this] {
-		model_.beVisible(!model_.isVisible());
+	StringProperty::connect(property, &StringProperty::valueChanged, std::move(handler));
+}
+
+void MonitorMainWindow::setModel(QSharedPointer<MonitorMainWindowModel> model)
+{
+	model_ = std::move(model);
+
+	connect(quitAction(), &QAction::triggered, model_.get(), &MonitorMainWindowModel::onQuit);
+
+	connect(showAction(), &QAction::triggered, [this] {
+		model_->isVisible = true;
+	});
+	connect(hideAction(), &QAction::triggered, [this] {
+		model_->isVisible = false;
+	});
+	connect(&model_->isVisible, &BooleanProperty::valueChanged, [=, this](bool isVisible) {
+		showAction()->setDisabled(isVisible);
+		hideAction()->setEnabled(isVisible);
 	});
 
-	connect(&model_, &MonitorMainWindowModel::showNotification, [this](const QString &title, const QString &message, milliseconds timeout) {
-		trayIcon_->showMessage(title, message, MonitorTrayIcon::MessageIcon::Information, int_cast<int>(timeout.count()));
+	bindValueChangedProperty(&model_->statusMessage, [this](QString message) {
+		statusBar()->showMessage(message);
 	});
+
+	connect(&trayIcon_, &MonitorTrayIcon::activated, [this] {
+		model_->isVisible = !model_->isVisible;
+	});
+
+	connect(model_.get(), &MonitorMainWindowModel::showNotification, [this](const QString &title, const QString &message, milliseconds timeout) {
+		trayIcon_.showMessage(title, message, MonitorTrayIcon::MessageIcon::Information, int_cast<int>(timeout.count()));
+	});
+	messages_.setModel(model_->messagesModel());
+	bindWidgetVisibleProperty(this, &model_->isVisible);
 }
 
 void MonitorMainWindow::onQuit()
@@ -160,23 +167,25 @@ void MonitorMainWindow::onAbout()
 void MonitorMainWindow::onEditSettings()
 {
 	MonitorSettingsDialogModel dialogModel(settings_);
-	dialogModel.hostName = model_.data().hostName;
-	dialogModel.portNumber = model_.data().portNumber;
-	dialogModel.phoneBookPath = model_.data().phoneBookPath;
-	dialogModel.notificationTimeout = model_.data().notificationTimeout;
+	dialogModel.hostName = model_->fritzBoxHostName;
+	dialogModel.portNumber = model_->fritzBoxPortNumber;
+	dialogModel.phoneBookPath = model_->fritzBoxPhoneBookPath;
+	dialogModel.notificationTimeout = model_->notificationTimeout;
 
 	MonitorSettingsDialog settingsDialog(settings_, this);
-	QSharedPointer modelPtr(&dialogModel, null_deleter());
-	settingsDialog.setModel(modelPtr);
+	settingsDialog.setModel(QSharedPointer(&dialogModel, null_deleter()));
 
 	if (settingsDialog.exec() == QDialog::Accepted) {
-		// model_.setData(settingsDialog.data());
+		model_->fritzBoxHostName = dialogModel.hostName;
+		model_->fritzBoxPortNumber = dialogModel.portNumber;
+		model_->fritzBoxPhoneBookPath = dialogModel.phoneBookPath;
+		model_->notificationTimeout = dialogModel.notificationTimeout;
 	}
 }
 
-void MonitorMainWindow::onVisible(bool isVisible)
+void MonitorMainWindow::setVisible(bool isVisible)
 {
-	setVisible(isVisible);
+	PERAMainWindow::setVisible(isVisible);
 	if (isVisible) {
 		activateWindow();
 		raise();

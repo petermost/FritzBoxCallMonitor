@@ -7,14 +7,6 @@
 #include <pera_software/aidkit/qt/core/Socket.hpp>
 
 class QDir;
-class QSettings;
-
-struct MonitorData {
-	QString hostName;
-	pera_software::aidkit::qt::Port portNumber = 0;
-	std::chrono::milliseconds notificationTimeout = std::chrono::milliseconds(0);
-	QString phoneBookPath;
-};
 
 class MonitorSettings : public pera_software::aidkit::qt::PERASettings {
 	public:
@@ -26,6 +18,15 @@ class MonitorSettings : public pera_software::aidkit::qt::PERASettings {
 		QDir readLastVisitedDirectory();
 		void writeLastVisitedDirectory(const QDir &lastVisitedDirectory);
 
-		MonitorData readData();
-		void writeData(const MonitorData &data);
+		QString readHostName();
+		void writeHostName(const QString &hostName);
+
+		pera_software::aidkit::qt::Port readPortNumber();
+		void writePortNumber(pera_software::aidkit::qt::Port portNumber);
+
+		QString readPhoneBookPath();
+		void writePhoneBookPath(const QString phoneBookPath);
+
+		std::chrono::milliseconds readNotificationTimeout();
+		void writeNotificationTimeout(std::chrono::milliseconds notificationTimeout);
 };

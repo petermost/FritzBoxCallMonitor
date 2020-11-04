@@ -18,6 +18,9 @@ class QSettings;
 class MonitorSettingsDialogModel : public QObject {
 	Q_OBJECT
 	public:
+		MonitorSettingsDialogModel(QSharedPointer<MonitorSettings> settings, QObject *parent = nullptr);
+		~MonitorSettingsDialogModel() override;
+
 		pera_software::aidkit::qt::StringProperty hostName;
 		pera_software::aidkit::qt::BooleanProperty hostNameValid;
 
@@ -27,9 +30,6 @@ class MonitorSettingsDialogModel : public QObject {
 		pera_software::aidkit::qt::BooleanProperty okButton;
 
 		QAction browseForPhoneBookAction;
-
-		MonitorSettingsDialogModel(QSharedPointer<MonitorSettings> settings, QObject *parent = nullptr);
-		~MonitorSettingsDialogModel() override;
 
 	public Q_SLOTS:
 		void onBrowseForPhoneBook();

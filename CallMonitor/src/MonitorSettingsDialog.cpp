@@ -1,4 +1,5 @@
 #include "MonitorSettingsDialog.hpp"
+#include "MonitorSettingsDialogModel.hpp"
 
 #include <pera_software/aidkit/qt/widgets/IntegerSpinBox.hpp>
 #include <pera_software/aidkit/qt/properties/Bindings.hpp>

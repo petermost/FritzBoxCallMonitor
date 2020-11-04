@@ -43,21 +43,43 @@ void MonitorSettings::writeLastVisitedDirectory(const QDir &lastVisitedDirectory
 	iniFile_.setValue(LAST_VISITED_DIRECTORY_KEY, lastVisitedDirectory.absolutePath());
 }
 
-MonitorData MonitorSettings::readData()
+QString MonitorSettings::readHostName()
 {
-	MonitorData data = {
-		.hostName = qvariant_cast<QString>(iniFile_.value(HOST_NAME_KEY, FritzBox::DEFAULT_HOST_NAME)),
-		.portNumber = qvariant_cast<FritzBox::Port>(iniFile_.value(PORT_NUMBER_KEY, FritzBox::DEFAULT_CALL_MONITOR_PORT)),
-		.notificationTimeout = qvariant_cast<milliseconds>(iniFile_.value(NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue(DEFAULT_NOTIFICATION_TIMEOUT))),
-		.phoneBookPath = qvariant_cast<QString>(iniFile_.value(PHONE_BOOK_PATH_KEY))
-	};
-	return data;
+	return qvariant_cast<QString>(iniFile_.value(HOST_NAME_KEY, FritzBox::DEFAULT_HOST_NAME));
 }
 
-void MonitorSettings::writeData(const MonitorData &data)
+void MonitorSettings::writeHostName(const QString &hostName)
 {
-	iniFile_.setValue(HOST_NAME_KEY, data.hostName);
-	iniFile_.setValue(PORT_NUMBER_KEY, data.portNumber);
-	iniFile_.setValue(PHONE_BOOK_PATH_KEY, data.phoneBookPath);
-	iniFile_.setValue(NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue(data.notificationTimeout));
+	iniFile_.setValue(HOST_NAME_KEY, hostName);
+}
+
+Port MonitorSettings::readPortNumber()
+{
+	return qvariant_cast<FritzBox::Port>(iniFile_.value(PORT_NUMBER_KEY, FritzBox::DEFAULT_CALL_MONITOR_PORT));
+}
+
+void MonitorSettings::writePortNumber(Port portNumber)
+{
+	iniFile_.setValue(PORT_NUMBER_KEY, portNumber);
+}
+
+QString MonitorSettings::readPhoneBookPath()
+{
+	return qvariant_cast<QString>(iniFile_.value(PHONE_BOOK_PATH_KEY));
+
+}
+
+void MonitorSettings::writePhoneBookPath(const QString phoneBookPath)
+{
+	iniFile_.setValue(PHONE_BOOK_PATH_KEY, phoneBookPath);
+}
+
+milliseconds MonitorSettings::readNotificationTimeout()
+{
+	return qvariant_cast<milliseconds>(iniFile_.value(NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue(DEFAULT_NOTIFICATION_TIMEOUT)));
+}
+
+void MonitorSettings::writeNotificationTimeout(milliseconds notificationTimeout)
+{
+	iniFile_.setValue(NOTIFICATION_TIMEOUT_KEY, QVariant::fromValue(notificationTimeout));
 }

@@ -6,7 +6,6 @@
 #include <QStandardPaths>
 #include <pera_software/aidkit/qt/core/Chrono.hpp>
 #include <pera_software/aidkit/qt/core/Enums.hpp>
-#include <pera_software/aidkit/qt/gui/MessagesModel.hpp>
 
 using namespace std::chrono;
 using namespace pera_software::aidkit::qt;
@@ -16,8 +15,7 @@ MonitorMainWindowModel::MonitorMainWindowModel(QSharedPointer<MonitorSettings> s
 {
 	fritzBox_ = new FritzBox(this);
 
-	messagesModel_ = new MessagesModel;
-	messagesModel_->setMaximumItemCount(100);
+	messagesModel_.setMaximumItemCount(100);
 
 	connect(fritzBox_, &FritzBox::errorOccured, this, &MonitorMainWindowModel::onErrorOccured);
 	connect(fritzBox_, &FritzBox::stateChanged, this, &MonitorMainWindowModel::onStateChanged);
@@ -26,38 +24,47 @@ MonitorMainWindowModel::MonitorMainWindowModel(QSharedPointer<MonitorSettings> s
 	connect(fritzBox_, &FritzBox::phoneConnected, this, &MonitorMainWindowModel::onPhoneConnected);
 	connect(fritzBox_, &FritzBox::phoneDisconnected, this, &MonitorMainWindowModel::onPhoneDisconnected);
 
-	beVisible(settings_->readVisibility());
-	setData(settings_->readData());
+	connect(&fritzBoxHostName, &StringProperty::valueChanged, [this](QString newHostName) {
+		fritzBox_->connectTo(newHostName, static_cast<Port>(fritzBoxPortNumber));
+	});
+	connect(&fritzBoxPortNumber, &IntegerProperty::valueChanged, [this](int newPortNumber) {
+		fritzBox_->connectTo(fritzBoxHostName, static_cast<Port>(newPortNumber));
+	});
+	connect(&fritzBoxPhoneBookPath, &StringProperty::valueChanged, [this](QString newPhoneBookPath) {
+		readPhoneBook(newPhoneBookPath);
+	});
 
-	// connectToFritzBox(settings_.hostName, settings_.portNumber);
+	// Read the properties:
 
-	Q_EMIT showStatus(tr("Loaded settings from: '%1'").arg(settings_->fileName()));
+	isVisible = settings_->readVisibility();
+	fritzBoxHostName = settings_->readHostName();
+	fritzBoxPortNumber = settings_->readPortNumber();
+	fritzBoxPhoneBookPath = settings_->readPhoneBookPath();
+	notificationTimeout = settings_->readNotificationTimeout();
+
+	statusMessage = tr("Loaded settings from: '%1'").arg(settings_->fileName());
 }
 
 //==================================================================================================
 
 MonitorMainWindowModel::~MonitorMainWindowModel()
 {
-	settings_->writeVisibility(isVisible());
-	settings_->writeData(data_);
+	settings_->writeVisibility(isVisible);
+	settings_->writeHostName(fritzBoxHostName);
+	settings_->writePortNumber(static_cast<Port>(fritzBoxPortNumber));
+	settings_->writePhoneBookPath(fritzBoxPhoneBookPath);
+	settings_->writeNotificationTimeout(notificationTimeout);
 
-	Q_EMIT showStatus(tr("Saved settings to: '%1'").arg(settings_->fileName()));
-}
-
-//==================================================================================================
-
-void MonitorMainWindowModel::connectToFritzBox(const QString &hostName, Port portNumber)
-{
-	fritzBox_->connectTo(hostName, portNumber);
+	statusMessage = tr("Saved settings to: '%1'").arg(settings_->fileName());
 }
 
 //==================================================================================================
 
 void MonitorMainWindowModel::onErrorOccured(QTcpSocket::SocketError, const QString &errorMessage)
 {
-	messagesModel_->showError(tr("Connecting to '%1:%2' failed, because: '%3'")
+	messagesModel_.showError(tr("Connecting to '%1:%2' failed, because: '%3'")
 			.arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()).arg(errorMessage));
-	beVisible();
+	isVisible = true;
 }
 
 //==================================================================================================
@@ -65,7 +72,7 @@ void MonitorMainWindowModel::onErrorOccured(QTcpSocket::SocketError, const QStri
 void MonitorMainWindowModel::onStateChanged(QTcpSocket::SocketState state)
 {
 	if (state == QTcpSocket::SocketState::ConnectedState) {
-		messagesModel_->showInformation(tr("Connected to '%1:%2'").arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()));
+		messagesModel_.showInformation(tr("Connected to '%1:%2'").arg(fritzBox_->hostName()).arg(fritzBox_->portNumber()));
 		// Q_EMIT showInformation( Enums::toString( state ));
 	}
 }
@@ -76,10 +83,10 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 {
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
-	messagesModel_->showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
+	messagesModel_.showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 
 	QString message = tr("Caller: %1\nCallee: %2").arg(callerName).arg(calleeName);
-	Q_EMIT showNotification(tr("Incoming Call"), message, data_.notificationTimeout);
+	Q_EMIT showNotification(tr("Incoming Call"), message, notificationTimeout);
 }
 
 //==================================================================================================
@@ -88,7 +95,7 @@ void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const Q
 {
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
 	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
-	messagesModel_->showInformation(tr("Outgoing call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
+	messagesModel_.showInformation(tr("Outgoing call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 }
 
 //==================================================================================================
@@ -96,14 +103,14 @@ void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const Q
 void MonitorMainWindowModel::onPhoneConnected(unsigned /* connectionId */, const QString &caller)
 {
 	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
-	messagesModel_->showInformation(tr("Phone connected: Caller: '%1'.").arg(callerName));
+	messagesModel_.showInformation(tr("Phone connected: Caller: '%1'.").arg(callerName));
 }
 
 //==================================================================================================
 
 void MonitorMainWindowModel::onPhoneDisconnected(unsigned /* connectionId */)
 {
-	messagesModel_->showInformation(tr("Phone disconnected."));
+	messagesModel_.showInformation(tr("Phone disconnected."));
 }
 
 void MonitorMainWindowModel::onQuit()
@@ -113,59 +120,22 @@ void MonitorMainWindowModel::onQuit()
 
 //==================================================================================================
 
-void MonitorMainWindowModel::setData(MonitorData data)
-{
-	if (data_.hostName != data.hostName || data_.portNumber != data.portNumber) {
-		connectToFritzBox(data.hostName, data.portNumber);
-	}
-	if (data_.phoneBookPath != data.phoneBookPath) {
-		readPhoneBook(data.phoneBookPath);
-	}
-	data_ = data;
-}
-
-//==================================================================================================
-
-MonitorData MonitorMainWindowModel::data() const
-{
-	return data_;
-}
-
-//==================================================================================================
-
-bool MonitorMainWindowModel::isVisible() const
-{
-	return *isVisible_;
-}
-
-//==================================================================================================
-
-void MonitorMainWindowModel::beVisible(bool isVisible)
-{
-	if (!isVisible_.has_value() || *isVisible_ != isVisible) {
-		isVisible_ = isVisible;
-		Q_EMIT visibilityChanged(*isVisible_);
-	}
-}
-
-//==================================================================================================
-
 void MonitorMainWindowModel::readPhoneBook(const QString &phoneBookPath)
 {
 	QString errorString;
 	if (fritzBoxPhoneBook_.read(phoneBookPath, &errorString)) {
 		fritzBoxPhoneBook_.forEach([=, this](const QString &name, const QString &number) {
-			messagesModel_->showInformation(tr("Read phone book entry for '%1' with the number: '%2'.").arg(name).arg(number));
+			messagesModel_.showInformation(tr("Read phone book entry for '%1' with the number: '%2'.").arg(name).arg(number));
 		});
 	} else {
-		messagesModel_->showError(tr("Unable to read '%1' because '%2'!").arg(phoneBookPath).arg(errorString));
-		beVisible();
+		messagesModel_.showError(tr("Unable to read '%1' because '%2'!").arg(phoneBookPath).arg(errorString));
+		isVisible = true;
 	}
 }
 
 //==================================================================================================
 
-QAbstractItemModel *MonitorMainWindowModel::messagesModel() const
+QAbstractItemModel *MonitorMainWindowModel::messagesModel()
 {
-	return messagesModel_;
+	return &messagesModel_;
 }

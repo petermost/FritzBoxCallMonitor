@@ -1,9 +1,12 @@
 #pragma once
 
 #include "MonitorTrayIcon.hpp"
-#include "MonitorMainWindowModel.hpp"
 #include <pera_software/aidkit/qt/widgets/ForwardDeclarations.hpp>
+#include <pera_software/aidkit/qt/widgets/MessagesView.hpp>
 #include <pera_software/aidkit/qt/widgets/PERAMainWindow.hpp>
+
+class MonitorSettings;
+class MonitorMainWindowModel;
 
 class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 	Q_OBJECT
@@ -13,13 +16,15 @@ class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 		QAction *showAction();
 		QAction *hideAction();
 
+		void setModel(QSharedPointer<MonitorMainWindowModel> model);
+
 	public Q_SLOTS:
 		void onQuit();
 		void onAbout();
+		void setVisible(bool visible) override;
 
 	private Q_SLOTS:
 		void onEditSettings();
-		void onVisible(bool isVisible);
 
 	private:
 		void addEditMenu();
@@ -29,11 +34,11 @@ class MonitorMainWindow : public pera_software::aidkit::qt::PERAMainWindow {
 		void addTrayIcon();
 
 		QSharedPointer<MonitorSettings> settings_;
-		MonitorMainWindowModel model_;
+		QSharedPointer<MonitorMainWindowModel> model_;
 
 		QAction *showAction_ = nullptr;
 		QAction *hideAction_ = nullptr;
 
-		pera_software::aidkit::qt::MessagesView *messages_;
-		MonitorTrayIcon *trayIcon_;
+		pera_software::aidkit::qt::MessagesView messages_;
+		MonitorTrayIcon trayIcon_;
 };

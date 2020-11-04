@@ -2,11 +2,16 @@
 
 #include "FritzBox.hpp"
 #include "FritzBoxPhoneBook.hpp"
+#include "MillisecondsProperty.hpp"
 #include "MonitorSettings.hpp"
 #include <QObject>
 #include <chrono>
 #include <optional>
 #include <pera_software/aidkit/qt/gui/ForwardDeclarations.hpp>
+#include <pera_software/aidkit/qt/gui/MessagesModel.hpp>
+#include <pera_software/aidkit/qt/properties/StringProperty.hpp>
+#include <pera_software/aidkit/qt/properties/BooleanProperty.hpp>
+#include <pera_software/aidkit/qt/properties/IntegerProperty.hpp>
 
 class FritzBox;
 class QSettings;
@@ -18,26 +23,27 @@ class MonitorMainWindowModel : public QObject {
 		MonitorMainWindowModel(QSharedPointer<MonitorSettings> settings);
 		~MonitorMainWindowModel() override;
 
-		bool isVisible() const;
-		QAbstractItemModel *messagesModel() const;
+		// Window properties:
+
+		pera_software::aidkit::qt::BooleanProperty isVisible;
+		pera_software::aidkit::qt::StringProperty statusMessage;
+
+		// FritzBox properties:
+
+		pera_software::aidkit::qt::StringProperty fritzBoxHostName;
+		pera_software::aidkit::qt::IntegerProperty fritzBoxPortNumber;
+		pera_software::aidkit::qt::StringProperty fritzBoxPhoneBookPath;
+		MillisecondsProperty notificationTimeout;
+
+		QAbstractItemModel *messagesModel();
 
 	Q_SIGNALS:
-		void visibilityChanged(bool isVisible);
-
 		void showNotification(const QString &title, const QString &message, std::chrono::milliseconds timeout);
-		void showStatus(const QString &message) const;
 
 	public Q_SLOTS:
 		void onQuit();
 
-		void setData(MonitorData data);
-		void beVisible(bool isVisible = true);
-
-	public:
-		MonitorData data() const;
-
 	private:
-		void connectToFritzBox(const QString &hostName, pera_software::aidkit::qt::Port portNumber);
 		void readPhoneBook(const QString &phoneBookPath);
 
 		void onErrorOccured(QTcpSocket::SocketError, const QString &errorMessage);
@@ -48,10 +54,8 @@ class MonitorMainWindowModel : public QObject {
 		void onPhoneDisconnected(unsigned connectionId);
 
 		QSharedPointer<MonitorSettings> settings_;
-		std::optional<bool> isVisible_;
 
-		MonitorData data_;
 		FritzBox *fritzBox_ = nullptr;
 		FritzBoxPhoneBook fritzBoxPhoneBook_;
-		pera_software::aidkit::qt::MessagesModel *messagesModel_;
+		pera_software::aidkit::qt::MessagesModel messagesModel_;
 };
