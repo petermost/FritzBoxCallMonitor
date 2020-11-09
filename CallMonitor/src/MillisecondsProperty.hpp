@@ -12,7 +12,7 @@ class MillisecondsProperty : public pera_software::aidkit::qt::Property<std::chr
 		using Property<std::chrono::milliseconds>::operator=;
 
 	Q_SIGNALS:
-		void valueChanged(std::chrono::milliseconds newValue) override;
+		void valueChanged(std::chrono::milliseconds newValue);
 
 	protected:
 		void emitValueChanged(std::chrono::milliseconds value) override;

@@ -17,42 +17,42 @@
 <context>
     <name>MonitorMainWindow</name>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="62"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="63"/>
         <source>Messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="71"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="72"/>
         <source>&amp;Show Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="79"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="80"/>
         <source>&amp;Hide Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="87"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="88"/>
         <source>&amp;Settings...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="90"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="91"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="97"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="98"/>
         <source>&amp;About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="106"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="107"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MonitorMainWindow.cpp" line="162"/>
+        <location filename="../src/MonitorMainWindow.cpp" line="163"/>
         <source>%1
 Version %2</source>
         <translation type="unfinished"></translation>
