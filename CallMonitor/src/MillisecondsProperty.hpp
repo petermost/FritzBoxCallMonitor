@@ -11,6 +11,9 @@ class MillisecondsProperty : public pera_software::aidkit::qt::Property<std::chr
 		using Property<std::chrono::milliseconds>::Property;
 		using Property<std::chrono::milliseconds>::operator=;
 
+		MillisecondsProperty(const MillisecondsProperty &) = default;
+		MillisecondsProperty &operator = (const MillisecondsProperty &) = default;
+
 	Q_SIGNALS:
 		void valueChanged(std::chrono::milliseconds newValue);
 
