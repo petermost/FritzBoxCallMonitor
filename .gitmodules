@@ -1,3 +1,6 @@
 [submodule "CppAidKit"]
 	path = CppAidKit
 	url = https://github.com/petermost/CppAidKit.git
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/Microsoft/vcpkg.git

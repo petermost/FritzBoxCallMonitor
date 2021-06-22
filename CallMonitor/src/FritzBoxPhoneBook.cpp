@@ -49,7 +49,7 @@ bool FritzBoxPhoneBook::read(QIODevice *device, QString *errorString)
 				}
 				if (elementName == "number"_qs) {
 					number = reader.readElementText();
-					entries_.insert(number, name);
+					enterName(name, number);
 				}
 				break;
 			}
@@ -64,16 +64,21 @@ bool FritzBoxPhoneBook::read(QIODevice *device, QString *errorString)
 	return true;
 }
 
+void FritzBoxPhoneBook::enterName(const QString &name, const QString &number)
+{
+	entries_.insert(number, name);
+}
+
 //==================================================================================================
 
-QString FritzBoxPhoneBook::findNumber(const QString &name) const
+QString FritzBoxPhoneBook::findNumberForName(const QString &name) const
 {
 	return entries_.value(name);
 }
 
 //==================================================================================================
 
-QString FritzBoxPhoneBook::findName(const QString &number) const
+QString FritzBoxPhoneBook::findNameForNumber(const QString &number) const
 {
 	auto nameIterator = entries_.find(number);
 	return (nameIterator != entries_.end()) ? *nameIterator : QString();
@@ -81,9 +86,9 @@ QString FritzBoxPhoneBook::findName(const QString &number) const
 
 //==================================================================================================
 
-QString FritzBoxPhoneBook::findNameOrDefault(const QString &number, const QString &defaultName) const
+QString FritzBoxPhoneBook::findNameForNumberOrDefault(const QString &number, const QString &defaultName) const
 {
-	QString name = findName(number);
+	QString name = findNameForNumber(number);
 	if (name.isEmpty())
 		name = defaultName;
 

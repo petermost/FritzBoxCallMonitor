@@ -1,5 +1,9 @@
+include(CppAidKit/cmake/vcpkg_options.cmake)
+
 cmake_minimum_required(VERSION 3.16)
-project(FritzBoxCallMonitor VERSION 2.0.0)
+project(FritzBoxCallMonitor VERSION 2.0.1)
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 add_subdirectory(CppAidKit)
 include(CppAidKit/cmake/AidKit.cmake)
@@ -13,8 +17,6 @@ find_package(Qt5 REQUIRED
 		# Sql
 )
 
-add_googletest_subdirectory()
-
 # set(CMAKE_AUTOMOC ON)
 # set(CMAKE_AUTORCC ON)
 # set(CMAKE_AUTOUIC ON)
@@ -27,7 +29,7 @@ configure_file(CallMonitor/src/MonitorVersion.h.in MonitorVersion.h)
 # From "The missing example to use cmake qt5_create_translation" (https://gist.github.com/giraldeau/546ba5512a74dfe9d8ea0862d66db412)
 
 configure_file(CallMonitor/translations/Translations.qrc Translations.qrc COPYONLY)
-qt5_create_translation(TRANSLATION_FILES ${CMAKE_CURRENT_SOURCE_DIR} CallMonitor/translations/fritzboxcallmonitor_de.ts)
+qt5_create_translation(TRANSLATION_FILES CallMonitor/src CallMonitor/translations/fritzboxcallmonitor_de.ts)
 
 ####################################################################################################
 # Setup Monitor:
@@ -109,7 +111,7 @@ target_link_libraries(simulator
 ####################################################################################################
 # Setup tests:
 
-if (TARGET AidKitTest)
+if (TARGET AidKitTestSupport)
 	add_executable(fritztest
 		CallMonitor/test/FritzBoxTest.cpp
 		CallMonitor/test/FritzBoxPhoneBookTest.cpp
@@ -123,6 +125,6 @@ if (TARGET AidKitTest)
 	target_link_libraries(fritztest
 		fritzboxlib
 		Qt5::Test
-		AidKitTest
+		AidKitTestSupport
 	)
 endif()

@@ -81,8 +81,8 @@ void MonitorMainWindowModel::onStateChanged(QTcpSocket::SocketState state)
 
 void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const QString &caller, const QString &callee)
 {
-	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
-	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
+	QString callerName = fritzBoxPhoneBook_.findNameForNumberOrDefault(caller, caller);
+	QString calleeName = fritzBoxPhoneBook_.findNameForNumberOrDefault(callee, callee);
 	messagesModel_.showInformation(tr("Incoming call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 
 	QString message = tr("Caller: %1\nCallee: %2").arg(callerName).arg(calleeName);
@@ -93,8 +93,8 @@ void MonitorMainWindowModel::onIncomingCall(unsigned /* connectionId */, const Q
 
 void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const QString &caller, const QString &callee)
 {
-	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
-	QString calleeName = fritzBoxPhoneBook_.findNameOrDefault(callee, callee);
+	QString callerName = fritzBoxPhoneBook_.findNameForNumberOrDefault(caller, caller);
+	QString calleeName = fritzBoxPhoneBook_.findNameForNumberOrDefault(callee, callee);
 	messagesModel_.showInformation(tr("Outgoing call: Caller: '%1', Callee: '%2'.").arg(callerName).arg(calleeName));
 }
 
@@ -102,7 +102,7 @@ void MonitorMainWindowModel::onOutgoingCall(unsigned /* connectionId */, const Q
 
 void MonitorMainWindowModel::onPhoneConnected(unsigned /* connectionId */, const QString &caller)
 {
-	QString callerName = fritzBoxPhoneBook_.findNameOrDefault(caller, caller);
+	QString callerName = fritzBoxPhoneBook_.findNameForNumberOrDefault(caller, caller);
 	messagesModel_.showInformation(tr("Phone connected: Caller: '%1'.").arg(callerName));
 }
 

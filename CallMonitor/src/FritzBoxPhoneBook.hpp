@@ -20,13 +20,16 @@ class FritzBoxPhoneBook : public QObject {
 		/// Reads the phone book from the given device.
 		bool read(QIODevice *device, QString *errorString);
 
+		/// Enter a number into the phone book.
+		void enterName(const QString &name, const QString &number);
+
 		/// Find the number for the name.
-		QString findNumber(const QString &name) const;
+		QString findNumberForName(const QString &name) const;
 
 		/// Find the name for the number.
-		QString findName(const QString &number) const;
+		QString findNameForNumber(const QString &number) const;
 
-		QString findNameOrDefault(const QString &number, const QString &defaultName) const;
+		QString findNameForNumberOrDefault(const QString &number, const QString &defaultName) const;
 
 		/// Returns the number of entries.
 		int count() const;

@@ -6,7 +6,7 @@ Please see http://www.pera-software.com/html/software/fritzbox-callmonitor/fritz
 ## Buildinstructions:
 * Install Qt packages:
 ```
-sudo apt install qtbase5-dev
+sudo apt install qtbase5-dev ninja-build qt5-qmake qttools5-dev-tools qttools5-dev
 ```
 * Prepare the source directory: 
 ```
